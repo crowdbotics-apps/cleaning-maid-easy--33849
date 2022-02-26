@@ -9151,6 +9151,10 @@ img {
   .main-panel .header {
     margin-bottom: 50px; }
 
+.custom-content {
+  margin-top: 110px !important;
+}
+
 .perfect-scrollbar-on .sidebar,
 .perfect-scrollbar-on .main-panel {
   height: 100%;

@@ -15,12 +15,12 @@
 
 */
 import React from 'react'
-import {NavLink} from 'react-router-dom'
-import {Nav, Collapse} from 'reactstrap'
+import { NavLink } from 'react-router-dom'
+import { Nav, Collapse } from 'reactstrap'
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from 'perfect-scrollbar'
 
-import avatar from 'assets/img/faces/ayo-ogunseinde-2.jpg'
+import avatar from 'assets/img/ayo-ogunseinde-2.jpg'
 import logo from 'assets/img/react-logo.png'
 
 var ps
@@ -149,28 +149,36 @@ class Sidebar extends React.Component {
     return (
       <div
         className='sidebar'
-        data-color={this.props.bgColor}
+        data-color={'white'}
         data-active-color={this.props.activeColor}
       >
-        <div className='logo'>
-          <a
-            href='https://www.creative-tim.com'
-            className='simple-text logo-mini'
-          >
-            <div className='logo-img'>
-              <img src={logo} alt='react-logo' />
-            </div>
-          </a>
-          <a
-            href='https://www.creative-tim.com'
-            className='simple-text logo-normal'
-          >
-            Creative Tim
-          </a>
+        <div className='logo user'>
+          <div className='photo'>
+            <img src={avatar} alt='Avatar' />
+          </div>
+          <div className='info'>
+            <a
+              href='#pablo'
+              data-toggle='collapse'
+              aria-expanded={this.state.openAvatar}
+              onClick={() =>
+                this.setState({ openAvatar: !this.state.openAvatar })
+              }
+            >
+              <span style={{fontSize:18,color:'#000000', fontWeight:'500',fontFamily:'Ubuntu'}}>
+                User Name
+                {/* <b className='caret' /> */}
+              </span>
+            </a>
+          </div>
+          <span style={{fontSize:8,color:'#034EA2', fontWeight:'600',marginLeft: 14}}>
+          Update photo
+            </span>
+          
         </div>
 
         <div className='sidebar-wrapper' ref='sidebar'>
-          <div className='user'>
+          {/* <div className='user'>
             <div className='photo'>
               <img src={avatar} alt='Avatar' />
             </div>
@@ -211,7 +219,7 @@ class Sidebar extends React.Component {
                 </ul>
               </Collapse>
             </div>
-          </div>
+          </div> */}
           <Nav>{this.createLinks(this.props.routes)}</Nav>
         </div>
       </div>

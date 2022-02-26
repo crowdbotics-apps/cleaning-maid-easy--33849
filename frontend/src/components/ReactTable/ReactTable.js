@@ -14,7 +14,7 @@ import matchSorter from "match-sorter";
 import Select from "react-select";
 
 // reactstrap components
-import { Container, Row, Col, FormGroup, Input } from "reactstrap";
+import { Container, Row, Col, FormGroup, Input ,Button} from "reactstrap";
 
 // Define a default UI for filtering
 function DefaultColumnFilter({
@@ -24,13 +24,13 @@ function DefaultColumnFilter({
 
   return (
     <FormGroup>
-      <Input
+      {/* <Input
         placeholder={`Search ${count} records...`}
         type="text"
         onChange={(e) => {
           setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
         }}
-      />
+      /> */}
     </FormGroup>
   );
 }
@@ -239,9 +239,18 @@ function Table({ columns, data }) {
                 </tr>
               );
             })}
+            
           </tbody>
+          
         </table>
-        <div className="pagination-bottom"></div>
+        <Button
+                className="mb-3 mt-4 align-self-end"
+                style={{ background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%)", fontSize: 17,}}
+                onClick={(e) => e.preventDefault()}
+            >
+                Add Service
+            </Button>
+        {/* <div className="pagination-bottom"></div> */}
       </div>
     </>
   );

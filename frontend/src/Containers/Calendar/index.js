@@ -91,7 +91,7 @@ class Calendar extends React.Component {
         <div className="content">
           {this.state.alert}
           <Row>
-            <Col className="ml-auto mr-auto" md="10">
+            <Col className="ml-auto mr-auto" md="12">
               <Card className="card-calendar">
                 <CardBody>
                   <ReactBigCalendar

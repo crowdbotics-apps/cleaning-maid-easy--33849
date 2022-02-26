@@ -96,7 +96,7 @@ class ForgotPassword extends React.Component {
                 <div
                     className="full-page-background"
                     style={{
-                        backgroundImage: `url(${require("assets/img/background_img.png")})`,
+                        backgroundImage: `url(${require("assets/images/background_img.png")})`,
                     }}
                 />
             </div>
