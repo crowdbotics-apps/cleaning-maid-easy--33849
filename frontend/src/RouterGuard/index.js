@@ -1,14 +1,15 @@
-import React from 'react'
-import {Route, Redirect} from 'react-router-dom'
-import {compose} from 'redux'
-import {connect} from 'react-redux'
+import React from "react"
+import { Route, Redirect } from "react-router-dom"
+import { compose } from "redux"
+import { connect } from "react-redux"
 
 const RouteGuard = ({
   isProtected = false,
-  accessToken,
+  // accessToken,
   component: Component,
   ...rest
 }) => {
+  const accessToken = false
   return (
     <Route
       {...rest}
@@ -17,13 +18,13 @@ const RouteGuard = ({
           return accessToken ? (
             <Component {...props} />
           ) : (
-            <Redirect to={{pathname: '/login'}} />
+            <Redirect to={{ pathname: "/login" }} />
           )
         } else {
           return accessToken ? (
             <Redirect
               to={{
-                pathname: '/'
+                pathname: "/"
               }}
             />
           ) : (
@@ -36,7 +37,7 @@ const RouteGuard = ({
 }
 
 const mapStateToProps = state => ({
-  accessToken: state.signIn.accessToken
+  // accessToken: state.signIn.accessToken
   // userDetails: state.signIn.userDetails,
   // timerRef: state.flightSearch.timerRef
 })
