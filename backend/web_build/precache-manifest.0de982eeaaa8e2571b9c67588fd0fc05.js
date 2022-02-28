@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "dce225f728c05429cc09ac07732c1e2d",
+    "revision": "b4c6dd2d7629c9964c9298404afe4559",
     "url": "/paper-dashboard-pro-react/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/paper-dashboard-pro-react/static/css/2.857fa345.chunk.css"
   },
   {
-    "revision": "30f297ad7b5d71a624b9",
+    "revision": "7ee59d830f8e76fa546e",
     "url": "/paper-dashboard-pro-react/static/css/main.9665ca6e.chunk.css"
   },
   {
@@ -20,12 +20,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/paper-dashboard-pro-react/static/js/2.1cc6f8f0.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "30f297ad7b5d71a624b9",
-    "url": "/paper-dashboard-pro-react/static/js/main.5cfbeeae.chunk.js"
+    "revision": "7ee59d830f8e76fa546e",
+    "url": "/paper-dashboard-pro-react/static/js/main.680664c5.chunk.js"
   },
   {
     "revision": "f2bfac72b98b2facc17425ba730cf727",
-    "url": "/paper-dashboard-pro-react/static/js/main.5cfbeeae.chunk.js.LICENSE.txt"
+    "url": "/paper-dashboard-pro-react/static/js/main.680664c5.chunk.js.LICENSE.txt"
   },
   {
     "revision": "6229a6bc3cee56124b8b",

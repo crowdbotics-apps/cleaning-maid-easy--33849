@@ -1,6 +1,13 @@
 import {all} from 'redux-saga/effects'
 import {push} from 'connected-react-router'
 
+//Saga
+import login from "../Containers/Login/redux/saga"
+import forgotPassword from "../Containers/ForgotPassword/redux/saga"
+
 export function* mainSaga() {
-  yield all([])
+  yield all([
+    login,
+    forgotPassword
+  ])
 }

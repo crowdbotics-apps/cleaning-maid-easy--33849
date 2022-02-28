@@ -39,7 +39,7 @@ const routes = [
   {
     path: '/services',
     name: 'Services',
-    icon: 'nc-icon nc-calendar-60',
+    icon: 'fa fa-pencil',
     component: Services,
     layout: '/admin'
   },
@@ -53,14 +53,14 @@ const routes = [
   {
     path: '/teams',
     name: 'Teams',
-    icon: 'nc-icon nc-calendar-60',
+    icon: 'fa fa-users',
     component: Teams,
     layout: '/admin'
   },
   {
     path: '/employees',
     name: 'Employees',
-    icon: 'nc-icon nc-calendar-60',
+    icon: 'fa fa-briefcase',
     component: Employees,
     layout: '/admin'
   },
