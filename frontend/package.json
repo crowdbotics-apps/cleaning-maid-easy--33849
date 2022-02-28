@@ -1,7 +1,7 @@
 {
-  "name": "paper-dashboard-pro-react",
+  "name": "cleaning-maid-easy",
   "version": "1.2.0",
-  "description": "Premium Bootstrap 4 Paper UI Design",
+  "description": "Cleaning Maid Easy",
   "main": "index.js",
   "private": true,
   "scripts": {
@@ -30,7 +30,6 @@
   "bugs": {
     "url": "https://github.com/creativetimofficial/ct-paper-dashboard-pro-react/issues"
   },
-  "homepage": "https://demos.creative-tim.com/paper-dashboard-pro-react/#/",
   "dependencies": {
     "axios": "^0.26.0",
     "bootstrap": "4.5.0",
