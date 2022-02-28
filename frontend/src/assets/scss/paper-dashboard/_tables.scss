@@ -47,9 +47,9 @@
 
    > thead > tr > th{
        font-size: 14px;
-       font-weight: $font-weight-bold;
+    //    font-weight: $font-weight-bold;
        padding-bottom: 0;
-       text-transform: uppercase;
+    //    text-transform: uppercase;
        border: 0;
    }
 
@@ -160,8 +160,8 @@
 }
 
 .table-responsive{
-  overflow: scroll;
-  padding-bottom: 10px;
+//   overflow: scroll;
+  padding-bottom: 5px;
 }
 
 #tables .table-responsive{
