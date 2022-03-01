@@ -15,61 +15,67 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
-    layout: '/auth'
+    layout: '/auth',
   },
   {
     path: '/forgetPassword',
     name: 'ForgetPassword',
     component: ForgotPassword,
-    layout: '/auth'
+    layout: '/auth',
   },
   {
     path: '/resetPassword',
     name: 'ResetPassword',
     component: ResetPassword,
-    layout: '/auth'
+    layout: '/auth',
   },
   {
     path: '/calendar',
     name: 'Calendar',
     icon: 'nc-icon nc-calendar-60',
     component: Calendar,
-    layout: '/admin'
+    layout: '/admin',
+    isShow: 1,
   },
   {
     path: '/services',
     name: 'Services',
     icon: 'fa fa-pencil',
     component: Services,
-    layout: '/admin'
+    layout: '/admin',
+    isShow: 1,
   },
   {
     path: '/customers',
     name: 'Customers',
     icon: 'nc-icon nc-calendar-60',
     component: Customers,
-    layout: '/admin'
+    layout: '/admin',
+    isShow: 1,
   },
   {
     path: '/teams',
     name: 'Teams',
     icon: 'fa fa-users',
     component: Teams,
-    layout: '/admin'
+    layout: '/admin',
+    isShow: 1,
   },
   {
     path: '/employees',
     name: 'Employees',
     icon: 'fa fa-briefcase',
     component: Employees,
-    layout: '/admin'
+    layout: '/admin',
+    isShow: 1,
   },
   {
     path: '/scheduleService',
     name: 'Schedule Service',
     icon: 'nc-icon nc-calendar-60',
     component: ScheduleService,
-    layout: '/admin'
+    layout: '/admin',
+    isShow: 1,
   },
   
 ]

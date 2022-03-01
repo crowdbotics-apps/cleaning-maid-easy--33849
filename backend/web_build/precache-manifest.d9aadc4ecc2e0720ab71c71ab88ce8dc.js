@@ -1,31 +1,31 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "44d8e490a28ad993cf732aa318f296e2",
+    "revision": "d0e228dd87737342069cb513069d2ab5",
     "url": "/index.html"
   },
   {
-    "revision": "c0bd820b63e69dc10a31",
+    "revision": "3b9c2df8083310d8bfb1",
     "url": "/static/css/2.857fa345.chunk.css"
   },
   {
-    "revision": "2c7b34797996f5204b1f",
-    "url": "/static/css/main.e1bdeee8.chunk.css"
+    "revision": "76af5cf232be8d834b23",
+    "url": "/static/css/main.96189850.chunk.css"
   },
   {
-    "revision": "c0bd820b63e69dc10a31",
-    "url": "/static/js/2.dc4a9d5a.chunk.js"
+    "revision": "3b9c2df8083310d8bfb1",
+    "url": "/static/js/2.38d907d2.chunk.js"
   },
   {
     "revision": "7ee8dd1aebe2a99658b5805607eb72de",
-    "url": "/static/js/2.dc4a9d5a.chunk.js.LICENSE.txt"
+    "url": "/static/js/2.38d907d2.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "2c7b34797996f5204b1f",
-    "url": "/static/js/main.4c123e73.chunk.js"
+    "revision": "76af5cf232be8d834b23",
+    "url": "/static/js/main.200981c0.chunk.js"
   },
   {
     "revision": "f2bfac72b98b2facc17425ba730cf727",
-    "url": "/static/js/main.4c123e73.chunk.js.LICENSE.txt"
+    "url": "/static/js/main.200981c0.chunk.js.LICENSE.txt"
   },
   {
     "revision": "2590635d79791e909b63",
@@ -38,6 +38,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "b0265c2ba6395c947070fcc6928b528e",
     "url": "/static/media/background_img.b0265c2b.png"
+  },
+  {
+    "revision": "e8d813de5cdb370ce32f8829054006bf",
+    "url": "/static/media/bg_content.e8d813de.png"
   },
   {
     "revision": "f843ae88404a95100e6ad22773403f8b",
@@ -72,16 +76,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/static/media/nucleo-icons.f32ed5ad.eot"
   },
   {
-    "revision": "7907591946eee451e53d97d92cc238c9",
-    "url": "/static/media/react-logo.79075919.png"
-  },
-  {
     "revision": "ed1f44d3983770a677ce03bb31b84601",
     "url": "/static/media/schedule_img.ed1f44d3.png"
-  },
-  {
-    "revision": "d6bcdcbb06d8bacc2f45572e6830c352",
-    "url": "/static/media/table_img.d6bcdcbb.png"
   },
   {
     "revision": "bd365bc90504a2230a53601f4f71830e",

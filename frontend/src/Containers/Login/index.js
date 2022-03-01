@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // reactstrap components
 import {
@@ -12,6 +12,8 @@ import {
     Form,
     Input,
     Container,
+    Spinner,
+    UncontrolledAlert,
     Col,
     Row,
 } from "reactstrap";
@@ -21,51 +23,56 @@ import useForm from '../../utils/useForm';
 import validator from '../../utils/validation';
 
 //Actions
-import { loginRequest } from './redux/actions'
+import { loginRequest,resetMsg } from './redux/actions'
 
 const Login = (props) => {
-    // const { loginRequest } = props
-
-    // const [email, setEmail] = useState('');
-    // const [password, setPassword] = useState('')
-
+    const { history } = props;
     const stateSchema = {
         email: {
-           value: '', 
-           error: '' 
-          },
-        password: { 
-          value: '', 
-          error: '' 
-        },
-      };
-    
-      
-      const validationStateSchema = {
-        email: {
-          required: true,
-        //   validator: validator.email,
+            value: '',
+            error: ''
         },
         password: {
-          required: true,
-        //   validator: validator.password,
-    
+            value: '',
+            error: ''
         },
-      };
-    
-      const { state, handleOnChange, disable } = useForm(
-        stateSchema, 
+    };
+
+
+    const validationStateSchema = {
+        email: {
+            required: true,
+              validator: validator.email,
+        },
+        password: {
+            required: true,
+            //   validator: validator.password,
+
+        },
+    };
+
+    const { state, handleOnChange, disable } = useForm(
+        stateSchema,
         validationStateSchema
-        );
+    );
 
-        const loginApi = () => {
-            const data = {
-                email: state.email.value,
-                password: state.password.value
-            }
-            props.loginRequest(data)
+    const changeMsgState=()=>{
+        props.resetMsg()
+    }
+
+    const loginApi = () => {
+
+        const data = {
+            email: state.email.value,
+            password: state.password.value,
         }
+        props.loginRequest(data)
+    }
 
+    // useEffect(()=>{
+
+    // },
+    // [])
     return (
         <div className="login-page">
             <Container>
@@ -84,14 +91,23 @@ const Login = (props) => {
 
                                     <h2 className="header text-center font-weight-bold" style={{ color: '#0C4DA2', }}>Sign In</h2>
                                 </div>
+                                {
+                                        props.error ?
+                                            <UncontrolledAlert color="danger" toggle={changeMsgState} fade={false}>
+                                                <span>
+                                                    <b>Fail - </b>
+                                                    {props.error}
+                                                </span>
+                                            </UncontrolledAlert> : ''
+                                    }
                                 <div>
                                     <label style={{ fontSize: 12, textTransform: 'uppercase' }}>Email</label>
                                     <FormGroup className={`has-label ${state.email.value}`}>
                                         <Input placeholder="" type="email" name="email"
-                                        onChange={(e) => handleOnChange('email', e.target.value)} 
+                                            onChange={(e) => handleOnChange('email', e.target.value)}
                                         />
-                                        {state.email.error && 
-                                            <label style={{color:'red'}}>{state.email.error }</label>
+                                        {state.email.error &&
+                                            <label style={{ color: 'red' }}>{state.email.error}</label>
                                         }
                                     </FormGroup>
                                     <label style={{ fontSize: 12, textTransform: 'uppercase' }}>Password</label>
@@ -100,8 +116,8 @@ const Login = (props) => {
                                             autoComplete="off"
                                             onChange={(e) => handleOnChange('password', e.target.value)}
                                         />
-                                        {state.password.error && 
-                                            <label style={{color:'red'}}>{state.password.error }</label>
+                                        {state.password.error &&
+                                            <label style={{ color: 'red' }}>{state.password.error}</label>
                                         }
                                     </FormGroup>
                                 </div>
@@ -115,7 +131,17 @@ const Login = (props) => {
                                             // href="#pablo"
                                             onClick={loginApi}
                                         >
-                                            Sign in
+                                            {props.requesting ?
+                                                <Spinner
+                                                    as="span"
+                                                    animation="border"
+                                                    size="sm"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                />
+                                                : 'Sign in'
+                                            }
+
                                         </Button>
                                     </div>
                                     <div className="text-center">
@@ -151,12 +177,13 @@ const Login = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    // data: state.login.data,
-    // requesting: state.login.requesting,
-    // error: state.login.error
+    // data: state.login.user.key,
+    requesting: state.login.requesting,
+    error: state.login.error
 });
 
 const mapDispatchToProps = (dispatch) => ({
     loginRequest: (data) => dispatch(loginRequest(data)),
+    resetMsg: () => dispatch(resetMsg())
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

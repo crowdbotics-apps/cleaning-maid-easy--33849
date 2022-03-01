@@ -1,19 +1,3 @@
-/*!
-
-=========================================================
-* Paper Dashboard PRO React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { Nav, Collapse } from 'reactstrap'
@@ -21,7 +5,6 @@ import { Nav, Collapse } from 'reactstrap'
 import PerfectScrollbar from 'perfect-scrollbar'
 
 import avatar from 'assets/img/ayo-ogunseinde-2.jpg'
-import logo from 'assets/img/react-logo.png'
 
 var ps
 
@@ -30,8 +13,7 @@ class Sidebar extends React.Component {
     super(props)
     this.state = this.getCollapseStates(props.routes)
   }
-  // this creates the intial state of this component based on the collapse routes
-  // that it gets through this.props.routes
+
   getCollapseStates = routes => {
     let initialState = {}
     routes.map((prop, key) => {
@@ -46,9 +28,7 @@ class Sidebar extends React.Component {
     })
     return initialState
   }
-  // this verifies if any of the collapses should be default opened on a rerender of this component
-  // for example, on the refresh of the page,
-  // while on the src/views/forms/RegularForms.js - route /admin/regular-forms
+
   getCollapseInitialState(routes) {
     for (let i = 0; i < routes.length; i++) {
       if (routes[i].collapse && this.getCollapseInitialState(routes[i].views)) {
@@ -106,22 +86,28 @@ class Sidebar extends React.Component {
           </li>
         )
       }
+
       return (
-        <li className={this.activeRoute(prop.layout + prop.path)} key={key}>
-          <NavLink to={prop.layout + prop.path} activeClassName=''>
-            {prop.icon !== undefined ? (
-              <>
-                <i className={prop.icon} />
-                <p>{prop.name}</p>
-              </>
-            ) : (
-              <>
-                <span className='sidebar-mini-icon'>{prop.mini}</span>
-                <span className='sidebar-normal'>{prop.name}</span>
-              </>
-            )}
-          </NavLink>
-        </li>
+        <>
+          {prop.isShow && (
+            <li className={this.activeRoute(prop.layout + prop.path)} key={key}>
+              <NavLink to={prop.layout + prop.path} activeClassName=''>
+                {prop.icon !== undefined ? (
+                  <>
+                    <i className={prop.icon} />
+                    <p>{prop.name}</p>
+                  </>
+                ) : (
+                  <>
+                    <span className='sidebar-mini-icon'>{prop.mini}</span>
+                    <span className='sidebar-normal'>{prop.name}</span>
+                  </>
+                )}
+              </NavLink>
+            </li>
+          )}
+        </>
+
       )
     })
   }
@@ -145,6 +131,7 @@ class Sidebar extends React.Component {
       ps.destroy()
     }
   }
+
   render() {
     return (
       <div
@@ -156,28 +143,30 @@ class Sidebar extends React.Component {
           <div className='photo'>
             <img src={avatar} alt='Avatar' />
           </div>
+
           <div className='info'>
             <a
-              href='#pablo'
+
               data-toggle='collapse'
               aria-expanded={this.state.openAvatar}
               onClick={() =>
                 this.setState({ openAvatar: !this.state.openAvatar })
               }
             >
-              <span style={{fontSize:18,color:'#000000', fontWeight:'500',fontFamily:'Ubuntu'}}>
-                User Name
-                {/* <b className='caret' /> */}
+              <span style={styles.textStyle}>
+                {!document.body.classList.contains('sidebar-mini') ? 'User Name' : ''}
               </span>
             </a>
           </div>
-          <span style={{fontSize:8,color:'#034EA2', fontWeight:'600',marginLeft: 14}}>
-          Update photo
-            </span>
-          
+          <span style={styles.uploadText}>
+            {!document.body.classList.contains('sidebar-mini') ? 'Update photo' : ''}
+          </span>
+
+          <div style={{ borderBottom: !document.body.classList.contains('sidebar-mini') ? 'groove' : '', borderWidth: !document.body.classList.contains('sidebar-mini') && 1, borderColor: 'gray', opacity:0.3, paddingTop:17,width:'100%' }}></div>
+
         </div>
 
-        <div className='sidebar-wrapper' ref='sidebar'>
+        <div className='sidebar-wrapper pt-4' ref='sidebar'>
           {/* <div className='user'>
             <div className='photo'>
               <img src={avatar} alt='Avatar' />
@@ -228,3 +217,24 @@ class Sidebar extends React.Component {
 }
 
 export default Sidebar
+
+export const styles = {
+  textStyle: {
+    fontSize: 18,
+    color: '#000000',
+    fontWeight: '500',
+    fontFamily: 'Ubuntu',
+    display: 'block',
+    paddingTop:'inherit'
+    // overflow: 'hidden'
+  },
+  uploadText: {
+    fontSize: 8,
+    color: '#034EA2',
+    fontWeight: '600',
+    marginLeft: 5,
+    display: 'block',
+    // overflow: 'hidden',
+    paddingTop: 13
+  }
+}
