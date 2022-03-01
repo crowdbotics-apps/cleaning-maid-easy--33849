@@ -162,7 +162,7 @@ class Sidebar extends React.Component {
             {!document.body.classList.contains('sidebar-mini') ? 'Update photo' : ''}
           </span>
 
-          <div style={{ borderBottom: !document.body.classList.contains('sidebar-mini') ? 'groove' : '', borderWidth: !document.body.classList.contains('sidebar-mini') && 1, borderColor: 'gray', opacity:0.3, paddingTop:27,width:'100%' }}></div>
+          <div style={{ borderBottom: !document.body.classList.contains('sidebar-mini') ? 'groove' : '', borderWidth: !document.body.classList.contains('sidebar-mini') && 1, borderColor: 'gray', opacity:0.3, paddingTop:17,width:'100%' }}></div>
 
         </div>
 
@@ -225,6 +225,7 @@ export const styles = {
     fontWeight: '500',
     fontFamily: 'Ubuntu',
     display: 'block',
+    paddingTop:'inherit'
     // overflow: 'hidden'
   },
   uploadText: {
@@ -234,6 +235,6 @@ export const styles = {
     marginLeft: 5,
     display: 'block',
     // overflow: 'hidden',
-    paddingTop: 10
+    paddingTop: 13
   }
 }
