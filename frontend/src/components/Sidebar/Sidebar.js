@@ -236,5 +236,6 @@ export const styles = {
     display: 'block',
     // overflow: 'hidden',
     paddingTop: 13
+    
   }
 }
