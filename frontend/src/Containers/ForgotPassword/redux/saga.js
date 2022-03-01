@@ -1,4 +1,5 @@
 import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { push } from "connected-react-router";
 
 // config
 import { BASE_URL } from '../../../config/app';
@@ -29,9 +30,12 @@ function forgotPasswordApi(data) {
 function* forgotPassword({ data }) {
   try {
     const response = yield call(forgotPasswordApi, data);
-    // localStorage.setItem('authToken', response?.data?.token);
-    console.log("success", response.data.detail)
     yield put(forgotPasswordSuccess(response?.data.detail));
+    yield put(
+      push({
+        pathname: '/auth/resetPassword'
+      })
+    )
     
   } catch (e) {
     const { response } = e

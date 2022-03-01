@@ -58,17 +58,17 @@ const ForgotPassword = (props) => {
         props.resetMsg()
     }
 
-    useEffect(()=>{
-        if(props.sucessMsg){
-            setTimeout(() => {
-            props.history.push('/auth/resetPassword')
-            props.resetMsg()
-            }, 3000);
-        }
+    // useEffect(()=>{
+    //     if(props.sucessMsg){
+    //         setTimeout(() => {
+    //         props.history.push('/auth/resetPassword')
+    //         props.resetMsg()
+    //         }, 3000);
+    //     }
         
-    },
+    // },
     
-    [props.sucessMsg])
+    // [props.sucessMsg])
 
     return (
         <div className="login-page">
@@ -102,14 +102,7 @@ const ForgotPassword = (props) => {
                                                 <b>Fail - </b>
                                                 {props.error}
                                             </span>
-                                        </UncontrolledAlert> :
-                                        props.sucessMsg ?
-                                        <UncontrolledAlert color="success" fade={false}>
-                                        <span>
-                                            <b>Sucess - </b>
-                                            {props.sucessMsg}
-                                        </span>
-                                    </UncontrolledAlert>:''
+                                        </UncontrolledAlert> :''
                                 }
                                 <div>
                                     <label style={{ fontSize: 12, textTransform: 'uppercase' }}>Email</label>

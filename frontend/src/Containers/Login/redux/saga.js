@@ -38,14 +38,12 @@ function loginAPI(data) {
 function* login({ data }) {
   try {
     const response = yield call(loginAPI, data);
-
-    console.log("response", response)
     localStorage.setItem('authToken', JSON.stringify(response?.data?.key));
     yield put(loginSuccess(response.data));
     
     yield put(
       push({
-        pathname: '/admin'
+        pathname: '/admin/services'
       })
     )
 
