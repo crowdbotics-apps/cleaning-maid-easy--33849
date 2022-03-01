@@ -45,8 +45,9 @@ ReactDOM.render(
           <RouteGuard
             path="/admin"
             component={props => <AdminLayout {...props} />}
+            isProtected
           />
-          <Redirect to="/auth/login" />
+          <Redirect to="/admin/services" />
         </Switch>
       </Router>
     </Provider>

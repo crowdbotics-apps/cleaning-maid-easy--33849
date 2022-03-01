@@ -1,4 +1,5 @@
 import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { push } from "connected-react-router";
 // import AsyncStorage from '@react-native-community/async-storage';
 
 // import { showMessage } from 'react-native-flash-message';
@@ -20,12 +21,10 @@ import {
 } from './actions';
 
 function loginAPI(data) {
-  console.log("dataa api", data)
   const URL = `${BASE_URL}/rest-auth/login/`;
-  console.log("URL", URL)
   const options = {
     headers: {
-      // Accept: 'application/json', 
+      Accept: 'application/json', 
       'Content-Type': 'application/json'
     },
     method: 'POST',
@@ -37,26 +36,21 @@ function loginAPI(data) {
 }
 
 function* login({ data }) {
-  console.log('data', data);
   try {
     const response = yield call(loginAPI, data);
+    localStorage.setItem('authToken', JSON.stringify(response?.data?.key));
+    yield put(loginSuccess(response.data));
+    
+    yield put(
+      push({
+        pathname: '/admin/services'
+      })
+    )
 
-    console.log("response", response)
-    // localStorage.setItem('authToken', response?.data?.token);
-
-    // showMessage({
-    //   message: 'Login successfully!.',
-    //   type: 'success',
-    // });
-    // yield put(loginSuccess(response?.data?.user));
   } catch (e) {
     const { response } = e
-    // yield put(loginFaluire({ e }));
-    // showMessage({
-    //   message: response?.data?.non_field_errors,
-    //   type: 'danger',
-    // });
-    console.log("faild", e)
+    yield put(loginFaluire(response?.data?.non_field_errors[0]));
+    console.log("faild", response?.data?.non_field_errors[0])
   }
 }
 

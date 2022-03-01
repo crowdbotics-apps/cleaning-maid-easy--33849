@@ -5,11 +5,12 @@ import { connect } from "react-redux"
 
 const RouteGuard = ({
   isProtected = false,
-  // accessToken,
   component: Component,
   ...rest
 }) => {
-  const accessToken = false
+
+  const accessToken = localStorage.getItem('authToken')
+  // const accessToken = false
   return (
     <Route
       {...rest}
@@ -18,7 +19,7 @@ const RouteGuard = ({
           return accessToken ? (
             <Component {...props} />
           ) : (
-            <Redirect to={{ pathname: "/login" }} />
+            <Redirect to={{ pathname: "/auth/login" }} />
           )
         } else {
           return accessToken ? (
@@ -38,7 +39,7 @@ const RouteGuard = ({
 
 const mapStateToProps = state => ({
   // accessToken: state.signIn.accessToken
-  // userDetails: state.signIn.userDetails,
+  // user: state.login.user,
   // timerRef: state.flightSearch.timerRef
 })
 

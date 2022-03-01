@@ -1,7 +1,8 @@
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
-  LOGING_FALUIRE
+  LOGING_FALUIRE,
+  FORGOT_RESET_MSG
 } from './types';
 
 const initialState = {
@@ -32,6 +33,12 @@ export default (state = initialState, action) => {
         requesting: false,
         error: action.error
       };
+
+      case FORGOT_RESET_MSG:
+        return {
+          ...state,
+          error: ''
+        };
 
     default:
       return state;
