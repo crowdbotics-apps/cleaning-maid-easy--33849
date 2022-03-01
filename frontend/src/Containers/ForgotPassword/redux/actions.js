@@ -2,6 +2,7 @@ import {
   FORGOT_PASSWORD_REQUEST,
   FORGOT_PASSWORD_SUCCESS,
   FORGOT_PASSWORD_FALUIRE,
+  FORGOT_PASSWORD_RESET_MSG
 } from './types';
 
 export const  forgetPasswordRequest= (data) => ({
@@ -18,3 +19,8 @@ export const forgotPasswordFaluire = (error) => ({
   type: FORGOT_PASSWORD_FALUIRE,
   error,
 });
+
+export const resetMsg = () => ({
+  type: FORGOT_PASSWORD_RESET_MSG
+});
+

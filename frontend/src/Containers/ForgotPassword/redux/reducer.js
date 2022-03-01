@@ -2,6 +2,7 @@ import {
   FORGOT_PASSWORD_REQUEST,
   FORGOT_PASSWORD_SUCCESS,
   FORGOT_PASSWORD_FALUIRE,
+  FORGOT_PASSWORD_RESET_MSG
 } from './types';
 
 const initialState = {
@@ -32,6 +33,12 @@ export default (state = initialState, action) => {
         requesting: false,
         error: action.error
       };
+      case FORGOT_PASSWORD_RESET_MSG:
+        return {
+          ...state,
+          error: '',
+          msg:''
+        };
 
     default:
       return state;

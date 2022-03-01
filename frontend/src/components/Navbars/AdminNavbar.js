@@ -86,6 +86,7 @@ class AdminNavbar extends React.Component {
     }
     this.setState(newState);
   };
+  
   render() {
     return (
       <>
@@ -95,16 +96,20 @@ class AdminNavbar extends React.Component {
         >
           <Container fluid>
             <div className="navbar-wrapper">
-              {/* <div className="navbar-minimize">
-                <Button
-                  className="btn-icon btn-round"
-                  color="default"
+              <div className="navbar-minimize">
+                <button
+                type="button"
+                  style={{backgroundColor:'white', border:0, boxShadow:'none', outline:'none'}}
                   id="minimizeSidebar"
                   onClick={this.props.handleMiniClick}
                 >
-                  <i className="nc-icon nc-minimal-right text-center visible-on-sidebar-mini" />
-                  <i className="nc-icon nc-minimal-left text-center visible-on-sidebar-regular" />
-                </Button>
+                  <img
+                    alt="..."
+                    src={require("../../assets/images/menu.png")}
+                  />
+                  {/* <i className="nc-icon nc-minimal-right text-center visible-on-sidebar-mini" /> */}
+                  {/* <i className="nc-icon nc-minimal-left text-center visible-on-sidebar-regular" /> */}
+                </button>
               </div>
               <div
                 className={classnames("navbar-toggle", {
@@ -120,7 +125,7 @@ class AdminNavbar extends React.Component {
                   <span className="navbar-toggler-bar bar2" />
                   <span className="navbar-toggler-bar bar3" />
                 </button>
-              </div> */}
+              </div>
               <NavbarBrand href="#pablo" onClick={(e) => e.preventDefault()}>
                 <span className="d-md-block">
                   Cleaning Maid Easy Pro
@@ -134,21 +139,21 @@ class AdminNavbar extends React.Component {
               isOpen={this.state.collapseOpen}
             > */}
 
-              <Nav navbar>
-                <NavItem>
-                  <NavLink
-                    className="btn-magnify"
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <img
-                      alt="..."
-                      src={require("assets/images/logo_img.png")}
-                    />
-                  </NavLink>
-                </NavItem>
+            <Nav navbar>
+              <NavItem>
+                <NavLink
+                  className="btn-magnify"
+                  href="#"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <img
+                    alt="..."
+                    src={require("assets/images/logo_img.png")}
+                  />
+                </NavLink>
+              </NavItem>
 
-              </Nav>
+            </Nav>
             {/* </Collapse> */}
           </Container>
         </Navbar>

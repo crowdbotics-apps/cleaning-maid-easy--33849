@@ -11,8 +11,8 @@ import { FORGOT_PASSWORD_REQUEST } from './types';
 
 // actions
 import {
-  loginSuccess,
-  loginFaluire,
+  forgotPasswordSuccess,
+  forgotPasswordFaluire,
 } from './actions';
 
 function forgotPasswordApi(data) {
@@ -28,14 +28,17 @@ function forgotPasswordApi(data) {
 
 function* forgotPassword({ data }) {
   try {
-    
     const response = yield call(forgotPasswordApi, data);
     // localStorage.setItem('authToken', response?.data?.token);
-
-    // yield put(loginSuccess(response?.data?.user));
+    console.log("success", response.data.detail)
+    yield put(forgotPasswordSuccess(response?.data.detail));
+    
   } catch (e) {
     const { response } = e
-    console.log("errorrrrr", e)
+    console.log("fail", response.data.email.email[0])
+    yield put(forgotPasswordFaluire(response.data.email.email[0]));
+
+    
   }
 }
 

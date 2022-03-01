@@ -19,7 +19,7 @@ const middlewares = [
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['signIn']
+  whitelist: ['login']
 }
 const persistedReducer = persistCombineReducers(
   persistConfig,
