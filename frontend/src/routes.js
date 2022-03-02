@@ -8,6 +8,8 @@ import Customers from 'Containers/Customers'
 import Teams from '../src/Containers/Teams'
 import Employees from 'Containers/Employees'
 import ScheduleService from '../src/Containers/ScheduleServices'
+import Profile from 'Containers/Profile'
+import EditProfile from 'Containers/EditProfile'
 
 
 const routes = [
@@ -44,6 +46,18 @@ const routes = [
     component: Services,
     layout: '/admin',
     isShow: 1,
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    layout: '/admin',
+  },
+  {
+    path: '/editProfile',
+    name: 'Edit Profile',
+    component: EditProfile,
+    layout: '/admin',
   },
   {
     path: '/customers',
