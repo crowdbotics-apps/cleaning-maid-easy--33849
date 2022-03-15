@@ -19,7 +19,8 @@ from operations.api.v1.serializers import (
     TeamSerializer,
     FrequencySerializer,
     ServiceSerializer,
-    AppointmentSerializer
+    AppointmentSerializer,
+    BriefAppointmentSerializer
 )
 from operations.models import (
     Note,
@@ -228,3 +229,28 @@ class PendingRequestActionViewSet(ViewSet):
             appointment.save()
 
         return Response(AppointmentSerializer(appointment).data)
+
+
+class DayCalendarViewSet(ViewSet):
+    authentication_classes = (
+        TokenAuthentication,
+    )
+    serializer_class = BriefAppointmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Appointment.objects.all()
+
+    http_method_names = ["get"]
+
+    def list(self, request):
+        try:
+            day = self.request.GET.get('day')
+        except:
+            day = None
+
+        if not day:
+            return Response({
+                'Error': "Please Specify the Day."
+            }, 400)
+
+        appointments = Appointment.objects.filter(appointment_date=day, status="Accepted")
+        return Response(BriefAppointmentSerializer(appointments, many=True).data)

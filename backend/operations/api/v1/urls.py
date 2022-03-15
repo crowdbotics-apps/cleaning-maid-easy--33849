@@ -11,7 +11,8 @@ from operations.api.v1.viewsets import (
     AddTeamMemberViewSet,
     RemoveTeamMemberViewSet,
     PendingRequestListViewSet,
-    PendingRequestActionViewSet
+    PendingRequestActionViewSet,
+    DayCalendarViewSet
 )
 
 router = DefaultRouter()
@@ -24,6 +25,7 @@ router.register("create_team", CreateTeamViewSet, basename="create_team")
 router.register("add_team_member", AddTeamMemberViewSet, basename="add_team_member")
 router.register("remove_team_member", RemoveTeamMemberViewSet, basename="remove_team_member")
 router.register("request_action", PendingRequestActionViewSet, basename="request_action")
+router.register("day_calendar", DayCalendarViewSet, basename="day_calendar")
 
 
 urlpatterns = [

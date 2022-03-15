@@ -70,3 +70,27 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         )
+
+
+class BriefAppointmentSerializer(serializers.ModelSerializer):
+    client = BriefUserSerializer(read_only=True)
+    assigned_team = TeamSerializer(read_only=True)
+    service = ServiceSerializer(read_only=True)
+    frequency = FrequencySerializer(read_only=True)
+
+    class Meta:
+        model = Appointment
+        fields = (
+            'id',
+            'title',
+            'appointment_date',
+            'start_time',
+            'end_time',
+            'client',
+            'assigned_team',
+            'service',
+            'frequency',
+            'status',
+            'created_at',
+            'updated_at',
+        )
