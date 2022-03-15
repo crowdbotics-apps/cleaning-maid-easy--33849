@@ -69,4 +69,12 @@ class UsersListViewSet(generics.ListAPIView):
         if q:
             users_query = users_query.filter(name__icontains=q)
 
+        try:
+            user_type = self.request.GET.get('user_type')
+        except:
+            user_type = None
+
+        if user_type:
+            users_query = users_query.filter(user_type=user_type)
+
         return users_query

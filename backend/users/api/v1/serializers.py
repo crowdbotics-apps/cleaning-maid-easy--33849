@@ -6,7 +6,16 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = (
+            'id',
+            'name',
+            'profile_picture',
+            'company_name',
+            'address',
+            'email',
+            'phone_number',
+            'user_type'
+        )
 
 
 class BriefUserSerializer(serializers.ModelSerializer):
@@ -14,6 +23,5 @@ class BriefUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id',
                   'name',
-                  'profile_media',
-                  'is_profile_media_video',
+                  'profile_picture',
                   ]

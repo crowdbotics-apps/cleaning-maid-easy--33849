@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.core.validators import FileExtensionValidator
 
 
 class User(AbstractUser):
@@ -24,6 +25,10 @@ class User(AbstractUser):
     company_name = models.CharField(max_length=256, null=True, blank=True)
     address = models.CharField(max_length=500, null=True, blank=True)
     phone_number = models.CharField(max_length=256, null=True, blank=True)
+    profile_picture = models.ImageField(upload_to="group_media/",
+                                  validators=[FileExtensionValidator(['jpg', 'png', 'jpeg'])],
+                                  null=True,
+                                  blank=True)
 
     user_type = models.CharField(max_length=256, choices=(
         ('Admin', 'Admin'),

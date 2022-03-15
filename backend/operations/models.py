@@ -62,6 +62,13 @@ class Appointment(models.Model):
     description = models.TextField(null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
 
+    status = models.CharField(max_length=256, null=True, blank=True,
+                              choices=(
+                                  ('Pending', 'Pending'),
+                                  ('Accepted', 'Accepted'),
+                                  ('Rejected', 'Rejected'),
+                              ))
+
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
