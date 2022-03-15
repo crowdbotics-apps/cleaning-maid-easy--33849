@@ -278,22 +278,22 @@
         },
         "faker": {
             "hashes": [
-                "sha256:206050b40d6dfb6efe8ccfbbb9866c56477c53edfdab83f80de3b59f38a88ce0",
-                "sha256:edb62f9511a0977abcea6a78e43b99d1f26c915d2142bbf4c6bf02a9bb597c7f"
+                "sha256:c88c8b5ee9376a242deca8fe829f9a3215ffa43c31da6f66d9594531fb344453",
+                "sha256:fa060e331ffffb57cfa4c07f95d54911e339984ed72596ba6a9e7b6fa569d799"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==13.2.0"
+            "version": "==13.3.1"
         },
         "google-api-core": {
             "extras": [
                 "grpc"
             ],
             "hashes": [
-                "sha256:7d030edbd3a0e994d796e62716022752684e863a6df9864b6ca82a1616c2a5a6",
-                "sha256:f33863a6709651703b8b18b67093514838c79f2b04d02aa501203079f24b8018"
+                "sha256:6be1fc59e2a7ba9f66808bbc22f976f81e4c3e7ab20fa0620ce42686288787d0",
+                "sha256:b0fa577e512f0c8e063386b974718b8614586a798c5894ed34bedf256d9dae24"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.5.0"
+            "version": "==2.7.1"
         },
         "google-auth": {
             "hashes": [
@@ -305,11 +305,11 @@
         },
         "google-cloud-core": {
             "hashes": [
-                "sha256:7d19bf8868b410d0bdf5a03468a3f3f2db233c0ee86a023f4ecc2b7a4b15f736",
-                "sha256:d9cffaf86df6a876438d4e8471183bbe404c9a15de9afe60433bc7dce8cb4252"
+                "sha256:89d2f7189bc6dc74de128d423ea52cc8719f0a5dbccd9ca80433f6504a20255c",
+                "sha256:a423852f4c36622376c8f0be509b67533690e061062368b763b92694c4ee06a7"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.2.2"
+            "version": "==2.2.3"
         },
         "google-cloud-secret-manager": {
             "hashes": [
@@ -378,11 +378,11 @@
         },
         "google-resumable-media": {
             "hashes": [
-                "sha256:1a7dce5790b04518edc02c2ce33965556660d64957106d66a945086e2b642572",
-                "sha256:36dc2f7201ee1cb360ef502187aa4e1f2b6ec4467fcee92e08a8cf165e36f587"
+                "sha256:06924e8b1e79f158f0202e7dd151ad75b0ea9d59b997c850f56bdd4a5a361513",
+                "sha256:3c13f84813861ac8f5b6371254bdd437076bf1f3bac527a9f3fd123a70166f52"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.3.0"
+            "version": "==2.3.2"
         },
         "googleapis-common-protos": {
             "extras": [
