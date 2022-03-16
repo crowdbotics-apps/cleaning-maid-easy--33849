@@ -1,4 +1,14 @@
-import React from "react";
+import React, { useEffect, } from "react";
+
+import { connect } from 'react-redux';
+
+
+//utils
+import useForm from '../../utils/useForm';
+import validator from '../../utils/validation';
+
+//Actions
+import { getServices, addServices, addServicesFailure } from './redux/actions'
 
 // reactstrap components
 import {
@@ -19,14 +29,66 @@ import {
   ModalBody,
   Col,
   UncontrolledTooltip,
+  Spinner
 } from "reactstrap";
+import { reduceEachLeadingCommentRange } from "typescript";
 
-const Services = () => {
+const Services = (props) => {
+
+  const { servicesData, requesting, servicesError } = props
 
   const [modal, setModal] = React.useState(false);
 
+  const stateSchema = {
+    serviceName: {
+      value: '',
+      error: ''
+    },
+    serviceDescription: {
+      value: '',
+      error: ''
+    },
+    servicePrice: {
+      value: '',
+      error: ''
+    },
+  };
+
+
+  const validationStateSchema = {
+    serviceName: {
+      required: true,
+    },
+    serviceDescription: {
+      required: true,
+    },
+    servicePrice: {
+      required: true,
+    },
+  };
+
+  const { state, handleOnChange, disable } = useForm(
+    stateSchema,
+    validationStateSchema
+  );
+
   // Toggle for Modal
-  const toggle = () => setModal(!modal);
+  const toggle = () => {
+    const apidata = {
+      name: state.serviceName.value,
+      description: state.serviceDescription.value,
+      price: state.servicePrice.value
+    }
+    props.addServices(apidata, setModal)
+  };
+
+  const closeModal =()=>{
+    setModal(!modal)
+  }
+
+  useEffect(() => {
+    props.getServices()
+  }, [])
 
   return (
     <div className="content "
@@ -39,7 +101,7 @@ const Services = () => {
     >
       <Modal
         isOpen={modal}
-        toggle={toggle}
+        closeModal={closeModal}
       >
         <div style={{ height: 600 }}>
           <div className="modal-header border-bottom-0">
@@ -48,7 +110,7 @@ const Services = () => {
               className="close"
               data-dismiss="modal"
               type="button"
-              onClick={toggle}
+              onClick={closeModal}
             >
               <i style={{ color: 'linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF' }} className="nc-icon nc-simple-remove" />
             </button>
@@ -59,19 +121,27 @@ const Services = () => {
           <div className="modal-body ">
 
             <label style={styles.labelTextStyle}>Service Name</label>
-            <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+            <Input style={styles.inputTextStyle} className="border-0 pl-0"
+              onChange={(e) => handleOnChange('serviceName', e.target.value)} />
             <div style={styles.inputLineStyle} />
+            {servicesError.name && <label style={{ color: 'red' }}>{servicesError.name}</label>}
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Service Description</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input style={styles.inputTextStyle} className="border-0 pl-0"
+                onChange={(e) => handleOnChange('serviceDescription', e.target.value)} />
               <div style={styles.inputLineStyle} />
             </div>
+            {servicesError.description && <label style={{ color: 'red' }}>{servicesError.description}</label>}
+
 
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Service Price</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input style={styles.inputTextStyle} className="border-0 pl-0"
+                onChange={(e) => handleOnChange('servicePrice', e.target.value)} />
               <div style={styles.inputLineStyle} />
             </div>
+            {servicesError.price && <label style={{ color: 'red' }}>{servicesError.price}</label>}
+
           </div>
         </div>
         <div className="modal-footer border-top-0  justify-content-center">
@@ -79,8 +149,18 @@ const Services = () => {
             className="mb-3"
             style={styles.btnTextStyle}
             onClick={toggle}
+            disabled={disable}
           >
-            Save Service
+            {requesting ?
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+              : 'Save Service'
+            }
           </Button>
         </div>
       </Modal>
@@ -100,49 +180,47 @@ const Services = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td style={styles.tdataText1}>1.</td>
-                    <td style={styles.tdataText2}>Basic Cleaning</td>
-                    <td style={styles.tdataText}>Top to bottom dusting/cleaning of surfaces and all floors throughout the home</td>
-                    <td style={styles.tdataText}>$220.00</td>
-                    <td className="text-right">
-                      <Button
-                        className="btn-icon btn-neutral"
-                        size="sm"
-                        type="button"
-                      >
-                        <img
-                          alt="..."
-                          src={require("assets/images/delete_btn.png")}
-                        />
-                      </Button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={styles.tdataText1}>6.</td>
-                    <td style={styles.tdataText2}>Basic Cleaning</td>
-                    <td style={styles.tdataText}>Top to bottom dusting/cleaning of surfaces and all floors throughout the home</td>
-                    <td style={styles.tdataText}>$220.00</td>
-                    <td className="text-right">
-                      <Button
-                        className="btn-icon btn-neutral"
-                        size="sm"
-                        type="button"
-                      >
-                        <img
-                          alt="..."
-                          src={require("assets/images/delete_btn.png")}
-                        />
-                      </Button>
-                    </td>
-                  </tr>
+                  {servicesData ? servicesData.map((item, i) => (
+                    <tr>
+                      <td style={styles.tdataText1}>{i + 1}.</td>
+                      <td style={styles.tdataText2}>{item.name}</td>
+                      <td style={styles.tdataText}>{item.description}</td>
+                      <td style={styles.tdataText}>{item.price}</td>
+                      <td className="text-right">
+                        <Button
+                          className="btn-icon btn-neutral"
+                          size="sm"
+                          type="button"
+                        >
+                          <img
+                            alt="..."
+                            src={require("assets/images/delete_btn.png")}
+                          />
+                        </Button>
+                      </td>
+                    </tr>
+                  )) :
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td className="justify-content-center d-flex pt-7">{requesting ? <Spinner
+                        as="span"
+                        animation="border"
+                        size="lg"
+                        role="status"
+                        aria-hidden="true"
+                      /> : <h6>No Record Found</h6>}</td>
+                      <td></td>
+                    </tr>
+                  }
+
                 </tbody>
               </Table>
               <div className="d-flex justify-content-end">
                 <Button
                   className="mb-3 "
                   style={styles.addBtnText}
-                  onClick={toggle}
+                  onClick={() => [setModal(!modal), props.addServicesFailure(false)]}
                 >
                   Add Service
                 </Button>
@@ -156,7 +234,19 @@ const Services = () => {
 
 }
 
-export default Services;
+const mapStateToProps = (state) => ({
+  requesting: state.services.requesting,
+  servicesData: state.services.servicesData,
+  servicesError: state.services.servicesError
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  getServices: () => dispatch(getServices()),
+  addServices: (data, setModal) => dispatch(addServices(data, setModal)),
+  addServicesFailure: (data) => dispatch(addServicesFailure(data))
+
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Services);
 
 const styles = {
   inputLineStyle: {

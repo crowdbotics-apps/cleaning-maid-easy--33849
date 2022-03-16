@@ -9,7 +9,7 @@ const RouteGuard = ({
   ...rest
 }) => {
 
-  const accessToken = localStorage.getItem('authToken')
+  const accessToken = sessionStorage.getItem('authToken')
   // const accessToken = false
   return (
     <Route
