@@ -10,6 +10,9 @@ import Employees from 'Containers/Employees'
 import ScheduleService from '../src/Containers/ScheduleServices'
 import Profile from 'Containers/Profile'
 import EditProfile from 'Containers/EditProfile'
+import PrivacyPolicy from 'Containers/PrivacyPolicy'
+import TermsConditions from 'Containers/TermsConditions'
+import Notifiaction from 'Containers/Notifications'
 
 
 const routes = [
@@ -88,6 +91,26 @@ const routes = [
     name: 'Schedule Service',
     icon: 'nc-icon nc-calendar-60',
     component: ScheduleService,
+    layout: '/admin',
+    isShow: 1,
+  },
+  {
+    path: '/termsConditions',
+    name: 'Terms Conditions',
+    component: TermsConditions,
+    layout: '/admin',
+  },
+  {
+    path: '/privacyPolicy',
+    name: 'Privacy Policy',
+    component: PrivacyPolicy,
+    layout: '/admin',
+  },
+  {
+    path: '/notifiaction',
+    name: 'Notifiaction',
+    icon: 'fa fa-bell-o',
+    component: Notifiaction,
     layout: '/admin',
     isShow: 1,
   },

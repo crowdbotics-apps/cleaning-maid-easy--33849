@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // reactstrap components
 import {
@@ -31,6 +31,10 @@ const Services = () => {
 
   // Toggle for Modal
   const toggle = () => setModal(!modal);
+  const [selectedClient, setSelectedClient] = useState("none");
+  function handleSelectChange(event) {
+    setSelectedClient(event.target.value);
+  }
 
   return (
     <div className="content "
@@ -45,7 +49,7 @@ const Services = () => {
         isOpen={modal}
         toggle={toggle}
       >
-        <div style={{ height: 600 }}>
+        <div>
           <div className="modal-header border-bottom-0">
             <button
               aria-hidden={true}
@@ -54,27 +58,102 @@ const Services = () => {
               type="button"
               onClick={toggle}
             >
-              <i style={{ color: 'linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF' }} className="nc-icon nc-simple-remove" />
+              <i
+                className="nc-icon nc-simple-remove"
+                style={{ color: " #438B44" }}
+              />
             </button>
             <div>
-              <label className="mt-5" style={styles.titleTextStyle} >Add Service</label>
+              <label className="mt-5" style={styles.titleTextStyle} >Add Customer</label>
             </div>
           </div>
           <div className="modal-body ">
-
-            <label style={styles.labelTextStyle}>Service Name</label>
+            <label style={styles.labelTextStyle}>Full Name*</label>
             <Input style={styles.inputTextStyle} className="border-0 pl-0" />
             <div style={styles.inputLineStyle} />
             <div className="mt-4">
-              <label style={styles.labelTextStyle}>Service Description</label>
+              <label style={styles.labelTextStyle}>Email*</label>
               <Input style={styles.inputTextStyle} className="border-0 pl-0" />
               <div style={styles.inputLineStyle} />
             </div>
 
             <div className="mt-4">
-              <label style={styles.labelTextStyle}>Service Price</label>
+              <label style={styles.labelTextStyle}>Company Name</label>
               <Input style={styles.inputTextStyle} className="border-0 pl-0" />
               <div style={styles.inputLineStyle} />
+            </div>
+            <div className="mt-4">
+              <label style={styles.labelTextStyle}>Phone Number*</label>
+              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <div style={styles.inputLineStyle} />
+            </div>
+            <Row>
+              <Col lg={4}>
+                <div className="mt-4">
+                  <label style={styles.labelTextStyle}>Zip Code*</label>
+                  <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+                  <div style={styles.inputLineStyle} />
+                </div>
+              </Col>
+              <Col lg={8}>
+                <div className="mt-4">
+                  <label style={styles.labelTextStyle}>Address*</label>
+                  <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+                  <div style={styles.inputLineStyle} />
+                </div>
+              </Col>
+            </Row>
+            <div className="mt-4">
+              <label style={styles.labelTextStyle}>Services*</label>
+              <div style={styles.mainstyle} className="mt-4">
+                <select
+                  style={styles.selectStyle}
+                  value={selectedClient}
+                  onChange={handleSelectChange}
+                >
+                  <option value="none" selected disabled hidden></option>
+                  <Row>
+                    <option value="Windows Inside Team">Windows Inside Team</option>
+                    <option value="Inside Oven Team">Inside Oven Team</option>
+                  </Row>
+                  <option value="Inside Fridge Team">Inside Fridge Team</option>
+                  <option value="Basic Cleaning Team">Basic Cleaning Team</option>
+                </select>
+              </div>
+            </div>
+            <div className="mt-4">
+              <label style={styles.labelTextStyle}>Others</label>
+              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <div style={styles.inputLineStyle} />
+            </div>
+
+            <div className="mt-4">
+              <label style={styles.labelTextStyle}>Frequency*</label>
+              <div style={styles.mainstyle} className="mt-4">
+                <select
+                  style={styles.selectStyle}
+                  value={selectedClient}
+                  onChange={handleSelectChange}
+                >
+                  <option value="none" selected disabled hidden></option>
+                  <Row>
+                    <option value="Windows Inside Team">Windows Inside Team</option>
+                    <option value="Inside Oven Team">Inside Oven Team</option>
+                  </Row>
+                  <option value="Inside Fridge Team">Inside Fridge Team</option>
+                  <option value="Basic Cleaning Team">Basic Cleaning Team</option>
+                </select>
+              </div>
+            </div>
+            <div className="mt-4 d-flex justify-content-between">
+              <label style={styles.labelTextStyle}>Notifications</label>
+              <Switch
+                offColor="success"
+                offText=""
+                onColor="primary"
+                onText=""
+                fontSize={'small'}
+              />{" "}
             </div>
           </div>
         </div>
@@ -150,8 +229,8 @@ const Services = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="align-top" style={{maxHeight:390}}>
-                      <div style={{ paddingLeft: 18, paddingRight: 20, overflowY:'scroll', maxHeight:395 }}>
+                    <td className="align-top" style={{ maxHeight: 390 }}>
+                      <div style={{ paddingLeft: 18, paddingRight: 20, overflowY: 'scroll', maxHeight: 395 }}>
                         <div className="d-flex justify-content-between">
                           <h7>09/09/2021 - Basic Cleaning ($40)</h7>
                           <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
@@ -216,8 +295,8 @@ const Services = () => {
                           <h7>09/09/2021 - Basic Cleaning ($40)</h7>
                           <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
                         </div>
-                       
-                        
+
+
                       </div>
                     </td>
                     <td className="align-top">
@@ -239,22 +318,22 @@ const Services = () => {
                     <td className="align-top">
                       <div className="pl-3 pr-3">
                         <div className=" d-flex justify-content-between">
-                        <h7>Notifications</h7>
-                        <Switch
-                          offColor="success"
-                          offText=""
-                          onColor="primary"
-                          onText=""
-                        />{" "}
+                          <h7>Notifications</h7>
+                          <Switch
+                            offColor="success"
+                            offText=""
+                            onColor="primary"
+                            onText=""
+                          />{" "}
                         </div>
-                      <div>
-                        <label>
-                        Notes
-                        </label>
-                        <p>
-                        Nulla euismod non eget id mi feugiat imperdiet. Porta vitae eleifend turpis a, cras bibendum nibh viverra amet. Nibh quisque eleifend consequat dolor eget id dolor.
-                        </p>
-                      </div>
+                        <div>
+                          <label>
+                            Notes
+                          </label>
+                          <p>
+                            Nulla euismod non eget id mi feugiat imperdiet. Porta vitae eleifend turpis a, cras bibendum nibh viverra amet. Nibh quisque eleifend consequat dolor eget id dolor.
+                          </p>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -306,9 +385,9 @@ const styles = {
     paddingRight: 50
   },
   theadText: {
-    paddingLeft:20,
+    paddingLeft: 20,
     borderLeft: "1px solid rgb(212, 212, 212)",
-    width:295
+    width: 295
   },
   searchStyle: {
     height: 32,
@@ -346,5 +425,17 @@ const styles = {
     fontSize: 12,
     color: '#000000'
   },
+  mainstyle: {
+    borderBottom: "1px solid #DDDDDD",
+  },
+
+  selectStyle: {
+    outline: 'none',
+    width: '100%',
+    border: 0,
+    backgroundColor: "transparent",
+    fontSize: 18,
+  }
+
 
 }

@@ -69,13 +69,13 @@ function Employees(props) {
                     </tr>
                   </thead>
                   <tbody style={{
-                   
-                    overflowX:'auto',
-                    overflowY:'hidden'
+
+                    overflowX: 'auto',
+                    overflowY: 'hidden'
                     // overflow-y: auto;    
                     // overflow-x: hidden
                   }}
-                    >
+                  >
                     <tr style={styles.trheight}>
                       <td style={styles.tdFont}>
                         1
@@ -1430,12 +1430,6 @@ function Employees(props) {
                         style={styles.selectStyle}
                         value={selectedClient}
                         onChange={handleSelectChange}
-                        style={{
-                          width: 400,
-                          border: 0,
-                          backgroundColor: "transparent",
-
-                        }}
                       >
                         {" "}
 
@@ -1544,6 +1538,12 @@ const styles = {
 
     flexDirection: "rowReverse",
     alignItems: "flexEnd",
+  },
+  selectStyle: {
+    outline: 'none',
+    width: 400,
+    border: 0,
+    backgroundColor: "transparent",
   },
 };
 
