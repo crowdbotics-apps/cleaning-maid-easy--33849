@@ -6,6 +6,7 @@ import {connectRouter} from 'connected-react-router'
 import login from "../Containers/Login/redux/reducer"
 import forgotPassword from "../Containers/ForgotPassword/redux/reducer"
 import services from 'Containers/Services/redux/reducer'
+import teams from 'Containers/Teams/redux/reducer'
 
 
 // const signInPersistConfig = {
@@ -17,5 +18,6 @@ import services from 'Containers/Services/redux/reducer'
 export const combinedReducers = history => ({
     login,
     forgotPassword,
-    services
+    services,
+    teams
 })

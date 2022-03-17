@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 
+//Actions
+import { getTeam, getEmployees, createTeam, deleteTeam, } from './redux/actions'
+//Redux
+import { connect } from 'react-redux';
+
 // reactstrap components
 import {
   Button,
@@ -16,15 +21,79 @@ import {
   Col,
   Modal,
   UncontrolledTooltip,
+  Spinner
 } from "reactstrap";
 import CardFooter from "reactstrap/lib/CardFooter";
-function Teams() {
+import { useEffect } from "react";
+import { isPropertySignature } from "typescript";
+function Teams(props) {
+  const { employeesData, requesting, employeeRequesting, teamData, deleteRequesting, createRequesting } = props
   const [modal, setmodal] = useState(false);
+  const [teamName, setTeamName] = useState(false)
+  const [nameError, setNameError] = useState(false)
+
   const toggle = () => {
     setmodal(!modal);
   };
 
-  const [isChecked, setIsChecked] = useState(false);
+  const [deleteId, setDeleteId] = useState(false);
+  const [selectedMembers, setSelectedMebers] = useState([])
+  const [searchData, setSearchData] = useState('')
+
+
+
+  useEffect(() => {
+    props.getTeam()
+  }, [])
+
+  const arrayData = [
+    { image: require("assets/img/mike.jpg"), name: 'muddasir', id: 1 },
+    { image: require("assets/img/mike.jpg"), name: 'babur', id: 2 },
+    { image: require("assets/img/mike.jpg"), name: 'subhan', id: 3 },
+    { image: require("assets/img/mike.jpg"), name: 'mutasim', id: 4 },
+    { image: require("assets/img/mike.jpg"), name: 'ali', id: 5 },
+    { image: require("assets/img/mike.jpg"), name: 'furqan', id: 6 },
+    { image: require("assets/img/mike.jpg"), name: 'etc', id: 7 },
+  ]
+
+  const filterData = () => {
+    let filterData =
+      employeesData && employeesData.filter((item) =>
+        item.name.toLowerCase().includes(searchData.toLowerCase()),
+      )
+    return filterData
+  }
+
+  const employeeData = (data) => {
+    if (selectedMembers.includes(data.id)) {
+      setSelectedMebers(selectedMembers.filter(item => item !== data.id))
+    } else {
+      setSelectedMebers((selectedMembers) => [...selectedMembers, data.id])
+    }
+  }
+
+  const deleteTeam = (id) => {
+    props.deleteTeam(id)
+    setDeleteId(id)
+  }
+
+
+  const createTeam = () => {
+    const regEx = /^([a-zA-Z]+\s)*[a-zA-Z]+$/
+    if (regEx.test(teamName)) {
+      let apiData = {
+        member_ids: [1, 2, 3, 4, 5],
+        team_name: teamName
+      }
+      props.createTeam(apiData, setmodal)
+      setNameError(false)
+    }
+    else {
+      setNameError(true)
+    }
+  }
+
+
 
   return (
     <div
@@ -52,178 +121,139 @@ function Teams() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="text-center " style={styles.textFont}>
-                        1
-                      </td>
-                      <td className="" style={styles.textFont}>
-                        Basic Cleaning Team
-                      </td>
-                      <td style={{ width: "52%",borderLeft:"" }}>
-                        <Button
-                          style={styles.addBtn}
-                          color="white"
-                          title=""
-                          type="button"
-                          size="sm"
-                        >
-                          Jane Cooper
-                        </Button>
-                        <Button
-                          style={styles.addBtn}
-                          color="white"
-                          title=""
-                          type="button"
-                          size="sm"
-                        >
-                          Jane Cooper
-                        </Button>
-                        <Button
-                          style={styles.addBtn}
-                          color="white"
-                          title=""
-                          type="button"
-                          size="sm"
-                        >
-                          Jane Cooper
-                        </Button>
-                        <Button
-                          style={styles.addBtn}
-                          color="white"
-                          title=""
-                          type="button"
-                          size="sm"
+                    {teamData.length ? teamData.map((item, index) => (
+                      <tr style={styles.borderBottom}>
+                        <td className="text-center " style={styles.textFont}>
+                          {index + 1}
+                        </td>
+                        <td className="" style={styles.textFont}>
+                          {item.title}
+                        </td>
+                        <td style={{ width: "52%", borderLeft: "" }}>
+                          {item.team_members?.length && item.team_members.map((item) => (
+                            <>
+                              {item.name !== null && (
+                                <Button
+                                  style={styles.addBtn}
+                                  color="white"
+                                  title=""
+                                  type="button"
+                                  size="sm"
+                                >
+                                  {item.name}
+                                </Button>
+                              )}
 
-                        >
-                          Jane Cooper
-                        </Button>
-                      </td>
-                      <td
-                        style={styles.borderBottom}
-                        className="text-center "
-                      >
-                         <img className="mr-3"
-                         style={styles.imgStyle}
-                          alt="..."
-                          src={require("assets/icons/pencil_btn.png")}
-                        />
-                        <img
-                          style={styles.imgStyle}
-                          // style={{marginLeft:50}}
-                          alt="..."
-                          src={require("assets/icons/delete_btn.png")}
-                        />
-                      </td>
+                            </>
+                          ))}
 
-                      <td rowSpan="7" style={{borderLeft:"1px solid rgb(212, 212, 212)"}}>
-                        <div>
-                          <Button
-                            style={styles.addBtn}
-                            color="white"
-                            title=""
-                            type="button"
+                        </td>
+                        <td
+                          style={styles.borderBottom}
+                          className="text-center "
+                        >
+                          <img className="mr-3"
+                            style={styles.imgStyle}
+                            alt="..."
+                            src={require("assets/icons/pencil_btn.png")}
+                          />
+                          {deleteRequesting && deleteId === item.id ? <Spinner
+                            as="span"
+                            animation="border"
                             size="sm"
-                          >
-                            Jane Cooper
-                          </Button>
-                        </div>
-                        <div className="mt-2">
-                          <Button
-                            style={styles.addBtn}
-                            color="white"
-                            title=""
-                            type="button"
-                            size="sm"
-                          >
-                            Jane Cooper
-                          </Button>
-                        </div>
-                        <div className="mt-2">
-                          <Button
-                            style={styles.addBtn}
-                            color="white"
-                            title=""
-                            type="button"
-                            size="sm"
-                          >
-                            Jane Cooper
-                          </Button>
-                        </div>
-                        <div className="mt-2">
-                          <Button
-                            style={styles.addBtn}
-                            color="white"
-                            title=""
-                            type="button"
-                            size="sm"
-                          >
-                            Jane Cooper
-                          </Button>
-                        </div>{" "}
-                        <div className="mt-2">
-                          <Button
-                            style={styles.addBtn}
-                            color="white"
-                            title=""
-                            type="button"
-                            size="sm"
-                          >
-                            Jane Cooper
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
+                            role="status"
+                            aria-hidden="true"
+                          /> : <img
+                            style={styles.imgStyle}
+                            onClick={() => deleteTeam(item.id)}
+                            // style={{marginLeft:50}}
+                            alt="..."
+                            src={require("assets/icons/delete_btn.png")}
+                          />}
+                        </td>
+                        {!index && (
+                          <td rowSpan="7" style={{ borderLeft: "1px solid rgb(212, 212, 212)" }}>
+                            <div>
+                              <Button
+                                style={styles.addBtn}
+                                color="white"
+                                title=""
+                                type="button"
+                                size="sm"
+                              >
+                                Jane Cooper
+                              </Button>
+                            </div>
+                            <div className="mt-2">
+                              <Button
+                                style={styles.addBtn}
+                                color="white"
+                                title=""
+                                type="button"
+                                size="sm"
+                              >
+                                Jane Cooper
+                              </Button>
+                            </div>
+                            <div className="mt-2">
+                              <Button
+                                style={styles.addBtn}
+                                color="white"
+                                title=""
+                                type="button"
+                                size="sm"
+                              >
+                                Jane Cooper
+                              </Button>
+                            </div>
+                            <div className="mt-2">
+                              <Button
+                                style={styles.addBtn}
+                                color="white"
+                                title=""
+                                type="button"
+                                size="sm"
+                              >
+                                Jane Cooper
+                              </Button>
+                            </div>{" "}
+                            <div className="mt-2">
+                              <Button
+                                style={styles.addBtn}
+                                color="white"
+                                title=""
+                                type="button"
+                                size="sm"
+                              >
+                                Jane Cooper
+                              </Button>
+                            </div>
+                          </td>
+                        )}
 
-                         {/* for bottom border */}
-                    <tr>
-                      <td className="text-center" style={styles.textFont}>
-                        1
-                      </td>
+                      </tr>
+                    )) :
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td className="justify-content-center d-flex pt-7">
+                          <div style={{ marginTop: 100 }}>
+                            {requesting ? <Spinner
+                              as="span"
+                              animation="border"
+                              size="lg"
+                              role="status"
+                              aria-hidden="true"
+                            /> : <h6 >No Record Found</h6>}
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    }
 
-                      <td style={styles.textFont}>
-                        Basic Cleaning Team
-                      </td>
 
-                      <td
-                        style={styles.borderBottom}>
-                        <Button
-                          style={styles.addBtn}
-                          color="white"
-                          title=""
-                          type="button"
-                          size="sm"
-                        >
-                          Jane Cooper
-                        </Button>
-                        <Button
-                          style={styles.addBtn}
-                          color="white"
-                          title=""
-                          type="button"
-                          size="sm"
-                        >
-                          Jane Cooper
-                        </Button>
-                      </td>
+                    {/* for bottom border */}
 
-                      <td
-                        style={styles.borderBottom}
-                        className="text-center "
-                      >
-                         <img className="mr-3"
-                         style={styles.imgStyle}
-                          alt="..."
-                          src={require("assets/icons/pencil_btn.png")}
-                        />
-                        <img
-                          style={styles.imgStyle}
-                          // style={{marginLeft:50}}
-                          alt="..."
-                          src={require("assets/icons/delete_btn.png")}
-                        />
-                      </td>
-
-                    </tr>
                   </tbody>
                 </Table>
               </div>
@@ -235,16 +265,16 @@ function Teams() {
                 title=""
                 type="button"
                 size="md"
-                onClick={() => {
-                  setmodal(!modal);
-                }}
+                onClick={() => [
+                  setmodal(!modal), props.getEmployees()
+                ]}
               >
                 Add Team{" "}
               </Button>
               <Modal isOpen={modal} toggle={toggle}>
                 <div className="modal-header border-bottom-0">
                   <label style={{ fontSize: 24, fontWeight: "600" }}>
-                    Save Teams
+                    Add Teams
                   </label>
                   <button
                     aria-hidden={true}
@@ -261,10 +291,12 @@ function Teams() {
                   </button>
                 </div>
                 <div className="modal-body ">
-                  <label>First Name</label>
-                  <Input style={styles.inputTextStyle} className="border-0 pl-0" />
-              <div style={styles.inputLineStyle} />
-                  <label className="mt-4 mb-4 ">Last Name</label>
+                  <label>Team Name</label>
+                  <Input style={styles.inputTextStyle} className="border-0 pl-0"
+                    onChange={(e) => setTeamName(e.target.value)} />
+                  <div style={styles.inputLineStyle} />
+                  {nameError && <p style={{ color: "red" }}>please enter valid Name</p>}
+                  <label className="mt-4 mb-4 ">Team Members</label>
                   <div className="d-flex align-items-center">
                     {/* <img
                   style={styles.searchImg}
@@ -275,43 +307,52 @@ function Teams() {
                       type="search"
                       name="search"
                       style={styles.searchStyle}
-                      onChange={(e) => console.log(e)}
+                      value={searchData}
+                      onChange={(e) => [setSearchData(e.target.value), filterData()]}
                     />
                   </div>
+                  {filterData().length ? filterData().map((item) => (
+                    <div style={styles.mainDiv}>
+                      <div>
+                        <img
+                          width={44}
+                          height={44}
+                          style={{ borderRadius: 30 }}
+                          alt="..."
+                          className="img"
+                          src={item.image}
+                        />
+                        <label className="pl-3" style={{
+                          fontSize: 18, fontWeight: "500"
+                        }}>
+                          {item.data}
+                        </label>
+                      </div>
+                      <div>
+                        <input
+                          style={styles.checkBoxStyle}
+                          type="checkbox"
+                          onChange={() => employeeData(item)}
+                        />
+                        <span
+                          className={`checkbox ${selectedMembers.includes(item.id) ? "checkbox--active" : ""
+                            }`}
+                          // This element is purely decorative so
+                          // we hide it for screen readers
+                          aria-hidden="true"
+                        />
+                      </div>
+                    </div>
+                  )) :
+                    <div className="mt-5" style={{ textAlign: 'center' }}> {requesting ? <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    /> : "No Member found"}</div>
+                  }
 
-                  <div style={styles.mainDiv}>
-                    <div>
-                      <img
-                        width={44}
-                        height={44}
-                        style={{ borderRadius: 30 }}
-                        alt="..."
-                        className="img"
-                        src={require("assets/img/mike.jpg")}
-                      />
-                      <label className="pl-3" style={{
-                        fontSize: 18, fontWeight: "500" }}>
-                    Save Teams
-                  </label>
-                    </div>
-                    <div>
-                      <input
-                        style={styles.checkBoxStyle}
-                        type="checkbox"
-                        onChange={() => {
-                          setIsChecked(!isChecked);
-                        }}
-                      />
-                      <span
-                        className={`checkbox ${
-                          isChecked ? "checkbox--active" : ""
-                        }`}
-                        // This element is purely decorative so
-                        // we hide it for screen readers
-                        aria-hidden="true"
-                      />
-                    </div>
-                  </div>
                 </div>
                 <div
                   style={{ justifyContent: "center" }}
@@ -327,8 +368,19 @@ function Teams() {
                       title=""
                       type="button"
                       size="lg"
+                      disabled={!teamName}
+                      onClick={createTeam}
                     >
-                      Save Team{" "}
+                      {createRequesting ?
+                        <Spinner
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                        : 'Save Team'
+                      }
                     </Button>
                   </div>
                 </div>
@@ -355,7 +407,6 @@ const styles = {
   },
   textFont: {
     fontSize: 14,
-
     fontWeight: "600",
     borderBottom: "1px solid rgb(212, 212, 212)",
 
@@ -369,8 +420,8 @@ const styles = {
   btnStyle: {
     background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%), linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), #FFFFFF",
     borderRadius: 10,
-    fontSize:14,
-    fontWeight:'bold',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   searchImg: {
     height: 20,
@@ -390,25 +441,43 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 25,
-    alignItems:'center'
+    alignItems: 'center'
   },
   checkBoxStyle: {
     width: 21,
     height: 21,
   },
-  imgStyle:{
-     maxWidth: 25 ,
-                          height:25
+  imgStyle: {
+    maxWidth: 25,
+    height: 25
   },
-  borderBottom:{
-     borderBottom: "1px solid rgb(212, 212, 212)" 
+  borderBottom: {
+    borderBottom: "1px solid rgb(212, 212, 212)"
 
-    },
-  borderRight:{ 
-    borderRight: "1px solid rgb(212, 212, 212)" },
-    inputLineStyle: {
-      backgroundColor: '#D9D9D9',
-      height: 1
-    },
+  },
+  borderRight: {
+    borderRight: "1px solid rgb(212, 212, 212)"
+  },
+  inputLineStyle: {
+    backgroundColor: '#D9D9D9',
+    height: 1
+  },
 };
-export default Teams;
+
+const mapStateToProps = (state) => ({
+  requesting: state.teams.requesting,
+  employeeRequesting: state.teams.employeeRequesting,
+  employeesData: state.teams.employeesData,
+  deleteRequesting: state.teams.deleteRequesting,
+  createRequesting: state.teams.createRequesting,
+  teamData: state.teams.teamData
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  getTeam: () => dispatch(getTeam()),
+  getEmployees: () => dispatch(getEmployees()),
+  createTeam: (data, setmodal) => dispatch(createTeam(data, setmodal)),
+  deleteTeam: (data) => dispatch(deleteTeam(data))
+
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Teams);
