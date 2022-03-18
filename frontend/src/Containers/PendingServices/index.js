@@ -1,13 +1,10 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
 import { connect } from "react-redux"
 
 //utils
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
-
-//Actions
-// import { getServices, addServices, addServicesFailure } from "./redux/actions"
 
 // reactstrap components
 import {
@@ -28,14 +25,30 @@ import {
   ModalBody,
   Col,
   UncontrolledTooltip,
-  Spinner
+  Spinner,
+  UncontrolledAlert,
+  Alert
 } from "reactstrap"
 import { reduceEachLeadingCommentRange } from "typescript"
 
+//Components
+import Select from "react-select"
+
+//CSS File Import
+import "../PendingServices/styles.css"
+
+//Actions
+import {
+  getAppointmentDetails,
+  getPendingRequests,
+  requestAction
+} from "./redux/actions"
+
 const PendingServices = props => {
-  const { servicesData, requesting, servicesError } = props
+  const { requesting, pendingRequests } = props
 
   const [modal, setModal] = React.useState(false)
+  const [requestError, setRequestError] = useState(false)
 
   const stateSchema = {
     serviceName: {
@@ -70,23 +83,40 @@ const PendingServices = props => {
   )
 
   // Toggle for Modal
-  const toggle = () => {
-    // const apidata = {
-    //   name: state.serviceName.value,
-    //   description: state.serviceDescription.value,
-    //   price: state.servicePrice.value
-    // }
-    // props.addServices(apidata, setModal)
-  }
+  const toggle = () => {}
 
   const closeModal = () => {
     setModal(!modal)
   }
 
   useEffect(() => {
-    // props.getServices()
+    props.getPendingRequests()
   }, [])
 
+  const tableData = [
+    {
+      name: "Jacob jones",
+      description: "top to bottom cleaning of the house",
+      service: "basic cleaning"
+    },
+    {
+      name: "Jacob jones",
+      description: "top to bottom cleaning of the house",
+      service: "basic cleaning"
+    },
+    {
+      name: "Jacob jones",
+      description: "top to bottom cleaning of the house",
+      service: "basic cleaning"
+    },
+    {
+      name: "Jacob jones",
+      description: "top to bottom cleaning of the house",
+      service: "basic cleaning"
+    }
+  ]
+
+  const modalToggle = () => setModal(!modal)
   return (
     <div
       className="content "
@@ -97,92 +127,211 @@ const PendingServices = props => {
         flex: 1
       }}
     >
-      <Modal isOpen={modal} closeModal={closeModal}>
-        <div style={{ height: 600 }}>
-          <div className="modal-header border-bottom-0">
-            <button
-              aria-hidden={true}
-              className="close"
-              data-dismiss="modal"
-              type="button"
-              onClick={closeModal}
-            >
-              <i
-                style={{
-                  color:
-                    "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF"
-                }}
-                className="nc-icon nc-simple-remove"
-              />
-            </button>
-            <div>
-              <label className="mt-5" style={styles.titleTextStyle}>
-                Add Service
-              </label>
-            </div>
-          </div>
-          <div className="modal-body ">
-            <label style={styles.labelTextStyle}>Service Name</label>
-            <Input
-              style={styles.inputTextStyle}
-              className="border-0 pl-0"
-              onChange={e => handleOnChange("serviceName", e.target.value)}
-            />
-            <div style={styles.inputLineStyle} />
-            {/* {servicesError.name && (
-              <label style={{ color: "red" }}>{servicesError.name}</label>
-            )} */}
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Service Description</label>
-              <Input
-                style={styles.inputTextStyle}
-                className="border-0 pl-0"
-                onChange={e =>
-                  handleOnChange("serviceDescription", e.target.value)
-                }
-              />
-              <div style={styles.inputLineStyle} />
-            </div>
-            {/* {servicesError.description && (
-              <label style={{ color: "red" }}>
-                {servicesError.description}
-              </label>
-            )} */}
+      <Modal isOpen={modal} toggle={modalToggle}>
+        <ModalHeader style={{ borderBottom: 0 }}>
+          <b>Courtney Henry</b>
+        </ModalHeader>
+        <ModalBody>
+          <Row>
+            <Col>
+              {requestError ? (
+                <Alert color="danger">
+                  Request Failed
+                </Alert>
+              ) : null}
+            </Col>
+          </Row>
+          <Row style={{ justifyContent: "center" }}>
+            <Col md="12">
+              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                <i
+                  class="nc-icon nc-calendar-60"
+                  style={{ marginRight: 10, color: "grey" }}
+                ></i>
+                <label style={styles.inputStyle}>09 September 2021</label>
+              </div>
+            </Col>
+          </Row>
+          <Row style={{ justifyContent: "center", marginTop: 20 }}>
+            <Col md="12">
+              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                <i
+                  class="fa fa-clock-o"
+                  style={{ marginRight: 15, color: "grey" }}
+                ></i>
+                <label style={styles.inputStyle}>09:00AM - 11:30AM</label>
+              </div>
+            </Col>
+          </Row>
+          <Row style={{ justifyContent: "center", marginTop: 20 }}>
+            <Col md="12">
+              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                <i
+                  class="fa fa-map-marker"
+                  style={{ marginRight: 15, color: "grey" }}
+                ></i>
+                <label style={styles.inputStyle}>9400 Ninove Street, SA</label>
+              </div>
+            </Col>
+          </Row>
 
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Service Price</label>
+          <Row className="mt-4" style={{ justifyContent: "space-between" }}>
+            <Col md="8">
+              <label style={styles.labelfontStyles}>Client Name</label>
               <Input
-                style={styles.inputTextStyle}
-                className="border-0 pl-0"
-                onChange={e => handleOnChange("servicePrice", e.target.value)}
+                style={{ width: 300, backgroundColor: "white" }}
+                readOnly={true}
+                className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
               />
-              <div style={styles.inputLineStyle} />
-            </div>
-            {/* {servicesError.price && (
-              <label style={{ color: "red" }}>{servicesError.price}</label>
-            )} */}
-          </div>
-        </div>
-        <div className="modal-footer border-top-0  justify-content-center">
-          <Button
-            className="mb-3"
-            style={styles.btnTextStyle}
-            onClick={toggle}
-            disabled={disable}
-          >
-            {/* {requesting ? (
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
+            </Col>
+            <Col md="4">
+              <label style={styles.labelfontStyles}>Number</label>
+              <Input
+                readOnly={true}
+                style={{ backgroundColor: "white" }}
+                className="border-top-0 border-right-0 border-left-0 p-0"
               />
-            ) : (
-              "Save Service"
-            )} */}
-          </Button>
-        </div>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md="12">
+              <div className="">
+                <label style={styles.labelfontStyles}>
+                  Assigned Employee/ Team
+                </label>
+                <Input
+                  readOnly={true}
+                  style={{ backgroundColor: "white" }}
+                  className="border-top-0 border-right-0 border-left-0 p-0"
+                />
+              </div>
+            </Col>
+          </Row>
+
+          <Row className="mt-4 " style={{ justifyContent: "space-between" }}>
+            <Col lg="6" md="6" sm="3">
+              <label style={styles.labelfontStyles}>Services</label>
+              <Select
+                className="react-select "
+                classNamePrefix="react-select"
+                name="singleSelect"
+                options={[
+                  {
+                    value: "",
+                    label: "Single Option",
+                    isDisabled: true
+                  },
+                  { value: "2", label: "Basic Cleaning" },
+                  { value: "3", label: "Is great" }
+                ]}
+                placeholder="Single Select"
+              />
+            </Col>
+            <Col lg="6" md="6" sm="3">
+              <label style={styles.labelfontStyles}>Frequency</label>
+              <Select
+                className="react-select  "
+                classNamePrefix="react-select"
+                name="singleSelect"
+                options={[
+                  {
+                    value: "",
+                    label: "Single Option",
+                    isDisabled: true
+                  },
+                  { value: "2", label: "4 weeks/ monthly" },
+                  { value: "3", label: "Is great" }
+                ]}
+                placeholder="Single Select"
+              />
+            </Col>
+          </Row>
+
+          <Row style={{ justifyContent: "center", marginTop: 20 }}>
+            <Col md="12">
+              <div className="">
+                <label style={styles.labelfontStyles}>Price</label>
+                <Input
+                  readOnly={true}
+                  style={{ backgroundColor: "white" }}
+                  className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+                />
+              </div>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col>
+              <FormGroup>
+                <label style={styles.labelfontStyles}> Description </label>
+                <Input
+                  readOnly={true}
+                  className="textarea"
+                  type="textarea"
+                  rows="3"
+                  style={styles.textArea}
+                  defaultValue="Oh so, your weak rhyme You doubt I'll bother,
+                        "
+                />
+              </FormGroup>
+            </Col>
+            <Col>
+              <FormGroup>
+                <label style={styles.labelfontStyles}> Notes </label>
+                <Input
+                  readOnly={true}
+                  className="textarea"
+                  type="textarea"
+                  rows="3"
+                  style={styles.textArea}
+                  defaultValue=""
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+
+          <Row style={{ justifyContent: "center" }}>
+            <Col md="6">
+              <Button
+                className="btnTest"
+                style={styles.addBtnText}
+                onClick={() => {
+                  props.requestAction(
+                    {
+                      appointment_id: 6,
+                      action: "Accept"
+                    },
+                    setRequestError
+                  )
+                  setRequestError(false)
+                  // setModal(false)
+                }}
+              >
+                Accept
+              </Button>
+            </Col>
+            <Col md="6">
+              <Button
+                className="btnTest2"
+                style={styles.addBtnText2}
+                outline
+                color="success"
+                onClick={() => {
+                  props.requestAction({
+                    appointment_id: 6,
+                    action: "Reject"
+                  })
+                  setRequestError(false)
+
+                  // setModal(false)
+                }}
+              >
+                Reject
+              </Button>
+            </Col>
+          </Row>
+        </ModalBody>
       </Modal>
       <Row>
         <Col md="12">
@@ -199,68 +348,89 @@ const PendingServices = props => {
                 <thead style={{ opacity: 0.5 }}>
                   <tr>
                     <th style={styles.theadText}></th>
-                    <th style={styles.theadText}>Service Name</th>
-                    <th style={styles.theadText}>Service Description</th>
-                    <th style={styles.theadText}>Service Price</th>
-                    <th style={styles.theadText}></th>
+                    <th style={styles.theadText}>Client Name</th>
+                    <th style={styles.theadText}>Notes</th>
+                    <th style={styles.theadText}>Service </th>
+                    {/* <th style={styles.theadText}></th> */}
                   </tr>
                 </thead>
                 <tbody>
-                  {/* {servicesData ? (
-                    servicesData.map((item, i) => (
-                      <tr>
+                  {requesting ? (
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <Spinner size="lg" />
+                      </td>
+                      
+                    </tr>
+                  ) : tableData.length === 0 ? (
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <b>No record found</b>
+                      </td>
+                      <td></td>
+                    </tr>
+                  ) : (
+                    tableData &&
+                    tableData.map((item, i) => (
+                      <tr
+                        onClick={() => {
+                          props.getAppointmentDetails()
+                          setModal(true)
+                          setRequestError(false)
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
                         <td style={styles.tdataText1}>{i + 1}.</td>
                         <td style={styles.tdataText2}>{item.name}</td>
                         <td style={styles.tdataText}>{item.description}</td>
-                        <td style={styles.tdataText}>{item.price}</td>
-                        <td className="text-right">
-                          <Button
-                            className="btn-icon btn-neutral"
-                            size="sm"
-                            type="button"
-                          >
-                            <img
-                              alt="..."
-                              src={require("assets/images/delete_btn.png")}
-                            />
-                          </Button>
-                        </td>
+                        <td style={styles.tdataText}>{item.service}</td>
+                      </tr>
+                    ))
+                  )}
+                  {/* {pendingRequests ? (
+                    tableData.map((item, i) => (
+                      <tr
+                        onClick={() => {
+                          props.getAppointmentDetails()
+                          setModal(true)
+                          setRequestError(false)
+                        }}
+                        style={{cursor:'pointer'}}
+                      >
+                        <td style={styles.tdataText1}>{i + 1}.</td>
+                        <td style={styles.tdataText2}>{item.name}</td>
+                        <td style={styles.tdataText}>{item.description}</td>
+                        <td style={styles.tdataText}>{item.service}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
                       <td></td>
                       <td></td>
-                      <td className="justify-content-center d-flex pt-7">
+                      <td>
                         {requesting ? (
-                          <Spinner
-                            as="span"
-                            animation="border"
-                            size="lg"
-                            role="status"
-                            aria-hidden="true"
-                          />
-                        ) : (
+                          <div style={{ marginTop: 100 }}>
+                            <Spinner
+                              as="span"
+                              animation="border"
+                              size="lg"
+                              role="status"
+                              aria-hidden="true"
+                            />
+                          </div>
+                        ) : tableData.length === 0 ? (
                           <h6>No Record Found</h6>
-                        )}
+                        ) : null}
                       </td>
                       <td></td>
                     </tr>
                   )} */}
                 </tbody>
               </Table>
-              <div className="d-flex justify-content-end">
-                <Button
-                  className="mb-3 "
-                  style={styles.addBtnText}
-                  onClick={() => [
-                    setModal(!modal),
-                    // props.addServicesFailure(false)
-                  ]}
-                >
-                  Add Service
-                </Button>
-              </div>
             </CardBody>
           </Card>
         </Col>
@@ -270,15 +440,15 @@ const PendingServices = props => {
 }
 
 const mapStateToProps = state => ({
-//   requesting: state.services.requesting,
-//   servicesData: state.services.servicesData,
-//   servicesError: state.services.servicesError
+  requesting: state.pendingRequests.requesting,
+  pendingRequests: state.pendingRequests.pendingRequests
+  //   servicesError: state.services.servicesError
 })
 
 const mapDispatchToProps = dispatch => ({
-//   getServices: () => dispatch(getServices()),
-//   addServices: (data, setModal) => dispatch(addServices(data, setModal)),
-//   addServicesFailure: data => dispatch(addServicesFailure(data))
+  getPendingRequests: () => dispatch(getPendingRequests()),
+  getAppointmentDetails: data => dispatch(getAppointmentDetails(data)),
+  requestAction: (data, request) => dispatch(requestAction(data, request))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(PendingServices)
 
@@ -317,10 +487,13 @@ const styles = {
   },
   tdataText1: {
     fontSize: 14,
+    lineHeight: 3,
     fontWeight: "500"
   },
   tdataText2: {
     fontSize: 14,
+    lineHeight: 3,
+    cursor: "pointer",
     fontWeight: "600"
   },
   tdataText: {
@@ -331,5 +504,34 @@ const styles = {
     background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%)",
     fontWeight: "bold",
     fontSize: 17
+  },
+  labelfontStyles: {
+    fontSize: 14,
+    color: "grey",
+    fontWeight: "500"
+  },
+  inputStyle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000000"
+  },
+  textArea: {
+    opacity: "0.6",
+    webkitBoxShadow: "1px 3px 1px #9E9E9E",
+    mozBoxShadow: "1px 3px 1px #9E9E9E",
+    boxShadow: "1px 3px 1px #9E9E9E",
+    fontSize: 12,
+    color: "#000000",
+    backgroundColor: "white"
+  },
+
+  addBtnText2: {
+    fontWeight: "bold",
+    fontSize: 14,
+    color: "#3A3B3C"
+  },
+  addBtnText: {
+    fontWeight: "bold",
+    fontSize: 14
   }
 }
