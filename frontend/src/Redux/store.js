@@ -1,11 +1,11 @@
-import {combinedReducers} from './mainReducer'
-import {createStore, applyMiddleware, compose} from 'redux'
-import createSagaMiddleware from 'redux-saga'
-import {mainSaga} from './mainSaga'
-import {createBrowserHistory} from 'history'
-import storage from 'redux-persist/lib/storage'
-import {persistCombineReducers} from 'redux-persist'
-import {routerMiddleware} from 'connected-react-router'
+import { combinedReducers } from "./mainReducer"
+import { createStore, applyMiddleware, compose } from "redux"
+import createSagaMiddleware from "redux-saga"
+import { mainSaga } from "./mainSaga"
+import { createBrowserHistory } from "history"
+import storage from "redux-persist/lib/storage"
+import { persistCombineReducers } from "redux-persist"
+import { routerMiddleware } from "connected-react-router"
 const sagaMiddleware = createSagaMiddleware()
 export const history = createBrowserHistory()
 /**
@@ -17,9 +17,9 @@ const middlewares = [
   sagaMiddleware /** more middlewares if any goes here */
 ]
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['login']
+  whitelist: []
 }
 const persistedReducer = persistCombineReducers(
   persistConfig,
@@ -30,4 +30,4 @@ const store = createStore(
   composeEnhancers(applyMiddleware(...middlewares))
 )
 sagaMiddleware.run(mainSaga)
-export {store}
+export { store }

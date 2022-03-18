@@ -1,6 +1,6 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { Nav, Collapse } from 'reactstrap'
+import { NavLink,Link } from 'react-router-dom'
+import { Nav, Collapse,Button } from 'reactstrap'
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from 'perfect-scrollbar'
 
@@ -140,13 +140,19 @@ class Sidebar extends React.Component {
         data-active-color={this.props.activeColor}
       >
         <div className='logo user'>
+        <NavLink to='/admin/profile' activeClassName='' style={{display:'contents'}}>
           <div className='photo'>
+          
+          <img src={avatar} alt='Avatar' />
+                   
+
             <img src={avatar} alt='Avatar' />
+            
           </div>
+          </NavLink>
 
           <div className='info'>
             <a
-
               data-toggle='collapse'
               aria-expanded={this.state.openAvatar}
               onClick={() =>
@@ -236,5 +242,6 @@ export const styles = {
     display: 'block',
     // overflow: 'hidden',
     paddingTop: 13
+    
   }
 }

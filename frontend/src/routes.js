@@ -8,6 +8,12 @@ import Customers from 'Containers/Customers'
 import Teams from '../src/Containers/Teams'
 import Employees from 'Containers/Employees'
 import ScheduleService from '../src/Containers/ScheduleServices'
+import Profile from 'Containers/Profile'
+import EditProfile from 'Containers/EditProfile'
+import PrivacyPolicy from 'Containers/PrivacyPolicy'
+import TermsConditions from 'Containers/TermsConditions'
+import Notifiaction from 'Containers/Notifications'
+import PendingServices from 'Containers/PendingServices'
 
 
 const routes = [
@@ -46,6 +52,26 @@ const routes = [
     isShow: 1,
   },
   {
+    path: '/PendingServices',
+    name: 'PendingServices',
+    icon: 'fa fa-question',
+    component: PendingServices,
+    layout: '/admin',
+    isShow: 1,
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    layout: '/admin',
+  },
+  {
+    path: '/editProfile',
+    name: 'Edit Profile',
+    component: EditProfile,
+    layout: '/admin',
+  },
+  {
     path: '/customers',
     name: 'Customers',
     icon: 'nc-icon nc-calendar-60',
@@ -74,6 +100,26 @@ const routes = [
     name: 'Schedule Service',
     icon: 'nc-icon nc-calendar-60',
     component: ScheduleService,
+    layout: '/admin',
+    isShow: 1,
+  },
+  {
+    path: '/termsConditions',
+    name: 'Terms Conditions',
+    component: TermsConditions,
+    layout: '/admin',
+  },
+  {
+    path: '/privacyPolicy',
+    name: 'Privacy Policy',
+    component: PrivacyPolicy,
+    layout: '/admin',
+  },
+  {
+    path: '/notifiaction',
+    name: 'Notifiaction',
+    icon: 'fa fa-bell-o',
+    component: Notifiaction,
     layout: '/admin',
     isShow: 1,
   },
