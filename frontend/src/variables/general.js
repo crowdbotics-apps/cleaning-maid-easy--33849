@@ -1,23 +1,3 @@
-/*!
-
-=========================================================
-* Paper Dashboard PRO React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-// ##############################
-// // // data for react-tables in ReactTables view
-// #############################
-
 const dataForReactTable = {
   headerRow: ["Name", "Position", "Office", "Age", "Actions"],
   footerRow: ["Name", "Position", "Office", "Age", "Actions"],
@@ -78,17 +58,26 @@ var d = today.getDate();
 
 const events = [
   {
-    title: "All Day Event",
+    title: "All Day Event sss",
     allDay: true,
     start: new Date(y, m, 1),
     end: new Date(y, m, 1),
+    resourceId:1
+  },
+  {
+    title: "All Day Event sss",
+    allDay: true,
+    start: new Date(y, m, 1),
+    end: new Date(y, m, 1),
+    resourceId:1
   },
   {
     title: "Meeting",
-    start: new Date(y, m, d - 1, 10, 30),
-    end: new Date(y, m, d - 1, 11, 30),
+    start: new Date(y, m, d ),
+    end: new Date(y, m, d),
     allDay: false,
     color: "green",
+    resourceId:1
   },
   {
     title: "Lunch",
@@ -96,6 +85,7 @@ const events = [
     end: new Date(y, m, d + 7, 14, 0),
     allDay: false,
     color: "red",
+    resourceId:2
   },
   {
     title: "PD-PRO-REACT Launch",
@@ -103,27 +93,69 @@ const events = [
     end: new Date(y, m, d - 2),
     allDay: true,
     color: "azure",
+    resourceId:3
   },
   {
     title: "Birthday Party",
-    start: new Date(y, m, d + 1, 19, 0),
-    end: new Date(y, m, d + 1, 22, 30),
+    start: new Date(y, m, d, 9, 0),
+    end: new Date(y, m, d, 14, 30),
     allDay: false,
-    color: "azure",
+    color: "red",
+    resourceId:1
+  },
+  {
+    title: "Birthday 147",
+    start: new Date(y, m, d, 9, 0),
+    end: new Date(y, m, d, 14, 30),
+    allDay: false,
+    color: "yellow",
+    resource: 'new job',
+    resourceId:1
+  },
+  {
+    title: "Birthday 147",
+    start: new Date(y, m, d, 9, 0),
+    end: new Date(y, m, d, 14, 30),
+    allDay: false,
+    color: "yellow",
+    resource: 'new job',
+    resourceId:1
+
+  },
+  {
+    title: "Birthday 147",
+    start: new Date(y, m, d, 9, 0),
+    end: new Date(y, m, d, 14, 30),
+    allDay: false,
+    color: "yellow",
+    resourceId:1
+  },
+  {
+    title: "Birthday pakistan",
+    start: new Date(y, m, d, 9, 0),
+    end: new Date(y, m, d, 14, 30),
+    allDay: false,
+    color: "green",
+    resourceId:1
   },
   {
     title: "Click for Creative Tim",
-    start: new Date(y, m, 21),
-    end: new Date(y, m, 22),
+    start: new Date(y, m, d),
+    end: new Date(y, m, d),
     color: "orange",
+    resourceId:3
+    
   },
   {
     title: "Click for Google",
     start: new Date(y, m, 21),
     end: new Date(y, m, 22),
     color: "orange",
+    resourceId:4
   },
 ];
+
+
 
 // ##############################
 // // // for vector map row in Dashboard view

@@ -1,82 +1,69 @@
-/*!
 
-=========================================================
-* Paper Dashboard PRO React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useState, useMemo } from "react"
 // react component used to create a calendar with events on it
 import {
   Calendar as ReactBigCalendar,
   momentLocalizer,
-} from "react-big-calendar";
-// dependency plugin for react-big-calendar
-import moment from "moment";
-// react component used to create alerts
-import SweetAlert from "react-bootstrap-sweetalert";
+  Views,
+  Navigate
+} from "react-big-calendar"
+import moment from "moment"
+import SweetAlert from "react-bootstrap-sweetalert"
 
 // reactstrap components
-import { Card, CardBody, Row, Col } from "reactstrap";
+import { Card, CardBody, Row, Col } from "reactstrap"
 
-import { events } from "variables/general.js";
+import { events } from "variables/general.js"
 
-const localizer = momentLocalizer(moment);
+const localizer = momentLocalizer(moment)
 
-class Calendar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      events: events,
-      alert: null,
-    };
+const Calendar = () => {
+  const [addEvents, setAddEvents] = useState(events)
+  const [alertMsg, setAlertMsg] = useState(null)
+
+  const selectedEvent = event => {
+    // alert(event.title);
   }
-  selectedEvent = (event) => {
-    alert(event.title);
-  };
-  addNewEventAlert = (slotInfo) => {
-    this.setState({
-      alert: (
-        <SweetAlert
-          input
-          showCancel
-          style={{ display: "block", marginTop: "-100px" }}
-          title="Input something"
-          onConfirm={(e) => this.addNewEvent(e, slotInfo)}
-          onCancel={() => this.hideAlert()}
-          confirmBtnBsStyle="info"
-          cancelBtnBsStyle="danger"
-        />
-      ),
-    });
-  };
-  addNewEvent = (e, slotInfo) => {
-    var newEvents = this.state.events;
+
+  const addNewEventAlert = slotInfo => {
+    // setAlertMsg(
+    //   <SweetAlert
+    //     input
+    //     showCancel
+    //     style={{ display: "block", marginTop: "-100px" }}
+    //     title="Input something"
+    //     onConfirm={e => addNewEvent(e, slotInfo)}
+    //     onCancel={() => hideAlert()}
+    //     confirmBtnBsStyle="info"
+    //     cancelBtnBsStyle="danger"
+    //   />
+    // )
+  }
+
+  const addNewEvent = (e, slotInfo) => {
+    var newEvents = addEvents
     newEvents.push({
       title: e,
       start: slotInfo.start,
-      end: slotInfo.end,
-    });
-    this.setState({
-      alert: null,
-      events: newEvents,
-    });
-  };
-  hideAlert = () => {
-    this.setState({
-      alert: null,
-    });
-  };
-  eventColors = (event, start, end, isSelected) => {
+      end: slotInfo.end
+    })
+    setAddEvents(newEvents)
+    setAlertMsg(null)
+  }
+
+  const hideAlert = () => {
+    setAlertMsg(null)
+  }
+
+  const resourceMap = [
+    { resourceId: 1, resourceTitle: "Board room" },
+    { resourceId: 2, resourceTitle: "Training room" },
+    { resourceId: 3, resourceTitle: "Meeting room 1" },
+    { resourceId: 4, resourceTitle: "Meeting room 2" }
+  ]
+
+ 
+  const eventColors = (event, start, end, isSelected) => {
     var backgroundColor = "event-";
     event.color
       ? (backgroundColor = backgroundColor + event.color)
@@ -85,34 +72,56 @@ class Calendar extends React.Component {
       className: backgroundColor,
     };
   };
-  render() {
-    return (
-      <>
-        <div className="content">
-          {this.state.alert}
-          <Row>
-            <Col className="ml-auto mr-auto" md="12">
-              <Card className="card-calendar">
-                <CardBody>
-                  <ReactBigCalendar
-                    selectable
-                    localizer={localizer}
-                    events={this.state.events}
-                    defaultView="month"
-                    scrollToTime={new Date(1970, 1, 1, 6)}
-                    defaultDate={new Date()}
-                    onSelectEvent={(event) => this.selectedEvent(event)}
-                    onSelectSlot={(slotInfo) => this.addNewEventAlert(slotInfo)}
-                    eventPropGetter={this.eventColors}
-                  />
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </>
-    );
-  }
+  
+
+  return (
+    <>
+      <div className="content">
+        {alertMsg}
+        <Row>
+          <Col className="ml-auto mr-auto" md="12">
+            <Card className="card-calendar">
+              <CardBody>
+                <ReactBigCalendar
+                  selectable
+                  defaultDate={new Date()}
+                  localizer={localizer}
+                  events={addEvents}
+                  views={{
+                    day: true,
+                    week: true,
+                    month: true
+                  }}
+                startAccessor='start'
+                endAccessor='end'
+                  toolbar={true}
+                  formats = {{
+                    dayHeaderFormat: ({start, end}) => {
+                        return (moment.utc(start).format('MM/DD/YYYY') + ', ' + moment.utc(end).format('MM/DD/YYYY') );
+                    },
+                    monthHeaderFormat: ({start}) => {
+                      return (moment.utc(start).format('MMMM'));
+                  },
+                  selectRangeFormat: ({start,end}) => {
+                    return (new Date() );
+                },
+                  
+                  
+                }}
+                  defaultView="day"
+                  scrollToTime={new Date()}
+                  onSelectEvent={event => selectedEvent(event)}
+                  onSelectSlot={slotInfo => addNewEventAlert(slotInfo)}
+                  eventPropGetter={eventColors}
+                  dayLayoutAlgorithm={"no-overlap"}
+                />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    </>
+  )
 }
 
-export default Calendar;
+export default Calendar
