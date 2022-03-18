@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 // reactstrap components
 import {
   Button,
@@ -9,12 +9,10 @@ import {
   Row,
   Col,
   FormGroup,
-  Input,
-} from "reactstrap";
-import Select from "react-select";
+  Input
+} from "reactstrap"
+import Select from "react-select"
 function ScheduleService() {
-  
- 
   return (
     <div
       className="content"
@@ -22,7 +20,7 @@ function ScheduleService() {
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundImage: `url(${require("assets/images/bg_content.png")})`,
-        flex: 1,
+        flex: 1
       }}
     >
       <Row>
@@ -58,9 +56,11 @@ function ScheduleService() {
                       flexWrap: "wrap",
                     }}
                   > */}
-                   <Row className="mt-4" style={{    justifyContent: "space-between"}}>
-                   <Col lg="7" md="6" sm="3">
-                   
+                  <Row
+                    className="mt-4"
+                    style={{ justifyContent: "space-between" }}
+                  >
+                    <Col lg="7" md="6" sm="3">
                       <label style={styles.labelFont}>Client Name</label>
                       <Input
                         style={styles.inputStyle}
@@ -68,14 +68,13 @@ function ScheduleService() {
                       />
                     </Col>
                     <Col lg="4" md="6" sm="3">
-                   
                       <label style={styles.labelFont}>Number</label>
                       <Input
                         style={styles.inputStyle}
                         className="border-top-0 border-right-0 border-left-0 p-0"
                       />
                     </Col>
-                    </Row>
+                  </Row>
                   {/* </div> */}
                   <div className="mt-4 ">
                     <label style={styles.labelFont}>
@@ -86,57 +85,56 @@ function ScheduleService() {
                       className="border-top-0 border-right-0 border-left-0 p-0"
                     />
                   </div>
-                 
-                  <Row className="mt-4 " style={{    justifyContent: "space-between"}}>
-                        <Col lg="6" md="6" sm="3" >
-                        <label style={styles.labelFont}>
-                     Services
-                    </label>
-                          <Select
-                            className="react-select primary mb-4"
-                            classNamePrefix="react-select"
-                            name="singleSelect"
-                            // value={this.state.singleSelect}
-                            // onChange={(value) =>
-                            //   this.setState({ singleSelect: value })
-                            // }
-                            options={[
-                              {
-                                value: "",
-                                label: "Single Option",
-                                isDisabled: true,
-                              },
-                              { value: "2", label: "4 weeks/ monthly" },
-                              { value: "3", label: "Is great" },
-                            ]}
-                            placeholder="Single Select"
-                          />
-                        </Col>
-                        <Col lg="6" md="6" sm="3" >
-                        <label style={styles.labelFont}>
-                     Frequency
-                    </label>
-                          <Select
-                            className="react-select primary "
-                            classNamePrefix="react-select"
-                            name="singleSelect"
-                            // value={this.state.singleSelect}
-                            // onChange={(value) =>
-                            //   this.setState({ singleSelect: value })
-                            // }
-                            options={[
-                              {
-                                value: "",
-                                label: "Single Option",
-                                isDisabled: true,
-                              },
-                              { value: "2", label: "Basic Cleaning" },
-                              { value: "3", label: "Is great" },
-                            ]}
-                            placeholder="Single Select"
-                          />
-                        </Col>
-                      </Row>
+
+                  <Row
+                    className="mt-4 "
+                    style={{ justifyContent: "space-between" }}
+                  >
+                    <Col lg="6" md="6" sm="3">
+                      <label style={styles.labelFont}>Services</label>
+                      <Select
+                        className="react-select primary mb-4"
+                        classNamePrefix="react-select"
+                        name="singleSelect"
+                        // value={this.state.singleSelect}
+                        // onChange={(value) =>
+                        //   this.setState({ singleSelect: value })
+                        // }
+                        options={[
+                          {
+                            value: "",
+                            label: "Single Option",
+                            isDisabled: true
+                          },
+                          { value: "2", label: "4 weeks/ monthly" },
+                          { value: "3", label: "Is great" }
+                        ]}
+                        placeholder="Single Select"
+                      />
+                    </Col>
+                    <Col lg="6" md="6" sm="3">
+                      <label style={styles.labelFont}>Frequency</label>
+                      <Select
+                        className="react-select primary "
+                        classNamePrefix="react-select"
+                        name="singleSelect"
+                        // value={this.state.singleSelect}
+                        // onChange={(value) =>
+                        //   this.setState({ singleSelect: value })
+                        // }
+                        options={[
+                          {
+                            value: "",
+                            label: "Single Option",
+                            isDisabled: true
+                          },
+                          { value: "2", label: "Basic Cleaning" },
+                          { value: "3", label: "Is great" }
+                        ]}
+                        placeholder="Single Select"
+                      />
+                    </Col>
+                  </Row>
                   <div className="mt-4">
                     <label style={styles.labelFont}>Price</label>
                     <Input
@@ -168,7 +166,8 @@ function ScheduleService() {
                         type="textarea"
                         rows="3"
                         placeholder="Leave a note here..."
-                        style={styles.textArea}/>
+                        style={styles.textArea}
+                      />
                     </FormGroup>
                   </div>
                 </Col>
@@ -177,10 +176,11 @@ function ScheduleService() {
             <CardFooter className="text-lg-right text-center">
               <Button
                 style={{
-                  background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%), linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), #FFFFFF",
+                  background:
+                    "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%), linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), #FFFFFF",
                   borderRadius: 10,
-                  fontSize:14,
-                  fontWeight:'bold'
+                  fontSize: 14,
+                  fontWeight: "bold"
                 }}
                 color="white"
                 title=""
@@ -194,7 +194,7 @@ function ScheduleService() {
         </Col>
       </Row>
     </div>
-  );
+  )
 }
 const styles = {
   cardStyle: {
@@ -209,24 +209,25 @@ const styles = {
     mozBoxShadow: "1px 3px 1px #9E9E9E",
     boxShadow: "1px 3px 1px #9E9E9E",
     fontSize: 12,
-    color: "#000000",
+    color: "#000000"
   },
   mainDivText: {
     borderRadius: 5,
     marginTop: 35,
-    backgroundColor: "white",
+    backgroundColor: "white"
   },
   labelFont: { fontSize: 14, fontWeight: "500" },
   inputStyle: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#000000",
+    color: "#000000"
   },
-  saveBtn:{
-    backgroundColor: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%), linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), #FFFFFF",
+  saveBtn: {
+    backgroundColor:
+      "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%), linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), #FFFFFF",
     borderRadius: 10,
-    fontSize:14,
-    fontWeight:'bold'
-  },
-};
-export default ScheduleService;
+    fontSize: 14,
+    fontWeight: "bold"
+  }
+}
+export default ScheduleService

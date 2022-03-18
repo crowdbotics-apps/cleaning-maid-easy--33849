@@ -13,6 +13,7 @@ import EditProfile from 'Containers/EditProfile'
 import PrivacyPolicy from 'Containers/PrivacyPolicy'
 import TermsConditions from 'Containers/TermsConditions'
 import Notifiaction from 'Containers/Notifications'
+import PendingServices from 'Containers/PendingServices'
 
 
 const routes = [
@@ -47,6 +48,14 @@ const routes = [
     name: 'Services',
     icon: 'fa fa-pencil',
     component: Services,
+    layout: '/admin',
+    isShow: 1,
+  },
+  {
+    path: '/PendingServices',
+    name: 'PendingServices',
+    icon: 'fa fa-question',
+    component: PendingServices,
     layout: '/admin',
     isShow: 1,
   },
