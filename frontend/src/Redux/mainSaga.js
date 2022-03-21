@@ -11,4 +11,5 @@ import scheduleServices from 'Containers/ScheduleServices/redux/saga'
 import calendar from 'Containers/Calendar/redux/saga'
 export function* mainSaga() {
   yield all([login, forgotPassword, services, teams, pendingRequests,calendar,scheduleServices])
+}
 
