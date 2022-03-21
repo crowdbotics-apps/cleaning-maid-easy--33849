@@ -93,28 +93,28 @@ const PendingServices = props => {
     props.getPendingRequests()
   }, [])
 
-  const tableData = [
-    {
-      name: "Jacob jones",
-      description: "top to bottom cleaning of the house",
-      service: "basic cleaning"
-    },
-    {
-      name: "Jacob jones",
-      description: "top to bottom cleaning of the house",
-      service: "basic cleaning"
-    },
-    {
-      name: "Jacob jones",
-      description: "top to bottom cleaning of the house",
-      service: "basic cleaning"
-    },
-    {
-      name: "Jacob jones",
-      description: "top to bottom cleaning of the house",
-      service: "basic cleaning"
-    }
-  ]
+  // const tableData = [
+  //   {
+  //     name: "Jacob jones",
+  //     description: "top to bottom cleaning of the house",
+  //     service: "basic cleaning"
+  //   },
+  //   {
+  //     name: "Jacob jones",
+  //     description: "top to bottom cleaning of the house",
+  //     service: "basic cleaning"
+  //   },
+  //   {
+  //     name: "Jacob jones",
+  //     description: "top to bottom cleaning of the house",
+  //     service: "basic cleaning"
+  //   },
+  //   {
+  //     name: "Jacob jones",
+  //     description: "top to bottom cleaning of the house",
+  //     service: "basic cleaning"
+  //   }
+  // ]
 
   const modalToggle = () => setModal(!modal)
   return (
@@ -135,9 +135,7 @@ const PendingServices = props => {
           <Row>
             <Col>
               {requestError ? (
-                <Alert color="danger">
-                  Request Failed
-                </Alert>
+                <Alert color="danger">Request Failed</Alert>
               ) : null}
             </Col>
           </Row>
@@ -362,9 +360,8 @@ const PendingServices = props => {
                       <td>
                         <Spinner size="lg" />
                       </td>
-                      
                     </tr>
-                  ) : tableData.length === 0 ? (
+                  ) : pendingRequests.length === 0 ? (
                     <tr>
                       <td></td>
                       <td></td>
@@ -374,8 +371,8 @@ const PendingServices = props => {
                       <td></td>
                     </tr>
                   ) : (
-                    tableData &&
-                    tableData.map((item, i) => (
+                    pendingRequests &&
+                    pendingRequests.map((item, i) => (
                       <tr
                         onClick={() => {
                           props.getAppointmentDetails()
@@ -391,44 +388,6 @@ const PendingServices = props => {
                       </tr>
                     ))
                   )}
-                  {/* {pendingRequests ? (
-                    tableData.map((item, i) => (
-                      <tr
-                        onClick={() => {
-                          props.getAppointmentDetails()
-                          setModal(true)
-                          setRequestError(false)
-                        }}
-                        style={{cursor:'pointer'}}
-                      >
-                        <td style={styles.tdataText1}>{i + 1}.</td>
-                        <td style={styles.tdataText2}>{item.name}</td>
-                        <td style={styles.tdataText}>{item.description}</td>
-                        <td style={styles.tdataText}>{item.service}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td>
-                        {requesting ? (
-                          <div style={{ marginTop: 100 }}>
-                            <Spinner
-                              as="span"
-                              animation="border"
-                              size="lg"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          </div>
-                        ) : tableData.length === 0 ? (
-                          <h6>No Record Found</h6>
-                        ) : null}
-                      </td>
-                      <td></td>
-                    </tr>
-                  )} */}
                 </tbody>
               </Table>
             </CardBody>
