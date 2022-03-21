@@ -8,6 +8,7 @@ import forgotPassword from "../Containers/ForgotPassword/redux/reducer"
 import services from "Containers/Services/redux/reducer"
 import teams from "Containers/Teams/redux/reducer"
 import pendingRequests from "Containers/PendingServices/redux/reducer"
+import calendar from 'Containers/Calendar/redux/reducer'
 
 // const signInPersistConfig = {
 //     key: 'login',
@@ -20,5 +21,6 @@ export const combinedReducers = history => ({
   forgotPassword,
   services,
   teams,
-  pendingRequests
+  pendingRequests,
+  calendar
 })
