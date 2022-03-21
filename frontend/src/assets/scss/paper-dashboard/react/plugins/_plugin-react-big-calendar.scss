@@ -451,7 +451,7 @@ button.rbc-input::-moz-focus-inner {
   display: -ms-flexbox;
   display: flex;
   max-height: 100%;
-  min-height: 20px;
+  // min-height: 20px;
   -webkit-flex-flow: column wrap;
       -ms-flex-flow: column wrap;
           flex-flow: column wrap;
@@ -629,7 +629,7 @@ button.rbc-input::-moz-focus-inner {
   font-size: .85em;
   border-radius: 2px;
   padding: 0;
-  background-color: $light-blue; /* default BACKGROUND color */
+  // background-color: $light-blue; /* default BACKGROUND color */
   // @include shadow-big-color($brand-success);
   font-weight: normal; /* undo jqui's ui-widget-header bold */
   text-align: left;
@@ -661,7 +661,7 @@ button.rbc-input::-moz-focus-inner {
 }
 .rbc-day-slot .rbc-event {
      display: block !important;
-     height: unset !important;
+    //  height: unset !important;
      max-height: unset !important;
 }
 
