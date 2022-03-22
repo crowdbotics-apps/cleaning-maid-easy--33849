@@ -1,25 +1,41 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar"
 import moment from "moment"
 import { connect } from "react-redux"
+import "./styles.css"
 
 // import SweetAlert from "react-bootstrap-sweetalert"
 // import "react-big-calendar/lib/css/react-big-calendar.css"
 // reactstrap components
-import { Card, CardBody, Row, Col, Button } from "reactstrap"
+import {
+  Card,
+  CardBody,
+  Row,
+  Col,
+  Button,
+  Modal,
+  Input,
+  Spinner,
+  Table
+} from "reactstrap"
 
 //Actions
-import { getDayAcceptedAppointments } from "./redux/actions"
+import { getDayAcceptedAppointments, getNotes } from "./redux/actions"
+import { getPendingRequests } from "../PendingServices/redux/actions"
+import { getTeam } from "../Teams/redux/actions"
 
 import { events } from "variables/general.js"
 
 const localizer = momentLocalizer(moment)
 
 const Calendar = props => {
+  const { pendingRequests, teamData, notes } = props
   const [addEvents, setAddEvents] = useState(events)
   const [alertMsg, setAlertMsg] = useState(null)
   const [viewState, setViewState] = useState(1)
+  const [modal, setModal] = React.useState(false)
+  const [teamsData, setTeamsData] = useState(false)
 
   const {
     addBtnText,
@@ -27,14 +43,39 @@ const Calendar = props => {
     btnWrapperStyle,
     monthLabel,
     arrowStyle,
-    toolbarStyle
+    toolbarStyle,
+    labelStyle,
+    teamListStyle,
+    notesListStyle,
+    headerTextStyle,
+    pendingTextStyle
   } = styles
+
+  useEffect(() => {
+    props.getPendingRequests()
+    props.getTeam()
+    props.getNotes()
+  }, [])
+
+  // useEffect(() => {
+  //   if (teamData.length) {
+  //     const data = teamData.map(item => {
+  //       const newData = {
+  //         id: item.id,
+  //         title: item.title
+  //       }
+  //       return newData
+  //     })
+  //     setTeamsData(data)
+  //     // console.log("teamsss", teamList)
+  //   }
+  // }, [teamData])
 
   const eventData = [
     {
       id: 4,
       title: "Appointment 1",
-      appointment_date: "2022-03-21",
+      appointment_date: "2022-03-22",
       start_time: "14:00:00",
       end_time: "18:00:00",
       client: null,
@@ -112,26 +153,109 @@ const Calendar = props => {
       updated_at: "2022-03-15T21:10:15.393307Z"
     }
   ]
-
+  const closeModal = () => {
+    setModal(!modal)
+  }
   const getTeamMembers = () => {
-    const items = eventData.map(item => {
-      return {
-        allDay: true,
-        end: new Date(item.appointment_date),
-        start: new Date(item.appointment_date),
-        title: item.assigned_team.team_members.map(item => item.name),
-        resourceId: item.id
-      }
-    })
+    // let totalTeams =
+    //   eventData && eventData.map(item => item.assigned_team.team_members.length)
+    // totalTeams = totalTeams.reduce((a, b) => a + b, 0) - 1
+    const items = eventData
+      .map((item, index) => {
+        return item.assigned_team.team_members.map(member => {
+          return {
+            allDay: true,
+            end: new Date(item.appointment_date),
+            start: new Date(item.appointment_date),
+            title: member.name,
+            resourceId: item.id,
+            color: "#8BB031"
+          }
+        })
+      })
+      .flat(1)
+    // const teams =
+    //   teamData &&
+    //   teamData.map(item => {
+    //     return {
+    //       allDay: true,
+    //       end: new Date(),
+    //       start: new Date(),
+    //       title: item.title,
+    //       resourceId: -1,
+    //       color: "#8BB031"
+    //     }
+    //   })
+    // if (teams && teams.length) {
+    //   items.push(...teams)
+    // }
     const resourceList = eventData.map(element => {
       return {
         resourceId: element.id,
         resourceTitle: element.assigned_team.title
       }
     })
+    // resourceList.push({ resourceId: -1, resourceTitle: "Unassigned/Notes" })
+
     return { items, resourceList }
   }
 
+  const allNotes=[
+    {
+      id: 1,
+      title: "Edited New Note",
+      description: "Note Edited Dscrp Here."
+    }
+  ]
+
+  const pendingRequestsList={
+    count: 1,
+    next: null,
+    previous: null,
+    results: [
+      {
+        id: 4,
+        title: "Appointment 1",
+        appointment_date: "2022-03-31",
+        start_time: "14:00:00",
+        end_time: "18:00:00",
+        client: null,
+        assigned_team: {
+          id: 2,
+          team_members: [
+            {
+              id: 2,
+              name: null,
+              profile_picture: null
+            },
+            {
+              id: 3,
+              name: "Omar Delice",
+              profile_picture: null
+            }
+          ],
+          title: "Team 1"
+        },
+        service: {
+          id: 1,
+          name: "Service 1",
+          description: "Big Description Here",
+          price: "14.99"
+        },
+        frequency: {
+          id: 1,
+          title: "Initial cleaning",
+          color_code: "adad"
+        },
+        price: "59.99",
+        description: "Full Description of the job here.",
+        notes: "Appointment notes here",
+        status: "Pending",
+        created_at: "2022-03-15T20:42:59.558771Z",
+        updated_at: "2022-03-15T20:42:59.558851Z"
+      }
+    ]
+  }
 
   const formats = {
     weekdayFormat: (date, culture, localizer) =>
@@ -204,7 +328,11 @@ const Calendar = props => {
               <span>Month</span>
             </Button>
           </div>
-          <Button className="mb-3" style={addBtnText}>
+          <Button
+            className="mb-3"
+            onClick={() => setModal(true)}
+            style={addBtnText}
+          >
             Add Service
           </Button>
         </Row>
@@ -217,33 +345,245 @@ const Calendar = props => {
       <div className="content">
         {alertMsg}
         <Row>
-          <Col className="" md="12">
+          <Col className="" md="12" sm='12'>
             <Card className="card-calendar">
               <CardBody>
-                <BigCalendar
-                  components={{
-                    toolbar: CustomToolbar
-                  }}
-                  resourceIdAccessor={viewState == 1 ? "resourceId" : null}
-                  resources={
-                    viewState == 1 ? getTeamMembers().resourceList : null
-                  }
-                  resourceTitleAccessor={
-                    viewState == 1 ? "resourceTitle" : null
-                  }
-                  localizer={localizer}
-                  defaultView="day"
-                  events={getTeamMembers().items}
-                  dayLayoutAlgorithm="no-overlap"
-                  showMultiDayTimes={true}
-                  length={10}
-                  startAccessor="start"
-                  endAccessor="end"
-                />
+                <Table borderless>
+                  <thead>
+                    <tr>
+                      <th  className='p-0'>
+                        <BigCalendar
+                          components={{
+                            toolbar: CustomToolbar
+                          }}
+                          resourceIdAccessor={
+                            viewState == 1 ? "resourceId" : null
+                          }
+                          resources={
+                            viewState == 1
+                              ? getTeamMembers().resourceList
+                              : null
+                          }
+                          resourceTitleAccessor={
+                            viewState == 1 ? "resourceTitle" : null
+                          }
+                          localizer={localizer}
+                          timeslots={2}
+                          defaultView="day"
+                          events={getTeamMembers().items}
+                          dayLayoutAlgorithm="no-overlap"
+                          showMultiDayTimes={true}
+                          length={10}
+                          startAccessor="start"
+                          endAccessor="end"
+                          eventPropGetter={event => {
+                            const eventData = getTeamMembers().items.find(
+                              ot => ot.id === event.id
+                            )
+                            const backgroundColor = eventData && eventData.color
+                            return { style: { backgroundColor } }
+                          }}
+                        />
+                      </th>
+                      <th style={{ verticalAlign: "top" }} className='p-0' >
+                        {" "}
+                        <div
+                          style={{
+                            marginTop: 61,
+                            borderColor: " #DDDDDD",
+                            borderWidth: 2,
+                            height:400
+                          }}
+                        >
+                          <div
+                            style={{
+                              textAlign: "center",
+                              borderColor: " #DDDDDD",
+                              borderTopStyle: "solid",
+                              borderBottomStyle: "solid",
+                              borderWidth: 2
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontWeight: "500",
+                                fontSize: 12
+                              }}
+                            >
+                              Unassigned/ Notes
+                            </span>
+                          </div>
+                          <div
+                            className="text-center"
+                            style={{ fontWeight: "500",
+                            fontsize: 12,paddingTop: 11, paddingBottom: 10 }}
+                          >
+                            <span>Teams</span>
+                          </div>
+                          {
+                            teamData && 
+                            teamData.map((item, index) => (
+                              <div
+                                className="text-center"
+                                style={teamListStyle}
+                              >
+                                <label style={labelStyle}>{item.title}</label>
+                              </div>
+                            ))}
+                          <div className="text-center" style={headerTextStyle}>
+                            <span>Notes</span>
+                          </div>
+                          {
+                            
+                            allNotes.map((item, index) => (
+                              <div
+                                className="text-center"
+                                style={notesListStyle}
+                              >
+                                <div>
+                                <label style={labelStyle}>{item.title}</label>
+                                </div>
+                                <div>
+                                <label style={labelStyle}>{item.description}</label>
+                                </div>
+
+                              </div>
+                            ))}
+                            <div className="text-center" style={pendingTextStyle}>
+                            <span>Pending Requests</span>
+                          </div>
+                          {
+                            pendingRequestsList.results.map((item, index) => (
+                              <div
+                                className="text-center"
+                                style={teamListStyle}
+                              >
+                                <label style={labelStyle}>{item.title}</label>
+                              </div>
+                            ))}
+                          
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
               </CardBody>
             </Card>
           </Col>
+          {/* <Col md={2} style={{ backgroundColor: "white" }}>
+            <div
+              style={{
+                width: "100%",
+                marginTop: 73,
+                borderLeft: "groove",
+                borderTop: "groove"
+              }}
+            >
+              <div
+                style={{
+                  textAlign: "center",
+                  borderBottom: "groove"
+                }}
+              >
+                <span
+                  style={{
+                    fontWeight: "500",
+                    fontSize: 12
+                  }}
+                >
+                  Unassigned/ Notes
+                </span>
+              </div>
+            </div>
+          </Col> */}
         </Row>
+        <Modal isOpen={modal} closeModal={closeModal}>
+          <div style={{ height: 600 }}>
+            <div className="modal-header border-bottom-0">
+              <button
+                aria-hidden={true}
+                className="close"
+                data-dismiss="modal"
+                type="button"
+                onClick={closeModal}
+              >
+                <i
+                  style={{
+                    color:
+                      "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF"
+                  }}
+                  className="nc-icon nc-simple-remove"
+                />
+              </button>
+              <div>
+                <label className="mt-5" style={styles.titleTextStyle}>
+                  Add Service
+                </label>
+              </div>
+            </div>
+            <div className="modal-body ">
+              <label style={styles.labelTextStyle}>Service Name</label>
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                // onChange={e => handleOnChange("serviceName", e.target.value)}
+              />
+              <div style={styles.inputLineStyle} />
+              {/* {servicesError.name && (
+              <label style={{ color: "red" }}>{servicesError.name}</label>
+            )} */}
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Service Description</label>
+                <Input
+                  style={styles.inputTextStyle}
+                  className="border-0 pl-0"
+                  // onChange={e =>
+                  //   handleOnChange("serviceDescription", e.target.value)
+                  // }
+                />
+                <div style={styles.inputLineStyle} />
+              </div>
+              {/* {servicesError.description && (
+              <label style={{ color: "red" }}>
+                {servicesError.description}
+              </label>
+            )} */}
+
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Service Price</label>
+                <Input
+                  style={styles.inputTextStyle}
+                  className="border-0 pl-0"
+                  // onChange={e => handleOnChange("servicePrice", e.target.value)}
+                />
+                <div style={styles.inputLineStyle} />
+              </div>
+              {/* {servicesError.price && (
+              <label style={{ color: "red" }}>{servicesError.price}</label>
+            )} */}
+            </div>
+          </div>
+          <div className="modal-footer border-top-0  justify-content-center">
+            <Button
+              className="mb-3"
+              style={styles.btnTextStyle}
+              // onClick={toggle}
+              // disabled={disable}
+            >
+              {false ? (
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+              ) : (
+                "Save Service"
+              )}
+            </Button>
+          </div>
+        </Modal>
       </div>
     </>
   )
@@ -302,15 +642,81 @@ const styles = {
     width: 265,
     height: 48,
     borderRadius: 10
+  },
+  titleTextStyle: {
+    fontSize: 24,
+    fontWeight: "600",
+    display: "grid"
+  },
+  labelTextStyle: {
+    fontSize: 14,
+    opacity: 0.5,
+    fontWeight: "500",
+    color: "#000000"
+  },
+  btnTextStyle: {
+    background:
+      "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF",
+    fontWeight: "bold",
+    fontSize: 14,
+    paddingLeft: 50,
+    paddingRight: 50
+  },
+  inputLineStyle: {
+    backgroundColor: "#D9D9D9",
+    height: 1
+  },
+  teamListStyle: {
+    backgroundColor: "#89AF31",
+    borderRadius: 5,
+    marginBottom: 2,
+    marginLeft:2
+  },
+  notesListStyle: {
+    backgroundColor: "#4C9041",
+    borderRadius: 5,
+    marginBottom: 2,
+    marginLeft:2
+  },
+  labelStyle: {
+    fontWeight: "500",
+    fontSize: 12,
+    textAlign: "center",
+    color: "#FFFFFF",
+    fontFamily: "Montserrat"
+  },
+  headerTextStyle: {
+    fontWeight: "500",
+    fontFamily:'Montserrat',
+    fontsize: 12,
+    paddingTop: 42,
+    paddingBottom: 10,
+    color:'#000000'
+
+  },
+  pendingTextStyle: {
+    fontWeight: "500",
+    fontFamily:'Montserrat',
+    fontsize: 12,
+    paddingTop: 86,
+    paddingBottom: 10,
+    color:'#000000'
   }
 }
 
 const mapStateToProps = state => ({
   requesting: state.calendar.requesting,
-  appointmentsDays: state.calendar.appointmentsDays
+  appointmentsDays: state.calendar.appointmentsDays,
+  notes: state.calendar.notes,
+  teamData: state.teams.teamData,
+  pendingRequests: state.pendingRequests.pendingRequests
 })
 
 const mapDispatchToProps = dispatch => ({
-  getDayAcceptedAppointments: date => dispatch(getDayAcceptedAppointments(date))
+  getDayAcceptedAppointments: date =>
+    dispatch(getDayAcceptedAppointments(date)),
+  getNotes: () => dispatch(getNotes()),
+  getPendingRequests: () => dispatch(getPendingRequests()),
+  getTeam: () => dispatch(getTeam())
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

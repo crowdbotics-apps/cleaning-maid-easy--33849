@@ -629,7 +629,7 @@ button.rbc-input::-moz-focus-inner {
   font-size: .85em;
   border-radius: 2px;
   padding: 0;
-  // background-color: $light-blue; /* default BACKGROUND color */
+  background-color: $light-blue; /* default BACKGROUND color */
   // @include shadow-big-color($brand-success);
   font-weight: normal; /* undo jqui's ui-widget-header bold */
   text-align: left;
