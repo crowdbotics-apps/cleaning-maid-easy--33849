@@ -22,3 +22,17 @@
     border-width: 1px;
     border-color: #DDDDDD;
 }
+
+
+.rbc-day-slot .rbc-event-label {
+    display: none;
+}
+
+.rbc-time-view .rbc-row {
+    min-height: 0px;
+}
+
+/* .rbc-allday-cell {
+    display: none;
+  } */
+  

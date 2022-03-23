@@ -48,7 +48,9 @@ const Calendar = props => {
     teamListStyle,
     notesListStyle,
     headerTextStyle,
-    pendingTextStyle
+    pendingTextStyle,
+    desStyle,
+    downloadStyle
   } = styles
 
   useEffect(() => {
@@ -75,9 +77,9 @@ const Calendar = props => {
     {
       id: 4,
       title: "Appointment 1",
-      appointment_date: "2022-03-22",
+      appointment_date: "2022-03-23",
       start_time: "14:00:00",
-      end_time: "18:00:00",
+      end_time: "17:00:00",
       client: null,
       assigned_team: {
         id: 2,
@@ -107,15 +109,15 @@ const Calendar = props => {
         color_code: "adad"
       },
       status: "Accepted",
-      created_at: "2022-03-15T20:42:59.558771Z",
+      created_at: "2022-03-23T04:03:00.000Z",
       updated_at: "2022-03-15T20:43:12.087570Z"
     },
     {
       id: 6,
       title: "Appointment 7",
-      appointment_date: "2022-03-21",
+      appointment_date: "2022-03-23",
       start_time: "15:00:00",
-      end_time: "21:00:00",
+      end_time: "20:00:00",
       client: {
         id: 3,
         name: "Omar Delice",
@@ -156,10 +158,12 @@ const Calendar = props => {
   const closeModal = () => {
     setModal(!modal)
   }
+
   const getTeamMembers = () => {
     // let totalTeams =
     //   eventData && eventData.map(item => item.assigned_team.team_members.length)
     // totalTeams = totalTeams.reduce((a, b) => a + b, 0) - 1
+
     const items = eventData
       .map((item, index) => {
         return item.assigned_team.team_members.map(member => {
@@ -169,11 +173,29 @@ const Calendar = props => {
             start: new Date(item.appointment_date),
             title: member.name,
             resourceId: item.id,
-            color: "#8BB031"
+            color: "#8BB031",
+            desc: ""
           }
         })
       })
       .flat(1)
+
+    const service = eventData.map((item, index) => {
+      const data = {
+        allDay: false,
+        end: new Date(`${item.appointment_date}T${item.end_time}Z`),
+        start: new Date(`${item.appointment_date}T${item.start_time}Z`),
+        title: item.title,
+        resourceId: item.id,
+        color: "#8BB031",
+        desc: item.service.description
+      }
+      return data
+    })
+    if (service && service.length) {
+      items.push(...service)
+    }
+
     // const teams =
     //   teamData &&
     //   teamData.map(item => {
@@ -200,7 +222,7 @@ const Calendar = props => {
     return { items, resourceList }
   }
 
-  const allNotes=[
+  const allNotes = [
     {
       id: 1,
       title: "Edited New Note",
@@ -208,7 +230,7 @@ const Calendar = props => {
     }
   ]
 
-  const pendingRequestsList={
+  const pendingRequestsList = {
     count: 1,
     next: null,
     previous: null,
@@ -258,7 +280,7 @@ const Calendar = props => {
   }
 
   const formats = {
-    weekdayFormat: (date, culture, localizer) =>
+    eventTimeRangeFormat: (date, culture, localizer) =>
       localizer.format(date, "dd", culture)
   }
 
@@ -340,21 +362,104 @@ const Calendar = props => {
     )
   }
 
+  function CustomEvent({ event }) {
+    return (
+      <div className={viewState === 3 ? "" : "pt-1"}>
+        <span
+          style={{
+            fontWeight: event.allDay || viewState === 3 ? "500" : "600",
+            fontFamily: "Montserrat",
+            fontSize: 12,
+            color: event.allDay ? "white" : "black"
+          }}
+        >
+          {event.title}
+        </span>
+        {viewState === 1 && (
+          <>
+            <div className="pt-1" style={desStyle}>
+              <span>{event.desc}</span>
+            </div>
+            {/* <Row>
+            <Col md="4" sm="4">
+              <div
+                style={downloadStyle}
+              >
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <img
+                    style={{ alignSelf: "center" }}
+                    alt="..."
+                    src={require("assets/icons/download.png")}
+                  />
+                </div>
+                <span
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontSize: 9,
+                    fontWeight: "500",
+                    textAligin: "center",
+                    color:'black'
+                  }}
+                >
+                  CHECK IN
+                </span>
+              </div>
+            </Col>
+            <Col md="4" sm="4">
+              <div>
+                <div>
+                  <img
+                    style={{ alignSelf: "center" }}
+                    alt="..."
+                    src={require("assets/icons/uploadSimple.png")}
+                  />
+                </div>
+                <span>CHECK OUT</span>
+              </div>
+            </Col>
+            <Col md="4" sm="4">
+              <div>
+                <img
+                  style={{ alignSelf: "center" }}
+                  alt="..."
+                  src={require("assets/icons/checkCircle.png")}
+                />
+              </div>
+            </Col>
+          </Row> */}
+
+            {!event.allDay && (
+              <div style={{ position: "absolute", bottom: 3 }}>
+                <span
+                  // className="rbc-day-slot rbc-event-labe"
+                  style={desStyle}
+                >{`${moment(event.end).format("h:mm A")}-${moment(
+                  event.start
+                ).format("h:mm A")}`}</span>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="content">
         {alertMsg}
         <Row>
-          <Col className="" md="12" sm='12'>
+          <Col className="" md="12" sm="12">
             <Card className="card-calendar">
               <CardBody>
                 <Table borderless>
                   <thead>
                     <tr>
-                      <th  className='p-0'>
+                      <th className="p-0">
                         <BigCalendar
                           components={{
-                            toolbar: CustomToolbar
+                            toolbar: CustomToolbar,
+                            event: CustomEvent
                           }}
                           resourceIdAccessor={
                             viewState == 1 ? "resourceId" : null
@@ -368,12 +473,10 @@ const Calendar = props => {
                             viewState == 1 ? "resourceTitle" : null
                           }
                           localizer={localizer}
-                          timeslots={2}
                           defaultView="day"
                           events={getTeamMembers().items}
                           dayLayoutAlgorithm="no-overlap"
                           showMultiDayTimes={true}
-                          length={10}
                           startAccessor="start"
                           endAccessor="end"
                           eventPropGetter={event => {
@@ -385,7 +488,94 @@ const Calendar = props => {
                           }}
                         />
                       </th>
-                      <th style={{ verticalAlign: "top" }} className='p-0' >
+                      {viewState === 1 && (
+                        <th style={{ verticalAlign: "top" }} className="p-0">
+                          {" "}
+                          <div
+                            style={{
+                              marginTop: 61,
+                              borderColor: " #DDDDDD",
+                              borderWidth: 2,
+                              height: 400
+                            }}
+                          >
+                            <div
+                              style={{
+                                textAlign: "center",
+                                borderColor: " #DDDDDD",
+                                borderTopStyle: "solid",
+                                borderBottomStyle: "solid",
+                                borderWidth: 2
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontWeight: "500",
+                                  fontSize: 12
+                                }}
+                              >
+                                Unassigned/ Notes
+                              </span>
+                            </div>
+                            <div
+                              className="text-center"
+                              style={{
+                                fontWeight: "500",
+                                fontsize: 12,
+                                paddingTop: 11,
+                                paddingBottom: 10
+                              }}
+                            >
+                              <span>Teams</span>
+                            </div>
+                            {teamData &&
+                              teamData.map((item, index) => (
+                                <div
+                                  className="text-center"
+                                  style={teamListStyle}
+                                >
+                                  <label style={labelStyle}>{item.title}</label>
+                                </div>
+                              ))}
+                            <div
+                              className="text-center"
+                              style={headerTextStyle}
+                            >
+                              <span>Notes</span>
+                            </div>
+                            {allNotes.map((item, index) => (
+                              <div
+                                className="text-center"
+                                style={notesListStyle}
+                              >
+                                <div>
+                                  <label style={labelStyle}>{item.title}</label>
+                                </div>
+                                <div>
+                                  <label style={labelStyle}>
+                                    {item.description}
+                                  </label>
+                                </div>
+                              </div>
+                            ))}
+                            <div
+                              className="text-center"
+                              style={pendingTextStyle}
+                            >
+                              <span>Pending Requests</span>
+                            </div>
+                            {pendingRequestsList.results.map((item, index) => (
+                              <div
+                                className="text-center"
+                                style={teamListStyle}
+                              >
+                                <label style={labelStyle}>{item.title}</label>
+                              </div>
+                            ))}
+                          </div>
+                        </th>
+                      )}
+                      {/* <th style={{ verticalAlign: "top" }} className='p-0' >
                         {" "}
                         <div
                           style={{
@@ -463,7 +653,7 @@ const Calendar = props => {
                             ))}
                           
                         </div>
-                      </th>
+                      </th> */}
                     </tr>
                   </thead>
                 </Table>
@@ -670,13 +860,13 @@ const styles = {
     backgroundColor: "#89AF31",
     borderRadius: 5,
     marginBottom: 2,
-    marginLeft:2
+    marginLeft: 2
   },
   notesListStyle: {
     backgroundColor: "#4C9041",
     borderRadius: 5,
     marginBottom: 2,
-    marginLeft:2
+    marginLeft: 2
   },
   labelStyle: {
     fontWeight: "500",
@@ -687,20 +877,31 @@ const styles = {
   },
   headerTextStyle: {
     fontWeight: "500",
-    fontFamily:'Montserrat',
+    fontFamily: "Montserrat",
     fontsize: 12,
     paddingTop: 42,
     paddingBottom: 10,
-    color:'#000000'
-
+    color: "#000000"
   },
   pendingTextStyle: {
     fontWeight: "500",
-    fontFamily:'Montserrat',
+    fontFamily: "Montserrat",
     fontsize: 12,
     paddingTop: 86,
     paddingBottom: 10,
-    color:'#000000'
+    color: "#000000"
+  },
+  desStyle: {
+    fontWeight: "500",
+    fontFamily: "Montserrat",
+    fontSize: 12,
+    color: "black"
+  },
+  downloadStyle: {
+    backgroundColor: "white",
+    justifyContent: "center",
+    display: "grid",
+    borderRadius: 5
   }
 }
 
