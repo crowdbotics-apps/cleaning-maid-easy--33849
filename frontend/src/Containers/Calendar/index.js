@@ -3,7 +3,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css"
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar"
 import moment from "moment"
 import { connect } from "react-redux"
-import "./styles.css"
+import styless from "./styles.css"
 
 // import SweetAlert from "react-bootstrap-sweetalert"
 // import "react-big-calendar/lib/css/react-big-calendar.css"
@@ -17,13 +17,21 @@ import {
   Modal,
   Input,
   Spinner,
-  Table
+  Table,
+  FormGroup
 } from "reactstrap"
 
 //Actions
-import { getDayAcceptedAppointments, getNotes } from "./redux/actions"
+import {
+  getDayAcceptedAppointments,
+  getNotes,
+  addNotes,
+  updateNotes
+} from "./redux/actions"
 import { getPendingRequests } from "../PendingServices/redux/actions"
 import { getTeam } from "../Teams/redux/actions"
+
+import useForm from "../../utils/useForm"
 
 import { events } from "variables/general.js"
 
@@ -36,6 +44,8 @@ const Calendar = props => {
   const [viewState, setViewState] = useState(1)
   const [modal, setModal] = React.useState(false)
   const [teamsData, setTeamsData] = useState(false)
+  const [noteModal, setNoteModal] = useState(false)
+  const [updateValues, setUpdateValues] = useState(false)
 
   const {
     addBtnText,
@@ -50,7 +60,13 @@ const Calendar = props => {
     headerTextStyle,
     pendingTextStyle,
     desStyle,
-    downloadStyle
+    downloadStyle,
+    dayWeekStyle,
+    dayWeekTextStyle,
+    dayMonthStyle,
+    monthHeaderStyle,
+    monthDayCellStyle,
+    saveBtnStyle
   } = styles
 
   useEffect(() => {
@@ -58,6 +74,80 @@ const Calendar = props => {
     props.getTeam()
     props.getNotes()
   }, [])
+
+  useEffect(() => {
+    if (viewState === 2) {
+      let myDivs = document.getElementsByClassName("rbc-allday-cell")
+      let rbcEvent = document.getElementsByClassName("rbc-event")
+      myDivs[0].style.display = "none"
+      rbcEvent[4].style.width = "30px"
+      rbcEvent[5].style.width = "30px"
+      rbcEvent[6].style.width = "30px"
+    }
+  }, [viewState])
+
+  useEffect(() => {
+    if (updateValues) {
+      handleOnChange("title", updateValues.title)
+      handleOnChange("description", updateValues.description)
+    }
+  }, [updateValues])
+
+  const stateSchema = {
+    title: {
+      value: "",
+      error: ""
+    },
+    description: {
+      value: "",
+      error: ""
+    }
+  }
+
+  const validationStateSchema = {
+    title: {
+      required: true
+    },
+    description: {
+      required: true
+    }
+  }
+
+  const { state, handleOnChange, disable } = useForm(
+    stateSchema,
+    validationStateSchema
+  )
+
+  const addNewNotes = () => {
+    const data = {
+      title: state.title.value,
+      description: state.description.value
+    }
+    props.addNotes(data, setNoteModal)
+  }
+
+  const resetValues = () => {
+    state.title.value = ""
+    state.description.value = ""
+  }
+  const toggle = () => {
+    setNoteModal(!noteModal)
+    setUpdateValues(false)
+    resetValues()
+  }
+
+  const updateValue = items => {
+    setUpdateValues(items)
+    setNoteModal(true)
+  }
+
+  const updateNotes = () => {
+    const data = {
+      title: state.title.value,
+      description: state.description.value
+    }
+    props.updateNotes(data, updateValues.id, toggle)
+  }
 
   // useEffect(() => {
   //   if (teamData.length) {
@@ -76,8 +166,8 @@ const Calendar = props => {
   const eventData = [
     {
       id: 4,
-      title: "Appointment 1",
-      appointment_date: "2022-03-23",
+      title: "Appointment 1  1 new data",
+      appointment_date: "2022-03-24",
       start_time: "14:00:00",
       end_time: "17:00:00",
       client: null,
@@ -237,7 +327,7 @@ const Calendar = props => {
     results: [
       {
         id: 4,
-        title: "Appointment 1",
+        title: "Appointment",
         appointment_date: "2022-03-31",
         start_time: "14:00:00",
         end_time: "18:00:00",
@@ -444,6 +534,57 @@ const Calendar = props => {
     )
   }
 
+  //  const eventStyleGetter=(event, start, end, isSelected) =>{
+  //     console.log(event.allDay);
+  //     var style = {
+  //         width:23
+  //     };
+  //     return {
+  //         style:event.allDay===true && style
+  //     };
+  // }
+
+  const WeekHeaderCellContent = props => {
+    const { date } = props
+    return (
+      <div style={{ height: 90, paddingTop: 20 }}>
+        <div style={dayWeekStyle} component="span">
+          {moment(date).format("ddd")}
+        </div>
+        <div component="span" style={dayWeekTextStyle}>
+          {moment(date).format("D")}
+        </div>
+      </div>
+    )
+  }
+  const MonthHeaderCellContent = props => {
+    const { date } = props
+    return (
+      <div style={monthHeaderStyle}>
+        <div style={dayMonthStyle} component="span">
+          {moment(date).format("ddd")}
+        </div>
+      </div>
+    )
+  }
+  const DateCellWrapper = ({ date, label }) => {
+    return (
+      <div style={monthDayCellStyle}>
+        <span>{label}</span>
+      </div>
+    )
+  }
+
+  // const CustomTimeSlotWrapper=({value, resource, children})=>{
+  //   // convert your `value` (a Date object) to something displayable
+  //   console.log("value",value);
+  //   return (
+  //     <div className="custom-slot-container" style={{textAlign:'right'}}>
+  //       <span className="hidden-value">{moment(value).format('h:m A')}</span>
+  //     </div>
+  //   );
+  // }
+
   return (
     <>
       <div className="content">
@@ -452,14 +593,37 @@ const Calendar = props => {
           <Col className="" md="12" sm="12">
             <Card className="card-calendar">
               <CardBody>
-                <Table borderless>
+                <Table borderless responsive>
                   <thead>
                     <tr>
                       <th className="p-0">
                         <BigCalendar
                           components={{
                             toolbar: CustomToolbar,
-                            event: CustomEvent
+                            event: CustomEvent,
+                            week: {
+                              header: WeekHeaderCellContent
+                            },
+                            // timeSlotWrapper:CustomTimeSlotWrapper,
+                            month: {
+                              header: MonthHeaderCellContent,
+                              dateHeader: DateCellWrapper
+                              // dateHeader: ({ date, label }) => {
+                              //   let highlightDate =
+                              //     events.find(event =>
+                              //       moment(date).isBetween(
+                              //         moment(event.startDate),
+                              //         moment(event.endDate),
+                              //         null,
+                              //         "[]"
+                              //       )
+                              //     ) != undefined;
+                              //   return (
+                              //     <h1 style={highlightDate ? { color: "red" } : null}>{label}</h1>
+                              //   );
+                              // }
+                            }
+                            // dateCellWrapper: DateCellWrapper
                           }}
                           resourceIdAccessor={
                             viewState == 1 ? "resourceId" : null
@@ -475,6 +639,7 @@ const Calendar = props => {
                           localizer={localizer}
                           defaultView="day"
                           events={getTeamMembers().items}
+                          // eventPropGetter={eventStyleGetter}
                           dayLayoutAlgorithm="no-overlap"
                           showMultiDayTimes={true}
                           startAccessor="start"
@@ -484,7 +649,11 @@ const Calendar = props => {
                               ot => ot.id === event.id
                             )
                             const backgroundColor = eventData && eventData.color
-                            return { style: { backgroundColor } }
+                            return {
+                              style: {
+                                backgroundColor
+                              }
+                            }
                           }}
                         />
                       </th>
@@ -528,50 +697,90 @@ const Calendar = props => {
                             >
                               <span>Teams</span>
                             </div>
-                            {teamData &&
-                              teamData.map((item, index) => (
-                                <div
-                                  className="text-center"
-                                  style={teamListStyle}
-                                >
-                                  <label style={labelStyle}>{item.title}</label>
-                                </div>
-                              ))}
+                            <div
+                              style={{
+                                overflowY: "scroll",
+                                height: 200,
+                                whiteSpace: "nowrap"
+                              }}
+                            >
+                              {teamData &&
+                                teamData.map((item, index) => (
+                                  <div
+                                    className="text-center"
+                                    style={teamListStyle}
+                                  >
+                                    <label style={labelStyle}>
+                                      {item.title}
+                                    </label>
+                                  </div>
+                                ))}
+                            </div>
                             <div
                               className="text-center"
                               style={headerTextStyle}
                             >
-                              <span>Notes</span>
+                              <Row>
+                                <Col md={4} sm={12}>
+                                  <button
+                                    style={{ display: "contents" }}
+                                    onClick={() => {
+                                      setNoteModal(true)
+                                    }}
+                                  >
+                                    <img
+                                      alt="..."
+                                      src={require("assets/icons/plusCircle.png")}
+                                    />
+                                  </button>
+                                </Col>
+                                <Col md={4} sm={12}>
+                                  <span>Notes</span>
+                                </Col>
+                                <Col md={4}></Col>
+                              </Row>
                             </div>
-                            {allNotes.map((item, index) => (
-                              <div
-                                className="text-center"
-                                style={notesListStyle}
-                              >
-                                <div>
-                                  <label style={labelStyle}>{item.title}</label>
-                                </div>
-                                <div>
-                                  <label style={labelStyle}>
-                                    {item.description}
-                                  </label>
-                                </div>
-                              </div>
-                            ))}
+                            <div style={{ overflowY: "scroll", height: 300 }}>
+                              {notes &&
+                                notes.map((item, index) => (
+                                  <div
+                                    onClick={() => updateValue(item)}
+                                    className="text-center"
+                                    style={notesListStyle}
+                                  >
+                                    <div>
+                                      <label style={labelStyle}>
+                                        {item.title}
+                                      </label>
+                                    </div>
+                                    <div>
+                                      <label style={labelStyle}>
+                                        {item.description}
+                                      </label>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
                             <div
                               className="text-center"
                               style={pendingTextStyle}
                             >
                               <span>Pending Requests</span>
                             </div>
-                            {pendingRequestsList.results.map((item, index) => (
-                              <div
-                                className="text-center"
-                                style={teamListStyle}
-                              >
-                                <label style={labelStyle}>{item.title}</label>
-                              </div>
-                            ))}
+                            <div style={{ overflowY: "scroll", height: 300 }}>
+                              {pendingRequestsList.results.map(
+                                (item, index) => (
+                                  <div
+                                    className="text-center"
+                                    style={teamListStyle}
+                                  >
+                                    <label style={labelStyle}>
+                                      {item.title}
+                                    </label>
+                                  </div>
+                                )
+                              )}
+                            </div>
                           </div>
                         </th>
                       )}
@@ -774,6 +983,102 @@ const Calendar = props => {
             </Button>
           </div>
         </Modal>
+
+        <Modal isOpen={noteModal} toggle={toggle}>
+          <div className="d-flex pl-4 pt-3 pr-3 justify-content-between">
+            <div>
+              {updateValues ? (
+                <button
+                  aria-hidden={true}
+                  className="close"
+                  data-dismiss="modal"
+                  type="button"
+                  style={{ outline: "none" }}
+                >
+                  <img
+                    alt="..."
+                    src={require("assets/images/delete_btn.png")}
+                  />
+                </button>
+              ) : (
+                ""
+              )}
+            </div>
+            <div>
+              <label
+                style={{ fontSize: 24, fontWeight: "600", paddingTop: 20 }}
+              >
+                Notes
+              </label>
+            </div>
+
+            <div>
+              <button
+                aria-hidden={true}
+                className="close"
+                data-dismiss="modal"
+                type="button"
+                style={{ outline: "none" }}
+                onClick={toggle}
+              >
+                <i
+                  className="nc-icon nc-simple-remove"
+                  style={{ color: " #438B44" }}
+                />
+              </button>
+            </div>
+          </div>
+          <div
+            className="modal-body"
+            style={{ paddingLeft: 24, paddingRight: 24 }}
+          >
+            <FormGroup>
+              <label style={styles.labelfontStyles}> Title </label>
+              <Input
+                type="text"
+                style={styles.textArea}
+                value={state.title.value}
+                onChange={e => handleOnChange("title", e.target.value)}
+              />
+              {state.title.error && (
+                <label style={{ color: "red" }}>{state.title.error}</label>
+              )}
+            </FormGroup>
+            <FormGroup className="pt-3">
+              <label style={styles.labelfontStyles}> Description </label>
+              <Input
+                className="textarea"
+                type="textarea"
+                rows="3"
+                style={styles.textArea}
+                value={state.description.value}
+                onChange={e => handleOnChange("description", e.target.value)}
+              />
+              {state.description.error && (
+                <label style={{ color: "red" }}>
+                  {state.description.error}
+                </label>
+              )}
+            </FormGroup>
+          </div>
+          <div
+            style={{ justifyContent: "center" }}
+            className="modal-footer border-top-0 pt-5 pb-3"
+          >
+            <div>
+              <Button
+                onClick={updateValues ? updateNotes : addNewNotes}
+                style={saveBtnStyle}
+                disabled={disable}
+                color="white"
+                title=""
+                type="button"
+              >
+                {updateValues ? "Update" : "Save"}
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </div>
     </>
   )
@@ -814,7 +1119,7 @@ const styles = {
     backgroundColor: "white",
     height: 38,
     width: 38,
-    marginLeft: 13,
+    marginLeft: 16,
     borderRadius: 20,
     shadowColor: "0px 2px 4px -2px rgba(0, 0, 0, 0.25)",
     shadowOffset: {
@@ -873,7 +1178,8 @@ const styles = {
     fontSize: 12,
     textAlign: "center",
     color: "#FFFFFF",
-    fontFamily: "Montserrat"
+    fontFamily: "Montserrat",
+    width: 150
   },
   headerTextStyle: {
     fontWeight: "500",
@@ -902,6 +1208,69 @@ const styles = {
     justifyContent: "center",
     display: "grid",
     borderRadius: 5
+  },
+  dayWeekStyle: {
+    fontFamily: "Montserrat",
+    fontWeight: 500,
+    color: "#000000",
+    textAlign: "center",
+    fontSize: 12,
+    opacity: 0.6
+  },
+  dayWeekTextStyle: {
+    fontFamily: "Montserrat",
+    fontWeight: "bold",
+    color: "#000000",
+    textAlign: "center",
+    fontSize: 30
+  },
+  dayMonthStyle: {
+    fontFamily: "Montserrat",
+    fontWeight: "500",
+    color: "#000000",
+    textAlign: "center",
+    fontSize: 26,
+    opacity: 0.6
+  },
+  monthHeaderStyle: {
+    height: 90,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  monthDayCellStyle: {
+    display: "flex",
+    justifyContent: "center",
+    fontFamily: "Montserrat",
+    fontSize: 14,
+    fontWeight: "600",
+    opacity: 0.6,
+    color: "#000000"
+  },
+  labelfontStyles: {
+    fontSize: 14,
+    color: "grey",
+    fontWeight: "500"
+  },
+  textArea: {
+    opacity: "0.6",
+    webkitBoxShadow: "1px 3px 1px #9E9E9E",
+    mozBoxShadow: "1px 3px 1px #9E9E9E",
+    boxShadow: "1px 3px 1px #9E9E9E",
+    fontSize: 14,
+    color: "#000000",
+    backgroundColor: "white",
+    fontWeight: "400"
+  },
+  saveBtnStyle: {
+    background: "linear-gradient(#E6DE18, #438B44)",
+    borderRadius: 15,
+    fontSize: 14,
+    fontWeight: "700",
+    paddingLeft: 86,
+    paddingRight: 86,
+    paddingTop: 17,
+    paddingBottom: 17
   }
 }
 
@@ -918,6 +1287,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(getDayAcceptedAppointments(date)),
   getNotes: () => dispatch(getNotes()),
   getPendingRequests: () => dispatch(getPendingRequests()),
-  getTeam: () => dispatch(getTeam())
+  getTeam: () => dispatch(getTeam()),
+  addNotes: (data, setNoteModal) => dispatch(addNotes(data, setNoteModal)),
+  updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)
