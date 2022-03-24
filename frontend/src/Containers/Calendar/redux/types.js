@@ -1,6 +1,10 @@
 export const GET_DAY_ACCEPTED_APPOINTEMENTS = 'Calendar/GET_DAY_ACCEPTED_APPOINTEMENTS';
 export const GET_DAY_ACCEPTED_APPOINTEMENTS_SUCCESS = 'Calendar/GET_DAY_ACCEPTED_APPOINTEMENTS_SUCCESS';
+export const ADD_NOTES = 'Calendar/ADD_NOTES';
+export const UPDATE_NOTES = 'Calendar/UPDATE_NOTES';
 export const GET_NOTES = 'Calendar/GET_NOTES';
 export const GET_NOTES_SUCCESS = 'Calendar/GET_NOTES_SUCCESS';
+
+
 
 
