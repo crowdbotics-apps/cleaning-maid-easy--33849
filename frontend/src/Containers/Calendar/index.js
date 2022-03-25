@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar"
 import moment from "moment"
@@ -18,8 +18,15 @@ import {
   Input,
   Spinner,
   Table,
-  FormGroup
+  FormGroup,
+  ModalHeader,
+  ModalBody,
+  Alert
 } from "reactstrap"
+
+//Components
+import Select from "react-select"
+import AddServices from "components/addServices"
 
 //Actions
 import {
@@ -28,6 +35,8 @@ import {
   addNotes,
   updateNotes
 } from "./redux/actions"
+
+import { renderHtmlText } from "../Services/redux/actions"
 import { getPendingRequests } from "../PendingServices/redux/actions"
 import { getTeam } from "../Teams/redux/actions"
 
@@ -46,6 +55,11 @@ const Calendar = props => {
   const [teamsData, setTeamsData] = useState(false)
   const [noteModal, setNoteModal] = useState(false)
   const [updateValues, setUpdateValues] = useState(false)
+  const [appointmentModal, setAppointmentModal] = useState(false)
+  const [requestError, setRequestError] = useState(false)
+  const [eventDetail, setEventDetail] = useState(false)
+
+  const calendarRef = useRef()
 
   const {
     addBtnText,
@@ -80,9 +94,11 @@ const Calendar = props => {
       let myDivs = document.getElementsByClassName("rbc-allday-cell")
       let rbcEvent = document.getElementsByClassName("rbc-event")
       myDivs[0].style.display = "none"
-      rbcEvent[4].style.width = "30px"
-      rbcEvent[5].style.width = "30px"
-      rbcEvent[6].style.width = "30px"
+      if (rbcEvent.length) {
+        rbcEvent[4].style.width = "30px"
+        rbcEvent[5].style.width = "30px"
+        rbcEvent[6].style.width = "30px"
+      }
     }
   }, [viewState])
 
@@ -149,6 +165,10 @@ const Calendar = props => {
     props.updateNotes(data, updateValues.id, toggle)
   }
 
+  const appointmentToggle = () => {
+    setAppointmentModal(false)
+    setEventDetail(false)
+  }
   // useEffect(() => {
   //   if (teamData.length) {
   //     const data = teamData.map(item => {
@@ -167,10 +187,14 @@ const Calendar = props => {
     {
       id: 4,
       title: "Appointment 1  1 new data",
-      appointment_date: "2022-03-24",
+      appointment_date: "2022-03-25",
       start_time: "14:00:00",
       end_time: "17:00:00",
-      client: null,
+      client: {
+        id: 3,
+        name: "Omar Delice",
+        profile_picture: null
+      },
       assigned_team: {
         id: 2,
         team_members: [
@@ -265,6 +289,7 @@ const Calendar = props => {
             resourceId: item.id,
             color: "#8BB031",
             desc: ""
+            // eventDetail:item
           }
         })
       })
@@ -278,7 +303,8 @@ const Calendar = props => {
         title: item.title,
         resourceId: item.id,
         color: "#8BB031",
-        desc: item.service.description
+        desc: item.service.description,
+        eventDetail: item
       }
       return data
     })
@@ -331,7 +357,7 @@ const Calendar = props => {
         appointment_date: "2022-03-31",
         start_time: "14:00:00",
         end_time: "18:00:00",
-        client: null,
+        client: "JHONE",
         assigned_team: {
           id: 2,
           team_members: [
@@ -375,83 +401,20 @@ const Calendar = props => {
   }
 
   const CustomToolbar = toolbar => {
-    const goToDayView = () => {
-      toolbar.onView("day")
-      setViewState(1)
-      // this.setState({ viewState: "day" });
-    }
-    const goToWeekView = () => {
-      toolbar.onView("week")
-      setViewState(2)
-    }
-    const goToMonthView = () => {
-      toolbar.onView("month")
-      setViewState(3)
-    }
-    const goToBack = () => {
-      toolbar.date.setMonth(toolbar.date.getMonth() - 1)
-      toolbar.onNavigate("prev")
-    }
-    const goToNext = () => {
-      toolbar.date.setMonth(toolbar.date.getMonth() + 1)
-      toolbar.onNavigate("next")
-    }
+    // props.getDayAcceptedAppointments(moment(toolbar?.date).format('YYYY-MM-DD'))
+    props.renderHtmlText({
+      toolbar: toolbar,
+      setViewState: setViewState,
+      setModal: setModal
+    })
 
-    const label = () => {
-      const date = moment(toolbar.date)
-      const newDate = date.format("YYYY-MM-DD")
-      // props.getDayAcceptedAppointments(newDate)
-      return (
-        <span>
-          {viewState === 1
-            ? date.format("DD/MM/YYYY") + ", " + date.format("DD/MM/YYYY")
-            : date.format("MMMM")}
-        </span>
-      )
-    }
-    return (
-      <div>
-        <Row>
-          <button style={arrowStyle} onClick={goToBack}>
-            <img alt="..." src={require("assets/icons/caretLeft.png")} />
-          </button>
-
-          <button style={arrowStyle} onClick={goToNext}>
-            <img alt="..." src={require("assets/icons/caretRight.png")} />
-          </button>
-          <label style={monthLabel}>{label()}</label>
-          <div style={toolbarStyle}>
-            <Button
-              style={viewState === 1 ? btnStyle : btnWrapperStyle}
-              onClick={goToDayView}
-            >
-              <span>Day</span>
-            </Button>
-            <Button
-              style={viewState === 2 ? btnStyle : btnWrapperStyle}
-              onClick={goToWeekView}
-            >
-              <span>Week</span>
-            </Button>
-            <Button
-              style={viewState === 3 ? btnStyle : btnWrapperStyle}
-              onClick={goToMonthView}
-            >
-              <span>Month</span>
-            </Button>
-          </div>
-          <Button
-            className="mb-3"
-            onClick={() => setModal(true)}
-            style={addBtnText}
-          >
-            Add Service
-          </Button>
-        </Row>
-      </div>
-    )
+    return <div></div>
   }
 
+  // useEffect(() => {
+  //   props.renderHtmlText(ca)
+
+  // }, [])
   function CustomEvent({ event }) {
     return (
       <div className={viewState === 3 ? "" : "pt-1"}>
@@ -575,6 +538,11 @@ const Calendar = props => {
     )
   }
 
+  const selectEvent = event => {
+    setAppointmentModal(true)
+    setEventDetail(event)
+  }
+
   // const CustomTimeSlotWrapper=({value, resource, children})=>{
   //   // convert your `value` (a Date object) to something displayable
   //   console.log("value",value);
@@ -625,6 +593,7 @@ const Calendar = props => {
                             }
                             // dateCellWrapper: DateCellWrapper
                           }}
+                          ref={calendarRef}
                           resourceIdAccessor={
                             viewState == 1 ? "resourceId" : null
                           }
@@ -644,6 +613,7 @@ const Calendar = props => {
                           showMultiDayTimes={true}
                           startAccessor="start"
                           endAccessor="end"
+                          onSelectEvent={event => selectEvent(event)}
                           eventPropGetter={event => {
                             const eventData = getTeamMembers().items.find(
                               ot => ot.id === event.id
@@ -658,11 +628,13 @@ const Calendar = props => {
                         />
                       </th>
                       {viewState === 1 && (
-                        <th style={{ verticalAlign: "top" }} className="p-0">
+                        <th
+                          style={{ verticalAlign: "top", width: "14%" }}
+                          className="p-0"
+                        >
                           {" "}
                           <div
                             style={{
-                              marginTop: 61,
                               borderColor: " #DDDDDD",
                               borderWidth: 2,
                               height: 400
@@ -897,91 +869,7 @@ const Calendar = props => {
           </Col> */}
         </Row>
         <Modal isOpen={modal} closeModal={closeModal}>
-          <div style={{ height: 600 }}>
-            <div className="modal-header border-bottom-0">
-              <button
-                aria-hidden={true}
-                className="close"
-                data-dismiss="modal"
-                type="button"
-                onClick={closeModal}
-              >
-                <i
-                  style={{
-                    color:
-                      "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF"
-                  }}
-                  className="nc-icon nc-simple-remove"
-                />
-              </button>
-              <div>
-                <label className="mt-5" style={styles.titleTextStyle}>
-                  Add Service
-                </label>
-              </div>
-            </div>
-            <div className="modal-body ">
-              <label style={styles.labelTextStyle}>Service Name</label>
-              <Input
-                style={styles.inputTextStyle}
-                className="border-0 pl-0"
-                // onChange={e => handleOnChange("serviceName", e.target.value)}
-              />
-              <div style={styles.inputLineStyle} />
-              {/* {servicesError.name && (
-              <label style={{ color: "red" }}>{servicesError.name}</label>
-            )} */}
-              <div className="mt-4">
-                <label style={styles.labelTextStyle}>Service Description</label>
-                <Input
-                  style={styles.inputTextStyle}
-                  className="border-0 pl-0"
-                  // onChange={e =>
-                  //   handleOnChange("serviceDescription", e.target.value)
-                  // }
-                />
-                <div style={styles.inputLineStyle} />
-              </div>
-              {/* {servicesError.description && (
-              <label style={{ color: "red" }}>
-                {servicesError.description}
-              </label>
-            )} */}
-
-              <div className="mt-4">
-                <label style={styles.labelTextStyle}>Service Price</label>
-                <Input
-                  style={styles.inputTextStyle}
-                  className="border-0 pl-0"
-                  // onChange={e => handleOnChange("servicePrice", e.target.value)}
-                />
-                <div style={styles.inputLineStyle} />
-              </div>
-              {/* {servicesError.price && (
-              <label style={{ color: "red" }}>{servicesError.price}</label>
-            )} */}
-            </div>
-          </div>
-          <div className="modal-footer border-top-0  justify-content-center">
-            <Button
-              className="mb-3"
-              style={styles.btnTextStyle}
-              // onClick={toggle}
-              // disabled={disable}
-            >
-              {false ? (
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-              ) : (
-                "Save Service"
-              )}
-            </Button>
-          </div>
+          <AddServices closeModal={closeModal} styles={styles} />
         </Modal>
 
         <Modal isOpen={noteModal} toggle={toggle}>
@@ -1079,6 +967,266 @@ const Calendar = props => {
             </div>
           </div>
         </Modal>
+
+        {eventDetail && (
+          <Modal isOpen={appointmentModal} toggle={appointmentToggle}>
+            <ModalHeader style={{ borderBottom: 0 }}>
+              <b>{eventDetail?.eventDetail?.title}</b>
+              <button
+                aria-hidden={true}
+                className="close"
+                data-dismiss="modal"
+                type="button"
+                style={{ outline: "none" }}
+                onClick={appointmentToggle}
+              >
+                <i
+                  className="nc-icon nc-simple-remove"
+                  style={{ color: " #438B44" }}
+                />
+              </button>
+            </ModalHeader>
+            <ModalBody>
+              <Row>
+                <Col>
+                  {requestError ? (
+                    <Alert color="danger">Request Failed</Alert>
+                  ) : null}
+                </Col>
+              </Row>
+              <Row style={{ justifyContent: "center" }}>
+                <Col md="12">
+                  <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                    <i
+                      class="nc-icon nc-calendar-60"
+                      style={{ marginRight: 15, color: "grey" }}
+                    ></i>
+                    <label style={styles.inputStyle}>
+                      {moment(
+                        eventDetail?.eventDetail?.appointment_date
+                      ).format("d MMMM yyy")}
+                    </label>
+                  </div>
+                </Col>
+              </Row>
+              <Row style={{ justifyContent: "center", marginTop: 20 }}>
+                <Col md="12">
+                  <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                    <i
+                      class="fa fa-clock-o"
+                      style={{ marginRight: 15, color: "grey" }}
+                    ></i>
+                    <label style={styles.inputStyle}>
+                      {moment(
+                        eventDetail?.eventDetail?.start_time,
+                        "hh:mm"
+                      ).format("hh:mmA")}{" "}
+                      -{" "}
+                      {moment(
+                        eventDetail?.eventDetail?.end_time,
+                        "hh:mm"
+                      ).format("hh:mmA")}
+                    </label>
+                  </div>
+                </Col>
+              </Row>
+              <Row style={{ justifyContent: "center", marginTop: 20 }}>
+                <Col md="12">
+                  <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                    <i
+                      class="fa fa-map-marker"
+                      style={{ marginRight: 15, color: "grey" }}
+                    ></i>
+                    <label style={styles.inputStyle}>
+                      9400 Ninove Street, SA
+                    </label>
+                  </div>
+                </Col>
+              </Row>
+
+              <Row className="mt-4" style={{ justifyContent: "space-between" }}>
+                <Col md="8">
+                  <label style={styles.labelfontStyles}>Client Name</label>
+                  <Input
+                    style={{
+                      width: 300,
+                      backgroundColor: "white",
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: "#000000"
+                    }}
+                    readOnly={true}
+                    value={eventDetail?.eventDetail?.client?.name}
+                    className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+                  />
+                </Col>
+                <Col md="4">
+                  <label style={styles.labelfontStyles}>Number</label>
+                  <Input
+                    readOnly={true}
+                    style={{
+                      backgroundColor: "white",
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: "#000000"
+                    }}
+                    className="border-top-0 border-right-0 border-left-0 p-0"
+                  />
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md="12">
+                  <div className="">
+                    <label style={styles.labelfontStyles}>
+                      Assigned Employee/ Team
+                    </label>
+                    <Input
+                      readOnly={true}
+                      value={eventDetail?.eventDetail?.assigned_team?.title}
+                      style={{
+                        backgroundColor: "white",
+                        fontSize: 14,
+                        fontWeight: "500",
+                        color: "#000000"
+                      }}
+                      className="border-top-0 border-right-0 border-left-0 p-0"
+                    />
+                  </div>
+                </Col>
+              </Row>
+
+              <Row
+                className="mt-4 "
+                style={{ justifyContent: "space-between" }}
+              >
+                <Col lg="6" md="6" sm="3">
+                  <label style={styles.labelfontStyles}>Services</label>
+                  <Select
+                    className="react-select "
+                    classNamePrefix="react-select"
+                    name="singleSelect"
+                    options={[
+                      {
+                        value: "",
+                        label: "Single Option",
+                        isDisabled: true
+                      },
+                      { value: "2", label: "Basic Cleaning" },
+                      { value: "3", label: "Is great" }
+                    ]}
+                    placeholder="Single Select"
+                  />
+                </Col>
+                <Col lg="6" md="6" sm="3">
+                  <label style={styles.labelfontStyles}>Frequency</label>
+                  <Select
+                    className="react-select  "
+                    classNamePrefix="react-select"
+                    name="singleSelect"
+                    options={[
+                      {
+                        value: "",
+                        label: "Single Option",
+                        isDisabled: true
+                      },
+                      { value: "2", label: "4 weeks/ monthly" },
+                      { value: "3", label: "Is great" }
+                    ]}
+                    placeholder="Single Select"
+                  />
+                </Col>
+              </Row>
+
+              <Row style={{ justifyContent: "center", marginTop: 20 }}>
+                <Col md="12">
+                  <div className="">
+                    <label style={styles.labelfontStyles}>Price</label>
+                    <Input
+                      readOnly={true}
+                      value={eventDetail?.eventDetail?.service?.price}
+                      style={{
+                        backgroundColor: "white",
+                        fontSize: 14,
+                        fontWeight: "500",
+                        color: "#000000"
+                      }}
+                      className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+                    />
+                  </div>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col>
+                  <FormGroup>
+                    <label style={styles.labelfontStyles}> Description </label>
+                    <Input
+                      readOnly={true}
+                      className="textarea"
+                      type="textarea"
+                      rows="3"
+                      style={styles.textArea}
+                      Modal
+                      defaultValue="Oh so, your weak rhyme You doubt I'll bother,
+                        "
+                    />
+                  </FormGroup>
+                </Col>
+                <Col>
+                  <FormGroup>
+                    <label style={styles.labelfontStyles}> Notes </label>
+                    <Input
+                      readOnly={true}
+                      className="textarea"
+                      type="textarea"
+                      rows="3"
+                      style={styles.textArea}
+                      defaultValue=""
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <div
+                style={{ justifyContent: "center" }}
+                className="modal-footer border-top-0 pt-5 pb-3"
+              >
+                <div>
+                  <Button
+                    onClick={() => setAppointmentModal(false)}
+                    style={saveBtnStyle}
+                    // disabled={disable}
+                    color="white"
+                    title=""
+                    disabled={true}
+                    type="button"
+                  >
+                    {"Save"}
+                  </Button>
+                </div>
+              </div>
+              {/* <div style={{ justifyContent: "center" }}>
+                <Button
+                  className="btnTest"
+                  style={styles.addBtnText}
+                  onClick={() => {
+                    props.requestAction(
+                      {
+                        appointment_id: 6,
+                        action: "Accept"
+                      },
+                      setRequestError
+                    )
+                    setRequestError(false)
+                    // setModal(false)
+                  }}
+                >
+                  Accept
+                </Button>
+            </div> */}
+            </ModalBody>
+          </Modal>
+        )}
       </div>
     </>
   )
@@ -1137,6 +1285,11 @@ const styles = {
     width: 265,
     height: 48,
     borderRadius: 10
+  },
+  inputTextStyle: {
+    fontWeight: "500",
+    fontSize: 18,
+    color: "#000000"
   },
   titleTextStyle: {
     fontSize: 24,
@@ -1289,6 +1442,7 @@ const mapDispatchToProps = dispatch => ({
   getPendingRequests: () => dispatch(getPendingRequests()),
   getTeam: () => dispatch(getTeam()),
   addNotes: (data, setNoteModal) => dispatch(addNotes(data, setNoteModal)),
-  updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle))
+  updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle)),
+  renderHtmlText: data => dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

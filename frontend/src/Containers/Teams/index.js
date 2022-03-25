@@ -1,10 +1,4 @@
-import React, { useState } from "react"
-
-//Actions
-import { getTeam, getEmployees, createTeam, deleteTeam } from "./redux/actions"
-//Redux
-import { connect } from "react-redux"
-
+import React, { useState,useEffect} from "react"
 // reactstrap components
 import {
   Button,
@@ -24,7 +18,13 @@ import {
   Spinner
 } from "reactstrap"
 import CardFooter from "reactstrap/lib/CardFooter"
-import { useEffect } from "react"
+//Actions
+import { getTeam, getEmployees, createTeam, deleteTeam } from "./redux/actions"
+import {renderHtmlText} from '../Services/redux/actions'
+//Redux
+import { connect } from "react-redux"
+
+
 import { isPropertySignature } from "typescript"
 function Teams(props) {
   const {
@@ -49,6 +49,7 @@ function Teams(props) {
 
   useEffect(() => {
     props.getTeam()
+    props.renderHtmlText('Teams')
   }, [])
 
   const arrayData = [
@@ -513,6 +514,7 @@ const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getEmployees: () => dispatch(getEmployees()),
   createTeam: (data, setmodal) => dispatch(createTeam(data, setmodal)),
-  deleteTeam: data => dispatch(deleteTeam(data))
+  deleteTeam: data => dispatch(deleteTeam(data)),
+  renderHtmlText: (data) => dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Teams)

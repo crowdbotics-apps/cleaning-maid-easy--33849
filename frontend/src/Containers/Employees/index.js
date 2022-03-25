@@ -1,5 +1,5 @@
 import Footer from "components/Footer/Footer";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
 // reactstrap components
 import {
@@ -26,6 +26,8 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { connect } from "react-redux";
+import {renderHtmlText} from '../Services/redux/actions'
 function Employees(props) {
   const [selectedClient, setSelectedClient] = useState("none");
 
@@ -41,6 +43,10 @@ function Employees(props) {
   // function ComponentDidMount() {
   //   ('[data-toggle="tooltip"]').tooltip();
   // }
+
+  useEffect(()=>{
+    props.renderHtmlText('Employees')
+  },[])
   return (
     <>
       <div className="content "
@@ -1547,4 +1553,7 @@ const styles = {
   },
 };
 
-export default Employees;
+const mapDispatchToProps = dispatch => ({
+  renderHtmlText: data => dispatch(renderHtmlText(data))
+})
+export default connect(null, mapDispatchToProps)(Employees)

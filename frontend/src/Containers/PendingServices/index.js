@@ -44,6 +44,8 @@ import {
   requestAction
 } from "./redux/actions"
 
+import {renderHtmlText} from '../Services/redux/actions'
+
 const PendingServices = props => {
   const { requesting, pendingRequests } = props
 
@@ -91,6 +93,7 @@ const PendingServices = props => {
 
   useEffect(() => {
     props.getPendingRequests()
+    props.renderHtmlText('Pending Services')
   }, [])
 
   // const tableData = [
@@ -269,7 +272,7 @@ const PendingServices = props => {
                   type="textarea"
                   rows="3"
                   style={styles.textArea}
-                  defaultValue="Oh so, your weak rhyme You doubt I'll bother,
+                  Modal defaultValue="Oh so, your weak rhyme You doubt I'll bother,
                         "
                 />
               </FormGroup>
@@ -407,7 +410,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getPendingRequests: () => dispatch(getPendingRequests()),
   getAppointmentDetails: data => dispatch(getAppointmentDetails(data)),
-  requestAction: (data, request) => dispatch(requestAction(data, request))
+  requestAction: (data, request) => dispatch(requestAction(data, request)),
+  renderHtmlText: (data)=> dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(PendingServices)
 

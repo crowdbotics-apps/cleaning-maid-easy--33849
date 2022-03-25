@@ -4,6 +4,7 @@ import {
   ADD_SERVICES,
   ADD_SERVICES_FAILURE,
   RESET,
+  RENDER_HTML_TEXT
 } from './types';
 
 export const  getServices= () => ({
@@ -23,6 +24,11 @@ export const addServices = (data, setModal) => ({
 
 export const addServicesFailure = (data) => ({
   type: ADD_SERVICES_FAILURE,
+  data,
+});
+
+export const renderHtmlText = (data) => ({
+  type: RENDER_HTML_TEXT,
   data,
 });
 

@@ -30,16 +30,17 @@ import TimePicker from "react-time-picker"
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 import { getState } from "utils/functions"
-
 //Actions
 import { getTeam } from "Containers/Teams/redux/actions"
-import { getServices } from "Containers/Services/redux/actions"
+import { getServices,renderHtmlText } from "Containers/Services/redux/actions"
 import { scheduleServices } from "./redux/actions"
+
 
 function ScheduleService(props) {
   useEffect(() => {
     props.getTeam()
     props.getServices()
+    props.renderHtmlText("Schedule Service")
   }, [])
 
   const { teamData, servicesData } = props
@@ -99,14 +100,12 @@ function ScheduleService(props) {
     let data = { ...appointmentData }
     data[title] = value
     setAppoinmentData(data)
-    console.log("data", data)
   }
 
   const onHandleSave = () => {
     const data = { ...appointmentData, ...getState(state) }
     data["client_id"] = 3
     data["status"] = "pending"
-    console.log("data", data)
     props.getScheduleServices(data)
   }
   return (
@@ -406,7 +405,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: (data) => dispatch(scheduleServices(data))
+  getScheduleServices: (data) => dispatch(scheduleServices(data)),
+  renderHtmlText: data => dispatch(renderHtmlText(data))
 
 })
 export default connect(mapStateToProps, mapDispatchToProps)(ScheduleService)
