@@ -6,7 +6,6 @@ import { push } from "connected-react-router";
 
 // config
 import { BASE_URL } from '../../../config/app';
-import localStorage from 'redux-persist/es/storage';
 
 // utils
 import XHR from '../../../utils/XHR';
@@ -38,7 +37,7 @@ function loginAPI(data) {
 function* login({ data }) {
   try {
     const response = yield call(loginAPI, data);
-    localStorage.setItem('authToken', JSON.stringify(response?.data?.key));
+    sessionStorage.setItem('authToken', response.data.key)
     yield put(loginSuccess(response.data));
     
     yield put(
