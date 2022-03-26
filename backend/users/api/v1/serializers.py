@@ -11,10 +11,12 @@ class UserInfoSerializer(serializers.ModelSerializer):
             'name',
             'profile_picture',
             'company_name',
+            "display_company",
             'address',
             'email',
             'phone_number',
-            'user_type'
+            'user_type',
+            'notifications_enabled'
         )
 
 
