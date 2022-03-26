@@ -124,6 +124,8 @@ class AddTeamMemberViewSet(ViewSet):
             })
 
         team.team_members.add(member)
+        member.assigned_team = team
+        member.save()
 
         return Response(TeamSerializer(team).data)
 
@@ -156,6 +158,9 @@ class RemoveTeamMemberViewSet(ViewSet):
             })
 
         team.team_members.remove(member)
+
+        member.assigned_team = None
+        member.save()
 
         return Response(TeamSerializer(team).data)
 
