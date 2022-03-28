@@ -30,7 +30,6 @@ async function getUserInfoAPI() {
 function* getUserInfo() {
   try {
     const response = yield call(getUserInfoAPI)
-    console.log("user success", response)
     // yield put(getUserInfoSuccess(response.data))
     sessionStorage.setItem('userInfo', JSON.stringify(response.data))
 

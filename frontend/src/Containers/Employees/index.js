@@ -188,7 +188,7 @@ function Employees(props) {
     state.phone_number.value = ""
     state.zip_code.value = null
     state.address.value = null
-    state.team_id.value = null
+    state.team_id.value = ''
   }
   const toggle = () => {
     setmodal(!modal)
@@ -589,7 +589,7 @@ function Employees(props) {
                         }
                       >
                         {" "}
-                        <option value="none" selected>
+                        <option value="" selected>
                           Select
                         </option>
                         {teamData &&

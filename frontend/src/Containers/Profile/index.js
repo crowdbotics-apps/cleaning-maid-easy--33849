@@ -24,12 +24,15 @@ import validator from "../../utils/validation"
 
 //Actions
 import { getUserInfo } from "./redux/actions"
+import {renderHtmlText} from '../Services/redux/actions'
 
 const Profile = props => {
   useEffect(() => {
+    props.renderHtmlText("Profile")
+    props.getUserInfo()
     const userData = sessionStorage.getItem("userInfo")
     setUserInfo(JSON.parse(userData))
-    // props.getUserInfo()
+    
   }, [])
 
   const [userInfo, setUserInfo] = useState(false)
@@ -56,8 +59,8 @@ const Profile = props => {
                     style={styles.imagWrapper}
                     alt="..."
                     src={
-                      userInfo.profile_picture
-                        ? userInfo.profile_picture
+                      userInfo && userInfo?.profile_picture
+                        ? userInfo?.profile_picture
                         : require("assets/img/default-avatar.png")
                     }
                   />
@@ -109,7 +112,8 @@ const Profile = props => {
 const mapStateToProps = state => ({})
 
 const mapDispatchToProps = dispatch => ({
-  //   getUserInfo: () => dispatch(getUserInfo())
+    getUserInfo: () => dispatch(getUserInfo()),
+    renderHtmlText: data => dispatch(renderHtmlText(data)),
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Profile)
 

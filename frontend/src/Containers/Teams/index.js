@@ -19,7 +19,7 @@ import {
 } from "reactstrap"
 import CardFooter from "reactstrap/lib/CardFooter"
 //Actions
-import { getTeam, getEmployees, createTeam, deleteTeam } from "./redux/actions"
+import { getTeam, getEmployees, createTeam, deleteTeam ,getUnAssignedEmployees } from "./redux/actions"
 import {renderHtmlText} from '../Services/redux/actions'
 //Redux
 import { connect } from "react-redux"
@@ -33,7 +33,8 @@ function Teams(props) {
     employeeRequesting,
     teamData,
     deleteRequesting,
-    createRequesting
+    createRequesting,
+    unAssignedEmployees
   } = props
   const [modal, setmodal] = useState(false)
   const [teamName, setTeamName] = useState(false)
@@ -50,6 +51,7 @@ function Teams(props) {
   useEffect(() => {
     props.getTeam()
     props.renderHtmlText('Teams')
+    props.getUnAssignedEmployees()
   }, [])
 
   const arrayData = [
@@ -507,7 +509,8 @@ const mapStateToProps = state => ({
   employeesData: state.teams.employeesData,
   deleteRequesting: state.teams.deleteRequesting,
   createRequesting: state.teams.createRequesting,
-  teamData: state.teams.teamData
+  teamData: state.teams.teamData,
+  unAssignedEmployees:state.teams.unAssignedEmployees
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -515,6 +518,7 @@ const mapDispatchToProps = dispatch => ({
   getEmployees: () => dispatch(getEmployees()),
   createTeam: (data, setmodal) => dispatch(createTeam(data, setmodal)),
   deleteTeam: data => dispatch(deleteTeam(data)),
-  renderHtmlText: (data) => dispatch(renderHtmlText(data))
+  renderHtmlText: (data) => dispatch(renderHtmlText(data)),
+  getUnAssignedEmployees: () => dispatch(getUnAssignedEmployees())
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Teams)
