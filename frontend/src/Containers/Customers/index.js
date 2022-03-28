@@ -26,14 +26,17 @@ import {
 import Switch from "react-bootstrap-switch"
 
 import { connect } from "react-redux"
+
 //Actions
 import { renderHtmlText } from "../Services/redux/actions"
+import { getAllCustomers } from "./redux/actions"
 
 const Customers = props => {
   const [modal, setModal] = React.useState(false)
 
   useEffect(() => {
-    props.renderHtmlText('Customers')
+    props.renderHtmlText("Customers");
+    props.getAllCustomers()
   }, [])
   // Toggle for Modal
   const toggle = () => setModal(!modal)
@@ -432,7 +435,8 @@ const Customers = props => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  renderHtmlText: (data)=> dispatch(renderHtmlText(data))
+  renderHtmlText: data => dispatch(renderHtmlText(data)),
+  getAllCustomers: () => dispatch(getAllCustomers())
 })
 
 export default connect(null, mapDispatchToProps)(Customers)

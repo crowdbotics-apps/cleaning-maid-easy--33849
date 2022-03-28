@@ -1,7 +1,13 @@
-import { SCHEDULE_SERVICE, SCHEDULE_SERVICE_SUCCESS } from "./types"
+import {
+  GET_FREQUENCIES,
+  GET_FREQUENCIES_SUCCESS,
+  SCHEDULE_SERVICE,
+  SCHEDULE_SERVICE_SUCCESS
+} from "./types"
 
 const initialState = {
-  requesting: false
+  requesting: false,
+  frequencies: false
 }
 
 export default (state = initialState, action) => {
@@ -15,6 +21,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         requesting: false
+      }
+
+    case GET_FREQUENCIES_SUCCESS:
+      return {
+        ...state,
+        frequencies: action.data
       }
 
     default:
