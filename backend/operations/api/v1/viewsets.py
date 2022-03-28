@@ -1,4 +1,4 @@
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet, ViewSet
@@ -108,8 +108,8 @@ class AddTeamMemberViewSet(ViewSet):
 
     def create(self, request):
         try:
-            member_id = request.data['member_id']
-            member = User.objects.get(id=int(member_id))
+            member_id = request.data['member_ids']
+            members = User.objects.filter(id__in=list(member_id))
         except:
             return Response({
                 'Error': 'Invalid Member ID.'
@@ -123,9 +123,10 @@ class AddTeamMemberViewSet(ViewSet):
                 'Error': 'Invalid Team ID.'
             })
 
-        team.team_members.add(member)
-        member.assigned_team = team
-        member.save()
+        team.team_members.add(*members)
+        for member in members:
+            member.assigned_team = team
+            member.save()
 
         return Response(TeamSerializer(team).data)
 
@@ -142,8 +143,8 @@ class RemoveTeamMemberViewSet(ViewSet):
 
     def create(self, request):
         try:
-            member_id = request.data['member_id']
-            member = User.objects.get(id=int(member_id))
+            member_id = request.data['member_ids']
+            members = User.objects.filter(id__in=list(member_id))
         except:
             return Response({
                 'Error': 'Invalid Member ID.'
@@ -157,10 +158,11 @@ class RemoveTeamMemberViewSet(ViewSet):
                 'Error': 'Invalid Team ID.'
             })
 
-        team.team_members.remove(member)
+        team.team_members.remove(*members)
 
-        member.assigned_team = None
-        member.save()
+        for member in members:
+            member.assigned_team = None
+            member.save()
 
         return Response(TeamSerializer(team).data)
 
