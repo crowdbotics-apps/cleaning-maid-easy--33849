@@ -31,10 +31,8 @@ async function scheduleServicesAPI(data) {
 function* scheduleServices({ data }) {
   try {
     const response = yield call(scheduleServicesAPI, data)
-    console.log("schedulr servoeea success", response)
   } catch (e) {
     const { response } = e
-    console.log("schedulr servoeea failed", response)
   }
 }
 

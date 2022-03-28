@@ -105,7 +105,8 @@ function ScheduleService(props) {
   const onHandleSave = () => {
     const data = { ...appointmentData, ...getState(state) }
     data["client_id"] = 3
-    data["status"] = "pending"
+    data["status"] = "Pending"
+
     props.getScheduleServices(data)
   }
   return (
@@ -134,6 +135,7 @@ function ScheduleService(props) {
                     <DatePicker
                       className={"calnderStyle"}
                       clearIcon
+                      wrapperClassName="react-datepicker-wrapper"
                       value={calendarValue}
                       onChange={date => {
                         const selectedDate = moment(date).format("YYYY-MM-DD")
@@ -152,6 +154,7 @@ function ScheduleService(props) {
                     <TimePicker
                       value={fromTime}
                       clearIcon
+                      className={"timeStyle"}
                       clockIcon
                       onChange={e => {
                         onSave("start_time", e)
@@ -165,6 +168,7 @@ function ScheduleService(props) {
                     <TimePicker
                       value={toTime}
                       clearIcon
+                      className={"timeStyle"}
                       clockIcon
                       autoFocus={false}
                       onChange={e => onSave("end_time", e)}

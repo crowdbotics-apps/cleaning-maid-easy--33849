@@ -12,6 +12,7 @@ class Sidebar extends React.Component {
   constructor(props) {
     super(props)
     this.state = this.getCollapseStates(props.routes)
+    this.state = {userInfo: ''}
   }
 
   getCollapseStates = routes => {
@@ -116,6 +117,11 @@ class Sidebar extends React.Component {
     return this.props.location.pathname.indexOf(routeName) > -1 ? 'active' : ''
   }
   componentDidMount() {
+    const userData = sessionStorage.getItem('userInfo')
+    const userInfo = JSON.parse(userData)
+    this.setState({
+      userInfo: userInfo
+    })
     // if you are using a Windows Machine, the scrollbars will have a Mac look
     if (navigator.platform.indexOf('Win') > -1) {
       ps = new PerfectScrollbar(this.refs.sidebar, {
@@ -160,7 +166,8 @@ class Sidebar extends React.Component {
               }
             >
               <span style={styles.textStyle}>
-                {!document.body.classList.contains('sidebar-mini') ? 'User Name' : ''}
+                {!document.body.classList.contains('sidebar-mini') ? "User Name" : ''}
+                {/* this.state.userInfo.name */}
               </span>
             </a>
           </div>
