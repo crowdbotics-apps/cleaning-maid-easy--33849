@@ -8,10 +8,10 @@ import { BASE_URL } from "../../../config/app"
 import XHR from "../../../utils/XHR"
 
 // types
-import { SCHEDULE_SERVICE } from "./types"
+import { GET_FREQUENCIES, SCHEDULE_SERVICE } from "./types"
 
 // actions
-import { scheduleServicesSuccess } from "./actions"
+import { getFrequenciesSuccess, scheduleServicesSuccess } from "./actions"
 
 async function scheduleServicesAPI(data) {
   const URL = `${BASE_URL}/api/v1/operations/appointment/`
@@ -28,14 +28,43 @@ async function scheduleServicesAPI(data) {
   return XHR(URL, options)
 }
 
-function* scheduleServices({ data }) {
+async function getFrequenciesAPI() {
+  const URL = `${BASE_URL}/api/v1/operations/frequency/`
+  const token = await sessionStorage.getItem("authToken")
+  const options = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`
+    },
+    method: "GET"
+  }
+
+  return XHR(URL, options)
+}
+
+function* getFrequencies() {
   try {
-    const response = yield call(scheduleServicesAPI, data)
-    console.log("schedulr servoeea success", response)
+    const response = yield call(getFrequenciesAPI)
+    yield put(getFrequenciesSuccess(response.data))
   } catch (e) {
     const { response } = e
-    console.log("schedulr servoeea failed", response)
+    yield put(getFrequenciesSuccess(false))
+
   }
 }
 
-export default all([takeLatest(SCHEDULE_SERVICE, scheduleServices)])
+function* scheduleServices({ data }) {
+  try {
+    const response = yield call(scheduleServicesAPI, data)
+    yield
+  } catch (e) {
+    const { response } = e
+  } finally {
+    yield put(scheduleServicesSuccess())
+  }
+}
+
+export default all([
+  takeLatest(SCHEDULE_SERVICE, scheduleServices),
+  takeLatest(GET_FREQUENCIES, getFrequencies)
+])
