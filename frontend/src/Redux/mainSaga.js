@@ -9,6 +9,8 @@ import teams from "Containers/Teams/redux/saga"
 import pendingRequests from "Containers/PendingServices/redux/saga"
 import scheduleServices from "Containers/ScheduleServices/redux/saga"
 import profile from "Containers/Profile/redux/saga"
+import calendar from 'Containers/Calendar/redux/saga'
+
 export function* mainSaga() {
   yield all([
     login,
@@ -17,6 +19,8 @@ export function* mainSaga() {
     teams,
     pendingRequests,
     scheduleServices,
-    profile
+    profile,
+    calendar
   ])
 }
+
