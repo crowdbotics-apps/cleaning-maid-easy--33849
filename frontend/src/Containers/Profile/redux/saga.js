@@ -8,32 +8,36 @@ import { BASE_URL } from "../../../config/app"
 import XHR from "../../../utils/XHR"
 
 // types
-import { SCHEDULE_SERVICE } from "./types"
+import { GET_USER_INFO } from "./types"
 
 // actions
-import { scheduleServicesSuccess } from "./actions"
+import { getUserInfoSuccess } from "./actions"
 
-async function scheduleServicesAPI(data) {
-  const URL = `${BASE_URL}/api/v1/operations/appointment/`
+async function getUserInfoAPI() {
+  const URL = `${BASE_URL}/api/v1/users/user_info/me/`
   const token = await sessionStorage.getItem("authToken")
   const options = {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`
     },
-    method: "POST",
-    data
+    method: "GET"
   }
 
   return XHR(URL, options)
 }
 
-function* scheduleServices({ data }) {
+function* getUserInfo() {
   try {
-    const response = yield call(scheduleServicesAPI, data)
+    const response = yield call(getUserInfoAPI)
+    console.log("user success", response)
+    // yield put(getUserInfoSuccess(response.data))
+    sessionStorage.setItem('userInfo', JSON.stringify(response.data))
+
   } catch (e) {
     const { response } = e
+    
   }
 }
 
-export default all([takeLatest(SCHEDULE_SERVICE, scheduleServices)])
+export default all([takeLatest(GET_USER_INFO, getUserInfo)])
