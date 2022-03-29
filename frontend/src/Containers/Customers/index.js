@@ -24,19 +24,33 @@ import {
   UncontrolledTooltip
 } from "reactstrap"
 import Switch from "react-bootstrap-switch"
+import "./style.css"
 
 import { connect } from "react-redux"
 
 //Actions
 import { renderHtmlText } from "../Services/redux/actions"
-import { getAllCustomers } from "./redux/actions"
+import { getAllCustomers,addCustomer } from "./redux/actions"
+import { getServices } from "../Services/redux/actions"
+import { getFrequencies } from "Containers/ScheduleServices/redux/actions"
+
+// /utils
+import useForm from "../../utils/useForm"
+import validator from "../../utils/validation"
 
 const Customers = props => {
+  const { customers, servicesData, frequencies } = props
   const [modal, setModal] = React.useState(false)
+  const [switchToogle, setSwitchToogle] = useState(false)
+  const [notificationsValue, setNotificationsValue] = useState(false)
+
+  
 
   useEffect(() => {
-    props.renderHtmlText("Customers");
+    props.renderHtmlText("Customers")
     props.getAllCustomers()
+    props.getServices()
+    props.getFrequencies()
   }, [])
   // Toggle for Modal
   const toggle = () => setModal(!modal)
@@ -45,6 +59,101 @@ const Customers = props => {
     setSelectedClient(event.target.value)
   }
 
+  
+  const stateSchema = {
+    fullName: {
+      value: "",
+      error: ""
+    },
+    email: {
+      value: "",
+      error: ""
+    },
+    company_name: {
+      value: "",
+      error: ""
+    },
+    phone_number: {
+      value: "",
+      error: ""
+    },
+    zip_code: {
+      value: "",
+      error: ""
+    },
+    address: {
+      value: "",
+      error: ""
+    },
+    service_id: {
+      value: "",
+      error: ""
+    },
+    other: {
+      value: "",
+      error: ""
+    },
+    freq_id: {
+      value: "",
+      error: ""
+    },
+  }
+
+  const validationStateSchema = {
+    fullName: {
+      required: true
+    },
+    email: {
+      required: true,
+      validator: validator.email
+    },
+    company_name: {
+      required: true
+    },
+    phone_number: {
+      required: true,
+      validator: validator.phone
+    },
+    zip_code: {
+      required: true,
+      validator: validator.numeric
+    },
+    address: {
+      required: true
+    },
+    service_id: {
+      required: true
+    },
+    other: {
+      required: true
+    },
+    freq_id: {
+      required: true
+    },
+   
+  }
+
+  const { state, handleOnChange, disable } = useForm(
+    stateSchema,
+    validationStateSchema
+  )
+
+  const addNewCustomer=()=>{
+    const data={
+      name:state.fullName.value,
+      email:state.email.value,
+      company_name:state.company_name.value,
+      phone_number:state.phone_number.value,
+      zip_code:state.zip_code.value,
+      address:state.address.value,
+      service_id:parseInt(state.service_id.value),
+      other:state.other.value,
+      freq_id:parseInt(state.freq_id.value),
+      notifications:notificationsValue
+    }
+    props.addCustomer(data)
+
+  }
   return (
     <div
       className="content "
@@ -78,22 +187,42 @@ const Customers = props => {
           </div>
           <div className="modal-body ">
             <label style={styles.labelTextStyle}>Full Name*</label>
-            <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+            <Input 
+            style={styles.inputTextStyle}
+             className="border-0 pl-0"
+             onChange={e =>
+              handleOnChange("fullName", e.target.value)
+            } 
+             />
             <div style={styles.inputLineStyle} />
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Email*</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input 
+              style={styles.inputTextStyle} 
+              className="border-0 pl-0" 
+              onChange={e =>
+                handleOnChange("email", e.target.value)
+              } 
+              />
               <div style={styles.inputLineStyle} />
             </div>
 
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Company Name</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input style={styles.inputTextStyle} className="border-0 pl-0" 
+               onChange={e =>
+                handleOnChange("company_name", e.target.value)
+              } 
+              />
               <div style={styles.inputLineStyle} />
             </div>
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Phone Number*</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input style={styles.inputTextStyle} className="border-0 pl-0" 
+               onChange={e =>
+                handleOnChange("phone_number", e.target.value)
+              } 
+              />
               <div style={styles.inputLineStyle} />
             </div>
             <Row>
@@ -103,6 +232,9 @@ const Customers = props => {
                   <Input
                     style={styles.inputTextStyle}
                     className="border-0 pl-0"
+                    onChange={e =>
+                      handleOnChange("zip_code", e.target.value)
+                    } 
                   />
                   <div style={styles.inputLineStyle} />
                 </div>
@@ -113,6 +245,9 @@ const Customers = props => {
                   <Input
                     style={styles.inputTextStyle}
                     className="border-0 pl-0"
+                    onChange={e =>
+                      handleOnChange("address", e.target.value)
+                    } 
                   />
                   <div style={styles.inputLineStyle} />
                 </div>
@@ -123,26 +258,26 @@ const Customers = props => {
               <div style={styles.mainstyle} className="mt-4">
                 <select
                   style={styles.selectStyle}
-                  value={selectedClient}
-                  onChange={handleSelectChange}
+                  value={state.service_id.value}
+                  onChange={e =>
+                    handleOnChange("service_id", e.target.value)
+                  } 
                 >
                   <option value="none" selected disabled hidden></option>
-                  <Row>
-                    <option value="Windows Inside Team">
-                      Windows Inside Team
-                    </option>
-                    <option value="Inside Oven Team">Inside Oven Team</option>
-                  </Row>
-                  <option value="Inside Fridge Team">Inside Fridge Team</option>
-                  <option value="Basic Cleaning Team">
-                    Basic Cleaning Team
-                  </option>
+                  {servicesData &&
+                    servicesData.map(itemdata => (
+                      <option value={itemdata.id}>{itemdata.name}</option>
+                    ))}
                 </select>
               </div>
             </div>
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Others</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input style={styles.inputTextStyle} className="border-0 pl-0" 
+               onChange={e =>
+                handleOnChange("other", e.target.value)
+              } 
+              />
               <div style={styles.inputLineStyle} />
             </div>
 
@@ -151,37 +286,38 @@ const Customers = props => {
               <div style={styles.mainstyle} className="mt-4">
                 <select
                   style={styles.selectStyle}
-                  value={selectedClient}
-                  onChange={handleSelectChange}
+                  value={state.freq_id.value}
+                  onChange={e =>
+                    handleOnChange("freq_id", e.target.value)
+                  }
                 >
                   <option value="none" selected disabled hidden></option>
-                  <Row>
-                    <option value="Windows Inside Team">
-                      Windows Inside Team
-                    </option>
-                    <option value="Inside Oven Team">Inside Oven Team</option>
-                  </Row>
-                  <option value="Inside Fridge Team">Inside Fridge Team</option>
-                  <option value="Basic Cleaning Team">
-                    Basic Cleaning Team
-                  </option>
+
+                  {frequencies &&
+                    frequencies.map(frequenciesList => (
+                      <option value={frequenciesList.id}>
+                        {frequenciesList.title}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>
             <div className="mt-4 d-flex justify-content-between">
               <label style={styles.labelTextStyle}>Notifications</label>
               <Switch
-                offColor="success"
+                offColor="black"
                 offText=""
-                onColor="primary"
-                onText=""
+                onColor="success"
                 fontSize={"small"}
+                onChange={(el, state) =>
+                  setNotificationsValue(state)
+                }
               />{" "}
             </div>
           </div>
         </div>
         <div className="modal-footer border-top-0  justify-content-center">
-          <Button className="mb-3" style={styles.btnTextStyle} onClick={toggle}>
+          <Button className="mb-3" style={styles.btnTextStyle} onClick={addNewCustomer}>
             Save Service
           </Button>
         </div>
@@ -223,207 +359,116 @@ const Customers = props => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="align-top">
-                      <div
-                        className="d-flex"
-                        style={{ paddingLeft: 13, paddingRight: 11 }}
-                      >
-                        <h5 style={{ paddingRight: 10 }}>1.</h5>
-                        <div style={{ width: "100%", paddingTop: 5 }}>
-                          <label style={styles.clientStyle}>Full Name</label>
-                          <br></br>
-                          <label style={styles.clientDataTextStyle}>
-                            Jenny Wilson
-                          </label>
-                          <br></br>
-                          <label style={styles.clientStyle}>Email</label>
-                          <br></br>
-                          <label style={styles.clientDataTextStyle}>
-                            jennuwilson@email.com
-                          </label>
-                          <br></br>
-                          <label style={styles.clientStyle}>Company Name</label>
-                          <br></br>
-                          <label style={styles.clientDataTextStyle}>/</label>
-                          <br></br>
-                          <div className="text-right">
-                            <img src={require("assets/icons/dot_icon.png")} />
+                  {customers &&
+                    customers.map((item, index) => (
+                      <tr>
+                        <td className="align-top">
+                          <div
+                            className="d-flex"
+                            style={{ paddingLeft: 13, paddingRight: 11 }}
+                          >
+                            <h5 style={{ paddingRight: 10 }}>{index + 1}.</h5>
+                            <div style={{ width: "100%", paddingTop: 5 }}>
+                              <label style={styles.clientStyle}>
+                                Full Name
+                              </label>
+                              <br></br>
+                              <label style={styles.clientDataTextStyle}>
+                                {item.name}
+                              </label>
+                              <br></br>
+                              <label style={styles.clientStyle}>Email</label>
+                              <br></br>
+                              <label style={styles.clientDataTextStyle}>
+                                {item.email}
+                              </label>
+                              <br></br>
+                              <label style={styles.clientStyle}>
+                                Company Name
+                              </label>
+                              <br></br>
+                              <label style={styles.clientDataTextStyle}>
+                                {item.company}
+                              </label>
+                              <br></br>
+                              <div className="text-right">
+                                <img
+                                  src={require("assets/icons/dot_icon.png")}
+                                />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="align-top" style={{ maxHeight: 390 }}>
-                      <div
-                        style={{
-                          paddingLeft: 18,
-                          paddingRight: 20,
-                          overflowY: "scroll",
-                          maxHeight: 395
-                        }}
-                      >
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="align-top">
-                      <div style={{ paddingLeft: 18, paddingRight: 20 }}>
-                        <div className="d-flex justify-content-between">
-                          <h7>-Basic Cleaning</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>-Windows Inside</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>-Windows Outside</h7>
-                          <i
-                            className="fa fa-circle"
-                            style={{ color: "#A8CEFF", fontSize: "large" }}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="align-top">
-                      <div className="pl-3 pr-3">
-                        <div className=" d-flex justify-content-between">
-                          <h7>Notifications</h7>
-                          <Switch
-                            offColor="success"
-                            offText=""
-                            onColor="primary"
-                            onText=""
-                          />{" "}
-                        </div>
-                        <div>
-                          <label>Notes</label>
-                          <p>
-                            Nulla euismod non eget id mi feugiat imperdiet.
-                            Porta vitae eleifend turpis a, cras bibendum nibh
-                            viverra amet. Nibh quisque eleifend consequat dolor
-                            eget id dolor.
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                        </td>
+                        <td
+                          className="align-top"
+                          style={{
+                            maxHeight: 390,
+                            overflowY: "scroll",
+                            maxHeight: 395
+                          }}
+                        >
+                          {item.service_history.map(serviceItem => (
+                            <div
+                              style={{
+                                paddingLeft: 18,
+                                paddingRight: 20
+                                // overflowY: "scroll",
+                              }}
+                            >
+                              <div className="d-flex justify-content-between">
+                                <h7>
+                                  {serviceItem.appointment_date} -{" "}
+                                  {serviceItem.service.name} ($
+                                  {serviceItem.price})
+                                </h7>
+                                <i
+                                  className="fa fa-circle"
+                                  style={{
+                                    color: `${serviceItem.frequency.color_code}`,
+                                    fontSize: "large"
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </td>
+
+                        <td className="align-top">
+                          {item.service_history.map(preferredServicesItem => (
+                            <div style={{ paddingLeft: 18, paddingRight: 20 }}>
+                              <div className="d-flex justify-content-between">
+                                <h7>-{preferredServicesItem.service.name}</h7>
+                                <i
+                                  className="fa fa-circle"
+                                  style={{
+                                    color: `${preferredServicesItem.frequency.color_code}`,
+                                    fontSize: "large"
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </td>
+                        <td className="align-top">
+                          <div className="pl-3 pr-3">
+                            <div className=" d-flex justify-content-between">
+                              <h7>Notifications</h7>
+                              <Switch
+                                offColor="black"
+                                offText=""
+                                onColor="yellow"
+                                onChange={e => setSwitchToogle(!switchToogle)}
+                                value={switchToogle}
+                              />{" "}
+                            </div>
+                            <div>
+                              <label>Notes</label>
+                              <p>{item.other}</p>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </Table>
             </CardBody>
@@ -433,13 +478,21 @@ const Customers = props => {
     </div>
   )
 }
+const mapStateToProps = state => ({
+  customers: state.customers.customers,
+  servicesData: state.services.servicesData,
+  frequencies: state.scheduleServices.frequencies
+})
 
 const mapDispatchToProps = dispatch => ({
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  getAllCustomers: () => dispatch(getAllCustomers())
+  getAllCustomers: () => dispatch(getAllCustomers()),
+  getServices: () => dispatch(getServices()),
+  getFrequencies: () => dispatch(getFrequencies()),
+  addCustomer :(data) => dispatch(addCustomer(data))
 })
 
-export default connect(null, mapDispatchToProps)(Customers)
+export default connect(mapStateToProps, mapDispatchToProps)(Customers)
 
 const styles = {
   inputLineStyle: {

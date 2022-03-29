@@ -1,4 +1,4 @@
-import React, { useState,useEffect} from "react"
+import React, { useState, useEffect,useRef } from "react"
 // reactstrap components
 import {
   Button,
@@ -19,11 +19,19 @@ import {
 } from "reactstrap"
 import CardFooter from "reactstrap/lib/CardFooter"
 //Actions
-import { getTeam, getEmployees, createTeam, deleteTeam ,getUnAssignedEmployees } from "./redux/actions"
-import {renderHtmlText} from '../Services/redux/actions'
+import {
+  getTeam,
+  getEmployees,
+  createTeam,
+  deleteTeam,
+  getUnAssignedEmployees,
+  removeTeamMember
+} from "./redux/actions"
+import { renderHtmlText } from "../Services/redux/actions"
+
 //Redux
 import { connect } from "react-redux"
-
+import Draggable from "react-draggable"
 
 import { isPropertySignature } from "typescript"
 function Teams(props) {
@@ -40,6 +48,7 @@ function Teams(props) {
   const [teamName, setTeamName] = useState(false)
   const [nameError, setNameError] = useState(false)
 
+  const UnAssignedTeamRef = useRef();
   const toggle = () => {
     setmodal(!modal)
   }
@@ -47,11 +56,13 @@ function Teams(props) {
   const [deleteId, setDeleteId] = useState(false)
   const [selectedMembers, setSelectedMebers] = useState([])
   const [searchData, setSearchData] = useState("")
+  const [activeDrags, setActiveDrags] = useState(false)
 
   useEffect(() => {
     props.getTeam()
-    props.renderHtmlText('Teams')
+    props.renderHtmlText("Teams")
     props.getUnAssignedEmployees()
+    props.getEmployees()
   }, [])
 
   const arrayData = [
@@ -90,7 +101,7 @@ function Teams(props) {
     const regEx = /^([a-zA-Z]+\s)*[a-zA-Z]+$/
     if (regEx.test(teamName)) {
       let apiData = {
-        member_ids: [1, 2, 3, 4, 5],
+        member_ids: selectedMembers,
         team_name: teamName
       }
       props.createTeam(apiData, setmodal)
@@ -100,6 +111,28 @@ function Teams(props) {
     }
   }
 
+  // function onStart(event) {
+  //   console.log("on start", event)
+  //   setActiveDrags(++activeDrags)
+  // }
+
+  const handleStart = (event, info) => {
+    setActiveDrags(true)
+}
+const handleStop = (event, info) => {
+  const position = UnAssignedTeamRef?.current?.getBoundingClientRect();
+  // setActiveDrags(false)
+}
+  const removeMember = (memeberId, teamId) => {
+    const data = {
+      member_id: memeberId,
+      team_id: teamId
+    }
+    props.removeTeamMember(data)
+  }
+
+ const handleEvent = (e, data) => {
+  }
   return (
     <div
       className="content"
@@ -135,20 +168,34 @@ function Teams(props) {
                           <td className="" style={styles.textFont}>
                             {item.title}
                           </td>
-                          <td style={{ width: "52%", borderLeft: "" }}>
+                          <td style={{ width: "52%", borderLeft: "" }} className="drag-data">
                             {item.team_members?.length &&
-                              item.team_members.map(item => (
+                              item.team_members.map((items, index) => (
                                 <>
-                                  {item.name !== null && (
-                                    <Button
-                                      style={styles.addBtn}
-                                      color="white"
-                                      title=""
-                                      type="button"
-                                      size="sm"
+                                  {items.name !== null && (
+                                    <Draggable
+                                    onDrag={handleEvent}
+                                    // bounds="table"
+                                    onStart={handleStart}
+                                    onStop={handleStop}
+                                    position={!activeDrags? { x: 0, y: 0 } : undefined}
+                                      draggableId={items.id.toString()}
+                                      index={index}
+                                      key={items.id}
+                                      // onStop={e =>
+                                      //   removeMember(items.id, item.id)
+                                      // }
                                     >
-                                      {item.name}
-                                    </Button>
+                                      <Button
+                                        style={styles.addBtn}
+                                        color="white"
+                                        title=""
+                                        type="button"
+                                        size="sm"
+                                      >
+                                        {items.name}
+                                      </Button>
+                                    </Draggable>
                                   )}
                                 </>
                               ))}
@@ -182,7 +229,9 @@ function Teams(props) {
                             )}
                           </td>
                           {!index && (
-                            <td
+                            <td 
+                            className="drag-data"
+                            ref={UnAssignedTeamRef}
                               rowSpan="7"
                               style={{
                                 borderLeft: "1px solid rgb(212, 212, 212)"
@@ -282,7 +331,7 @@ function Teams(props) {
                 title=""
                 type="button"
                 size="md"
-                onClick={() => [setmodal(!modal), props.getEmployees()]}
+                onClick={() => [setmodal(!modal)]}
               >
                 Add Team{" "}
               </Button>
@@ -334,9 +383,14 @@ function Teams(props) {
                       ]}
                     />
                   </div>
-                  {filterData().length ? (
+                  {filterData().length===0 ? (
+                    <div style={{ textAlign: "center", marginTop: 24 }}>
+                      <label>No record Found</label>
+                    </div>
+                  ) : filterData().length ? (
                     filterData().map(item => (
                       <div style={styles.mainDiv}>
+                        {/* <Draggable> */}
                         <div>
                           <img
                             width={44}
@@ -353,7 +407,7 @@ function Teams(props) {
                               fontWeight: "500"
                             }}
                           >
-                            {item.data}
+                            {item.name}
                           </label>
                         </div>
                         <div>
@@ -510,7 +564,7 @@ const mapStateToProps = state => ({
   deleteRequesting: state.teams.deleteRequesting,
   createRequesting: state.teams.createRequesting,
   teamData: state.teams.teamData,
-  unAssignedEmployees:state.teams.unAssignedEmployees
+  unAssignedEmployees: state.teams.unAssignedEmployees
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -518,7 +572,8 @@ const mapDispatchToProps = dispatch => ({
   getEmployees: () => dispatch(getEmployees()),
   createTeam: (data, setmodal) => dispatch(createTeam(data, setmodal)),
   deleteTeam: data => dispatch(deleteTeam(data)),
-  renderHtmlText: (data) => dispatch(renderHtmlText(data)),
-  getUnAssignedEmployees: () => dispatch(getUnAssignedEmployees())
+  renderHtmlText: data => dispatch(renderHtmlText(data)),
+  getUnAssignedEmployees: () => dispatch(getUnAssignedEmployees()),
+  removeTeamMember: data => dispatch(removeTeamMember(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Teams)

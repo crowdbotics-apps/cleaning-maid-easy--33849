@@ -8,10 +8,11 @@ import {
   DELETE_TEAM,
   GET_UN_ASSIGNED_EMPLOYEES,
   GET_UN_ASSIGNED_EMPLOYEES_SUCCESS,
+  REMOVE_TEAM_MEMBER,
   RESET,
 } from './types';
 
-export const  getTeam= () => ({
+export const getTeam= () => ({
   type: GET_TEAM,
 });
 
@@ -37,6 +38,11 @@ export const getEmployeesSuccess = (data) => ({
   type: GET_EMPLOYEES_SUCCESS,
   data,
 });
+
+export const removeTeamMember=(data)=>({
+  type: REMOVE_TEAM_MEMBER,
+  data,
+})
 
 export const  createTeam= (data, setmodal) => ({
   type: CREATE_TEAM,
