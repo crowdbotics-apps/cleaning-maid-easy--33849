@@ -7,7 +7,7 @@ import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
 //Actions
-import { getServices, addServices, addServicesFailure } from "./redux/actions"
+import { getServices, addServices, addServicesFailure,renderHtmlText } from "./redux/actions"
 
 // reactstrap components
 import {
@@ -85,6 +85,7 @@ const Services = props => {
 
   useEffect(() => {
     props.getServices()
+    props.renderHtmlText('Services')
   }, [])
 
   return (
@@ -272,13 +273,14 @@ const Services = props => {
 const mapStateToProps = state => ({
   requesting: state.services.requesting,
   servicesData: state.services.servicesData,
-  servicesError: state.services.servicesError
+  servicesError: state.services.servicesError,
 })
 
 const mapDispatchToProps = dispatch => ({
   getServices: () => dispatch(getServices()),
   addServices: (data, setModal) => dispatch(addServices(data, setModal)),
-  addServicesFailure: data => dispatch(addServicesFailure(data))
+  addServicesFailure: data => dispatch(addServicesFailure(data)),
+  renderHtmlText: (data)=> dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Services)
 

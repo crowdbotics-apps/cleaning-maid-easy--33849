@@ -44,6 +44,8 @@ import {
   requestAction
 } from "./redux/actions"
 
+import { renderHtmlText } from "../Services/redux/actions"
+
 const PendingServices = props => {
   const { requesting, pendingRequests } = props
 
@@ -91,6 +93,7 @@ const PendingServices = props => {
 
   useEffect(() => {
     props.getPendingRequests()
+    props.renderHtmlText("Pending Services")
   }, [])
 
   // const tableData = [
@@ -269,6 +272,7 @@ const PendingServices = props => {
                   type="textarea"
                   rows="3"
                   style={styles.textArea}
+                  Modal
                   defaultValue="Oh so, your weak rhyme You doubt I'll bother,
                         "
                 />
@@ -382,9 +386,9 @@ const PendingServices = props => {
                         style={{ cursor: "pointer" }}
                       >
                         <td style={styles.tdataText1}>{i + 1}.</td>
-                        <td style={styles.tdataText2}>{item.name}</td>
+                        <td style={styles.tdataText2}>{item.title}</td>
                         <td style={styles.tdataText}>{item.description}</td>
-                        <td style={styles.tdataText}>{item.service}</td>
+                        <td style={styles.tdataText}>{item.service.name}</td>
                       </tr>
                     ))
                   )}
@@ -407,7 +411,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getPendingRequests: () => dispatch(getPendingRequests()),
   getAppointmentDetails: data => dispatch(getAppointmentDetails(data)),
-  requestAction: (data, request) => dispatch(requestAction(data, request))
+  requestAction: (data, request) => dispatch(requestAction(data, request)),
+  renderHtmlText: data => dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(PendingServices)
 

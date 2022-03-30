@@ -1,54 +1,228 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"
 
 // reactstrap components
 import {
   Button,
-  ButtonGroup,
   Card,
-  CardHeader,
   CardBody,
-  CardTitle,
-  Label,
-  FormGroup,
   Input,
   Table,
   Row,
   Modal,
-  ModalFooter,
-  InputGroup,
-  ModalHeader,
-  InputGroupAddon,
-  InputGroupText,
-  ModalBody,
   Col,
-  UncontrolledTooltip,
-} from "reactstrap";
-import Switch from "react-bootstrap-switch";
+  Spinner,
+  UncontrolledAlert
+} from "reactstrap"
+import Switch from "react-bootstrap-switch"
+import "./style.css"
 
-const Services = () => {
+import { connect } from "react-redux"
 
-  const [modal, setModal] = React.useState(false);
+//Actions
+import { renderHtmlText } from "../Services/redux/actions"
+import {
+  getAllCustomers,
+  addCustomer,
+  addCustomerFailure,
+  changeNotification,
+  searchCustomers
+} from "./redux/actions"
+import { getServices } from "../Services/redux/actions"
+import { getFrequencies } from "Containers/ScheduleServices/redux/actions"
+
+// /utils
+import useForm from "../../utils/useForm"
+import validator from "../../utils/validation"
+
+const Customers = props => {
+  const { customers, servicesData, frequencies, requesting, backendError } =
+    props
+  const [modal, setModal] = React.useState(false)
+  const [notificationsValue, setNotificationsValue] = useState(false)
+  const [notificationsId, setNotificationsId] = useState([])
+
+  useEffect(() => {
+    props.renderHtmlText("Customers")
+    props.getAllCustomers()
+    props.getServices()
+    props.getFrequencies()
+  }, [])
+
+  useEffect(() => {
+    customers && filterNotifications()
+    if(customers.length){
+      let mydiv=document.getElementsByClassName('table-responsive-xl')
+      mydiv[0].style.height='600px'
+      mydiv[0].style.overflowY='auto'
+    }
+    else{
+      let mydiv=document.getElementsByClassName('table-responsive-xl')
+      mydiv[0].style.height=''
+      mydiv[0].style.overflowY=''
+    }
+    
+  }, [customers])
+
+  useEffect(() => {
+    if (backendError) {
+      setTimeout(() => {
+        props.addCustomerFailure(false)
+      }, 1500)
+    }
+  }, [backendError])
+  const [selectedClient, setSelectedClient] = useState("none")
+  function handleSelectChange(event) {
+    setSelectedClient(event.target.value)
+  }
+
+  const stateSchema = {
+    fullName: {
+      value: "",
+      error: ""
+    },
+    email: {
+      value: "",
+      error: ""
+    },
+    company_name: {
+      value: "",
+      error: ""
+    },
+    phone_number: {
+      value: "",
+      error: ""
+    },
+    zip_code: {
+      value: "",
+      error: ""
+    },
+    address: {
+      value: "",
+      error: ""
+    },
+    service_id: {
+      value: "",
+      error: ""
+    },
+    other: {
+      value: "",
+      error: ""
+    },
+    freq_id: {
+      value: "",
+      error: ""
+    }
+  }
+
+  const validationStateSchema = {
+    fullName: {
+      required: true
+    },
+    email: {
+      required: true,
+      validator: validator.email
+    },
+    company_name: {
+      required: true
+    },
+    phone_number: {
+      required: true,
+      validator: validator.phone
+    },
+    zip_code: {
+      required: true,
+      validator: validator.numeric
+    },
+    address: {
+      required: true
+    },
+    service_id: {
+      required: true
+    },
+    other: {
+      required: true
+    },
+    freq_id: {
+      required: true
+    }
+  }
+
+  const resetValues = () => {
+    state.fullName.value = null
+    state.email.value = null
+    state.company_name.value = ""
+    state.phone_number.value = ""
+    state.zip_code.value = null
+    state.address.value = null
+    state.service_id.value = ""
+    state.other.value = null
+    state.freq_id.value = ""
+  }
+
+  const filterNotifications = () => {
+    const filteredItems =
+      customers &&
+      customers
+        .map(item => {
+          if (item.notifications_enabled) {
+            return item.id
+          }
+        })
+        .filter(e => e !== undefined)
+    setNotificationsId(filteredItems ? filteredItems : [])
+  }
+
+  const handleChange = (item, state) => {
+    if (notificationsId.includes(item.id)) {
+      setNotificationsId(
+        notificationsId.filter(elements => elements !== item.id)
+      )
+    } else {
+      setNotificationsId(notificationsId => [...notificationsId, item.id])
+    }
+    let data = new FormData()
+    data.append("notifications_enabled", state)
+    props.changeNotification(data, item.id)
+  }
 
   // Toggle for Modal
-  const toggle = () => setModal(!modal);
-  const [selectedClient, setSelectedClient] = useState("none");
-  function handleSelectChange(event) {
-    setSelectedClient(event.target.value);
+  const toggle = () => {
+    resetValues()
+    setModal(!modal)
+  }
+
+  const { state, handleOnChange, disable } = useForm(
+    stateSchema,
+    validationStateSchema
+  )
+
+  const addNewCustomer = () => {
+    const data = {
+      name: state.fullName.value,
+      email: state.email.value,
+      company_name: state.company_name.value,
+      phone_number: state.phone_number.value,
+      zip_code: state.zip_code.value,
+      address: state.address.value,
+      service_id: parseInt(state.service_id.value),
+      other: state.other.value,
+      freq_id: parseInt(state.freq_id.value),
+      notifications: notificationsValue
+    }
+    props.addCustomer(data, toggle)
   }
 
   return (
-    <div className="content "
+    <div
+      className="content "
       style={{
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
         backgroundImage: `url(${require("assets/images/bg_content.png")})`,
         flex: 1
       }}
     >
-      <Modal
-        isOpen={modal}
-        toggle={toggle}
-      >
+      <Modal isOpen={modal} toggle={toggle}>
         <div>
           <div className="modal-header border-bottom-0">
             <button
@@ -64,42 +238,104 @@ const Services = () => {
               />
             </button>
             <div>
-              <label className="mt-5" style={styles.titleTextStyle} >Add Customer</label>
+              <label className="mt-5" style={styles.titleTextStyle}>
+                Add Customer
+              </label>
             </div>
           </div>
+          <div style={{ paddingRight: 40, paddingLeft: 40 }}>
+            {backendError ? (
+              <UncontrolledAlert color="danger" fade={false}>
+                <span>{backendError}</span>
+              </UncontrolledAlert>
+            ) : (
+              ""
+            )}
+          </div>
+
           <div className="modal-body ">
             <label style={styles.labelTextStyle}>Full Name*</label>
-            <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+            <Input
+              style={styles.inputTextStyle}
+              className="border-0 pl-0"
+              onChange={e => handleOnChange("fullName", e.target.value)}
+            />
             <div style={styles.inputLineStyle} />
+            {state.fullName.error && (
+              <label style={{ color: "red" }}>{state.fullName.error}</label>
+            )}
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Email*</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                onChange={e => handleOnChange("email", e.target.value)}
+              />
               <div style={styles.inputLineStyle} />
+              {state.email.error && (
+                <label style={{ color: "red" }}>{state.email.error}</label>
+              )}
             </div>
 
             <div className="mt-4">
-              <label style={styles.labelTextStyle}>Company Name</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <label style={styles.labelTextStyle}>Company Name*</label>
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                onChange={e => handleOnChange("company_name", e.target.value)}
+              />
               <div style={styles.inputLineStyle} />
+              {state.company_name.error && (
+                <label style={{ color: "red" }}>
+                  {state.company_name.error}
+                </label>
+              )}
             </div>
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Phone Number*</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                onChange={e => handleOnChange("phone_number", e.target.value)}
+              />
               <div style={styles.inputLineStyle} />
+              {state.phone_number.error && (
+                <label style={{ color: "red" }}>
+                  {state.phone_number.error}
+                </label>
+              )}
             </div>
             <Row>
               <Col lg={4}>
                 <div className="mt-4">
                   <label style={styles.labelTextStyle}>Zip Code*</label>
-                  <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+                  <Input
+                    style={styles.inputTextStyle}
+                    className="border-0 pl-0"
+                    onChange={e => handleOnChange("zip_code", e.target.value)}
+                  />
                   <div style={styles.inputLineStyle} />
+                  {state.zip_code.error && (
+                    <label style={{ color: "red" }}>
+                      {state.zip_code.error}
+                    </label>
+                  )}
                 </div>
               </Col>
               <Col lg={8}>
                 <div className="mt-4">
                   <label style={styles.labelTextStyle}>Address*</label>
-                  <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+                  <Input
+                    style={styles.inputTextStyle}
+                    className="border-0 pl-0"
+                    onChange={e => handleOnChange("address", e.target.value)}
+                  />
                   <div style={styles.inputLineStyle} />
+                  {state.address.error && (
+                    <label style={{ color: "red" }}>
+                      {state.address.error}
+                    </label>
+                  )}
                 </div>
               </Col>
             </Row>
@@ -108,23 +344,33 @@ const Services = () => {
               <div style={styles.mainstyle} className="mt-4">
                 <select
                   style={styles.selectStyle}
-                  value={selectedClient}
-                  onChange={handleSelectChange}
+                  value={state.service_id.value}
+                  onChange={e => handleOnChange("service_id", e.target.value)}
                 >
-                  <option value="none" selected disabled hidden></option>
-                  <Row>
-                    <option value="Windows Inside Team">Windows Inside Team</option>
-                    <option value="Inside Oven Team">Inside Oven Team</option>
-                  </Row>
-                  <option value="Inside Fridge Team">Inside Fridge Team</option>
-                  <option value="Basic Cleaning Team">Basic Cleaning Team</option>
+                  <option value="" selected disabled>
+                    Select
+                  </option>
+                  {servicesData &&
+                    servicesData.map(itemdata => (
+                      <option value={itemdata.id}>{itemdata.name}</option>
+                    ))}
                 </select>
               </div>
+              {state.service_id.error && (
+                <label style={{ color: "red" }}>{state.service_id.error}</label>
+              )}
             </div>
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Others</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" />
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                onChange={e => handleOnChange("other", e.target.value)}
+              />
               <div style={styles.inputLineStyle} />
+              {state.other.error && (
+                <label style={{ color: "red" }}>{state.other.error}</label>
+              )}
             </div>
 
             <div className="mt-4">
@@ -132,38 +378,55 @@ const Services = () => {
               <div style={styles.mainstyle} className="mt-4">
                 <select
                   style={styles.selectStyle}
-                  value={selectedClient}
-                  onChange={handleSelectChange}
+                  value={state.freq_id.value}
+                  onChange={e => handleOnChange("freq_id", e.target.value)}
                 >
-                  <option value="none" selected disabled hidden></option>
-                  <Row>
-                    <option value="Windows Inside Team">Windows Inside Team</option>
-                    <option value="Inside Oven Team">Inside Oven Team</option>
-                  </Row>
-                  <option value="Inside Fridge Team">Inside Fridge Team</option>
-                  <option value="Basic Cleaning Team">Basic Cleaning Team</option>
+                  <option value="" selected disabled>
+                    Select
+                  </option>
+
+                  {frequencies &&
+                    frequencies.map(frequenciesList => (
+                      <option value={frequenciesList.id}>
+                        {frequenciesList.title}
+                      </option>
+                    ))}
                 </select>
+                {state.freq_id.error && (
+                  <label style={{ color: "red" }}>{state.freq_id.error}</label>
+                )}
               </div>
             </div>
             <div className="mt-4 d-flex justify-content-between">
               <label style={styles.labelTextStyle}>Notifications</label>
               <Switch
-                offColor="success"
+                offColor="black"
                 offText=""
-                onColor="primary"
-                onText=""
-                fontSize={'small'}
+                onColor="success"
+                fontSize={"small"}
+                onChange={(el, state) => setNotificationsValue(state)}
               />{" "}
             </div>
           </div>
         </div>
         <div className="modal-footer border-top-0  justify-content-center">
           <Button
+            disabled={disable}
             className="mb-3"
             style={styles.btnTextStyle}
-            onClick={toggle}
+            onClick={addNewCustomer}
           >
-            Save Service
+            {requesting ? (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            ) : (
+              "Save Service"
+            )}
           </Button>
         </div>
       </Modal>
@@ -171,13 +434,17 @@ const Services = () => {
         <Col md="12">
           <Card style={styles.cardStyle}>
             <CardBody>
-              <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center pb-3">
                 <img
                   style={styles.searchImg}
                   src={require("assets/icons/search_icon.png")}
                 />
-                <Input placeholder="Search" type="search" name="search" style={styles.searchStyle}
-                  onChange={(e) => console.log(e)}
+                <Input
+                  placeholder="Search"
+                  type="search"
+                  name="search"
+                  style={styles.searchStyle}
+                  onChange={e => props.searchCustomers(e.target.value)}
                 />
 
                 <img
@@ -186,14 +453,11 @@ const Services = () => {
                   src={require("assets/icons/filter_btn.png")}
                 />
                 <h7 className="pl-2">Filter</h7>
-                <Button
-                  style={styles.addBtnText}
-                  onClick={toggle}
-                >
+                <Button style={styles.addBtnText} onClick={toggle}>
                   Add Customer
                 </Button>
               </div>
-              <Table responsive='xl' bordered >
+              <Table responsive="xl" bordered >
                 <thead style={{ opacity: 0.5 }}>
                   <tr>
                     <th style={styles.theadText}>Client Information</th>
@@ -203,140 +467,146 @@ const Services = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="align-top">
-                      <div className="d-flex" style={{ paddingLeft: 13, paddingRight: 11 }}>
-                        <h5 style={{ paddingRight: 10 }}>1.</h5>
-                        <div style={{ width: '100%', paddingTop: 5 }}>
-                          <label style={styles.clientStyle}>Full Name</label>
-                          <br></br>
-                          <label style={styles.clientDataTextStyle}>Jenny Wilson</label>
-                          <br></br>
-                          <label style={styles.clientStyle}>Email</label>
-                          <br></br>
-                          <label style={styles.clientDataTextStyle}>jennuwilson@email.com</label>
-                          <br></br>
-                          <label style={styles.clientStyle}>Company Name</label>
-                          <br></br>
-                          <label style={styles.clientDataTextStyle}>/</label>
-                          <br></br>
-                          <div className='text-right'>
-                            <img
-                              src={require("assets/icons/dot_icon.png")}
+                  {customers.length ? (
+                    customers.map((item, index) => (
+                      <tr>
+                        <td className="align-top">
+                          <div
+                            className="d-flex"
+                            style={{ paddingLeft: 13, paddingRight: 11 }}
+                          >
+                            <h5 style={{ paddingRight: 10 }}>{index + 1}.</h5>
+                            <div style={{ width: "100%", paddingTop: 5 }}>
+                              <label style={styles.clientStyle}>
+                                Full Name
+                              </label>
+                              <br></br>
+                              <label style={styles.clientDataTextStyle}>
+                                {item.name}
+                              </label>
+                              <br></br>
+                              <label style={styles.clientStyle}>Email</label>
+                              <br></br>
+                              <label style={styles.clientDataTextStyle}>
+                                {item.email}
+                              </label>
+                              <br></br>
+                              <label style={styles.clientStyle}>
+                                Company Name
+                              </label>
+                              <br></br>
+                              <label style={styles.clientDataTextStyle}>
+                                {item.company}
+                              </label>
+                              <br></br>
+                              <div className="text-right">
+                                <img
+                                  src={require("assets/icons/dot_icon.png")}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td
+                          className="align-top"
+                          style={{
+                            maxHeight: 390,
+                            overflowY: "scroll",
+                            maxHeight: 395
+                          }}
+                        >
+                          {item.service_history.map(serviceItem => (
+                            <div
+                              style={{
+                                paddingLeft: 18,
+                                paddingRight: 20
+                                // overflowY: "scroll",
+                              }}
+                            >
+                              <div className="d-flex justify-content-between">
+                                <h7>
+                                  {serviceItem.appointment_date} -{" "}
+                                  {serviceItem.service.name} ($
+                                  {serviceItem.price})
+                                </h7>
+                                <i
+                                  className="fa fa-circle"
+                                  style={{
+                                    color: `${serviceItem.frequency.color_code}`,
+                                    fontSize: "large"
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </td>
+
+                        <td className="align-top">
+                          {item.service_history.map(preferredServicesItem => (
+                            <div style={{ paddingLeft: 18, paddingRight: 20 }}>
+                              <div className="d-flex justify-content-between">
+                                <h7>-{preferredServicesItem.service.name}</h7>
+                                <i
+                                  className="fa fa-circle"
+                                  style={{
+                                    color: `${preferredServicesItem.frequency.color_code}`,
+                                    fontSize: "large"
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </td>
+                        <td className="align-top">
+                          <div className="pl-3 pr-3">
+                            <div className=" d-flex justify-content-between">
+                              <h7>Notifications</h7>
+                              <Switch
+                                offColor="black"
+                                offText=""
+                                onChange={(el, state) =>
+                                  handleChange(item, state)
+                                }
+                                value={
+                                  notificationsId.includes(item.id)
+                                    ? true
+                                    : false
+                                }
+                              />{" "}
+                            </div>
+                            <div>
+                              <label>Notes</label>
+                              <p>{item.other}</p>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr style={{ textAlign: "end" }}>
+                      <td style={{ border: 0 }}></td>
+                      <td style={{ border: 0 }}>
+                        {requesting ? (
+                          <div style={{ paddingTop: 40, paddingBottom: 40 }}>
+                            <Spinner
+                              as="span"
+                              animation="border"
+                              size="lg"
+                              role="status"
+                              aria-hidden="true"
                             />
                           </div>
-
-                        </div>
-                      </div>
-                    </td>
-                    <td className="align-top" style={{ maxHeight: 390 }}>
-                      <div style={{ paddingLeft: 18, paddingRight: 20, overflowY: 'scroll', maxHeight: 395 }}>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>09/09/2021 - Basic Cleaning ($40)</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-
-
-                      </div>
-                    </td>
-                    <td className="align-top">
-                      <div style={{ paddingLeft: 18, paddingRight: 20 }}>
-                        <div className="d-flex justify-content-between">
-                          <h7>-Basic Cleaning</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>-Windows Inside</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <h7>-Windows Outside</h7>
-                          <i className="fa fa-circle" style={{ color: '#A8CEFF', fontSize: 'large' }} />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="align-top">
-                      <div className="pl-3 pr-3">
-                        <div className=" d-flex justify-content-between">
-                          <h7>Notifications</h7>
-                          <Switch
-                            offColor="success"
-                            offText=""
-                            onColor="primary"
-                            onText=""
-                          />{" "}
-                        </div>
-                        <div>
-                          <label>
-                            Notes
+                        ) : (
+                          <label style={styles.notFoundStyle}>
+                            No Record Found
                           </label>
-                          <p>
-                            Nulla euismod non eget id mi feugiat imperdiet. Porta vitae eleifend turpis a, cras bibendum nibh viverra amet. Nibh quisque eleifend consequat dolor eget id dolor.
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                        )}
+                      </td>
+
+                      <td style={{ border: 0 }}></td>
+                      <td style={{ border: 0 }}></td>
+                    </tr>
+                  )}
                 </tbody>
               </Table>
             </CardBody>
@@ -344,15 +614,32 @@ const Services = () => {
         </Col>
       </Row>
     </div>
-  );
-
+  )
 }
+const mapStateToProps = state => ({
+  requesting: state.customers.requesting,
+  customers: state.customers.customers,
+  servicesData: state.services.servicesData,
+  frequencies: state.scheduleServices.frequencies,
+  backendError: state.customers.backendError
+})
 
-export default Services;
+const mapDispatchToProps = dispatch => ({
+  renderHtmlText: data => dispatch(renderHtmlText(data)),
+  getAllCustomers: () => dispatch(getAllCustomers()),
+  getServices: () => dispatch(getServices()),
+  getFrequencies: () => dispatch(getFrequencies()),
+  addCustomer: (data, toggle) => dispatch(addCustomer(data, toggle)),
+  addCustomerFailure: error => dispatch(addCustomerFailure(error)),
+  changeNotification: (data, id) => dispatch(changeNotification(data, id)),
+  searchCustomers: data => dispatch(searchCustomers(data))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Customers)
 
 const styles = {
   inputLineStyle: {
-    backgroundColor: '#D9D9D9',
+    backgroundColor: "#D9D9D9",
     height: 1
   },
   cardStyle: {
@@ -364,22 +651,23 @@ const styles = {
   titleTextStyle: {
     fontSize: 24,
     fontWeight: "600",
-    display: 'grid'
+    display: "grid"
   },
   labelTextStyle: {
     fontSize: 14,
     opacity: 0.5,
-    fontWeight: '500',
-    color: '#000000',
+    fontWeight: "500",
+    color: "#000000"
   },
   inputTextStyle: {
-    fontWeight: '500',
+    fontWeight: "500",
     fontSize: 18,
-    color: '#000000'
+    color: "#000000"
   },
   btnTextStyle: {
-    background: "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF",
-    fontWeight: 'bold',
+    background:
+      "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF",
+    fontWeight: "bold",
     fontSize: 14,
     paddingLeft: 50,
     paddingRight: 50
@@ -392,21 +680,21 @@ const styles = {
   searchStyle: {
     height: 32,
     borderRadius: 20,
-    backgroundColor: '#EBEBEB',
-    color: 'black',
+    backgroundColor: "#EBEBEB",
+    color: "black",
     maxWidth: 590,
-    paddingLeft: 39,
+    paddingLeft: 39
   },
   addBtnText: {
     background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%)",
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 17,
-    marginLeft: 'auto'
+    marginLeft: "auto"
   },
   searchImg: {
     height: 20,
     width: 20,
-    position: 'absolute',
+    position: "absolute",
     marginLeft: 10
   },
 
@@ -415,27 +703,32 @@ const styles = {
     width: 26
   },
   clientStyle: {
-    fontWeight: '500',
+    fontWeight: "500",
     fontSize: 12,
-    color: '#000000',
+    color: "#000000",
     opacity: 0.4
   },
   clientDataTextStyle: {
-    fontWeight: '500',
+    fontWeight: "500",
     fontSize: 12,
-    color: '#000000'
+    color: "#000000"
   },
   mainstyle: {
-    borderBottom: "1px solid #DDDDDD",
+    borderBottom: "1px solid #DDDDDD"
   },
 
   selectStyle: {
-    outline: 'none',
-    width: '100%',
+    outline: "none",
+    width: "100%",
     border: 0,
     backgroundColor: "transparent",
-    fontSize: 18,
+    fontSize: 18
+  },
+  notFoundStyle: {
+    color: "black",
+    paddingBottom: 40,
+    paddingTop: 40,
+    fontSize: 20,
+    fontWeight: "bold"
   }
-
-
 }

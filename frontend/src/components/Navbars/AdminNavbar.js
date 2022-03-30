@@ -14,8 +14,8 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
-import classnames from "classnames";
+import React from "react"
+import classnames from "classnames"
 import {
   Button,
   Collapse,
@@ -34,18 +34,23 @@ import {
   NavLink,
   Nav,
   Container,
-} from "reactstrap";
+  Row
+} from "reactstrap"
+import { connect } from "react-redux"
+import moment from "moment"
 
 class AdminNavbar extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       collapseOpen: false,
       color: "bg-white",
-    };
+      viewState: 1
+    }
   }
+
   componentDidMount() {
-    window.addEventListener("resize", this.updateColor);
+    window.addEventListener("resize", this.updateColor)
   }
   componentDidUpdate(e) {
     if (
@@ -53,40 +58,144 @@ class AdminNavbar extends React.Component {
       e.history.location.pathname !== e.location.pathname &&
       document.documentElement.className.indexOf("nav-open") !== -1
     ) {
-      document.documentElement.classList.toggle("nav-open");
+      document.documentElement.classList.toggle("nav-open")
     }
   }
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   updateColor = () => {
     if (window.innerWidth < 993 && this.state.collapseOpen) {
       this.setState({
-        color: "bg-white",
-      });
+        color: "bg-white"
+      })
     } else {
       this.setState({
-        color: "bg-white",
-      });
+        color: "bg-white"
+      })
     }
-  };
+  }
   // this function opens and closes the sidebar on small devices
   toggleSidebar = () => {
-    document.documentElement.classList.toggle("nav-open");
-  };
+    document.documentElement.classList.toggle("nav-open")
+  }
   // this function opens and closes the collapse on small devices
   // it also adds navbar-transparent class to the navbar when closed
   // ad bg-white when opened
   toggleCollapse = () => {
     let newState = {
-      collapseOpen: !this.state.collapseOpen,
-    };
-    if (!this.state.collapseOpen) {
-      newState["color"] = "bg-white";
-    } else {
-      newState["color"] = "bg-white";
+      collapseOpen: !this.state.collapseOpen
     }
-    this.setState(newState);
-  };
-  
+    if (!this.state.collapseOpen) {
+      newState["color"] = "bg-white"
+    } else {
+      newState["color"] = "bg-white"
+    }
+    this.setState(newState)
+  }
+
+  CustomToolbar = () => {
+    const toolbar = this.props?.htmlText.toolbar
+    const setViewState = this.props?.htmlText.setViewState
+    const goToDayView = () => {
+      toolbar.onView("day")
+      setViewState(1)
+      this.setState({
+        viewState: 1
+      })
+      // setViewState(1)
+      // this.setState({ viewState: "day" });
+    }
+    const goToWeekView = () => {
+      toolbar.onView("week")
+      setViewState(2)
+      this.setState({
+        viewState: 2
+      })
+    }
+    const goToMonthView = () => {
+      toolbar.onView("month")
+      setViewState(3)
+      this.setState({
+        viewState: 3
+      })
+    }
+    const goToBack = () => {
+      toolbar.date.setMonth(toolbar?.date?.getMonth() - 1)
+      toolbar.onNavigate("prev")
+    }
+    const goToNext = () => {
+      toolbar.date.setMonth(toolbar?.date?.getMonth() + 1)
+      toolbar.onNavigate("next")
+    }
+
+    const label = () => {
+      const date = moment(toolbar?.date)
+      const todayDate = moment(new Date()).format("DD/MM/YYYY")
+      const nowDay = date.format("DD/MM/YYYY")
+
+      // props.getDayAcceptedAppointments(newDate)
+      return (
+        <span>
+          {this.state.viewState === 1
+            ? todayDate===nowDay ? ('Today' + ", " + date.format("DD/MM/YYYY")):(nowDay + ", " + date.format("DD/MM/YYYY"))
+            : date.format("MMMM")}
+        </span>
+      )
+    }
+    const setModal = item => {
+      return this.props?.htmlText?.setModal(item)
+    }
+
+    return (
+      <div>
+        <Row style={{ display: "flex", alignItems: "center" }}>
+          <button style={styles.arrowStyle} onClick={goToBack}>
+            <img alt="..." src={require("assets/icons/caretLeft.png")} />
+          </button>
+
+          <button style={styles.arrowStyle} onClick={goToNext}>
+            <img alt="..." src={require("assets/icons/caretRight.png")} />
+          </button>
+          <label style={styles.monthLabel}>{label()}</label>
+          <div style={styles.toolbarStyle}>
+            <Button
+              style={
+                this.state.viewState === 1
+                  ? styles.btnStyle
+                  : styles.btnWrapperStyle
+              }
+              onClick={goToDayView}
+            >
+              <span>Day</span>
+            </Button>
+            <Button
+              style={
+                this.state.viewState === 2
+                  ? styles.btnStyle
+                  : styles.btnWrapperStyle
+              }
+              onClick={goToWeekView}
+            >
+              <span>Week</span>
+            </Button>
+            <Button
+              style={
+                this.state.viewState === 3
+                  ? styles.btnStyle
+                  : styles.btnWrapperStyle
+              }
+              onClick={goToMonthView}
+            >
+              <span>Month</span>
+            </Button>
+          </div>
+          <Button onClick={() => setModal(true)} style={styles.addBtnText}>
+            Add Service
+          </Button>
+        </Row>
+      </div>
+    )
+  }
+
   render() {
     return (
       <>
@@ -96,24 +205,24 @@ class AdminNavbar extends React.Component {
         >
           <Container fluid>
             <div className="navbar-wrapper">
-              <div className="navbar-minimize">
-                <button
+              {/* <div className="navbar-minimize"> */}
+              <button
                 type="button"
-                  style={{backgroundColor:'white', border:0, boxShadow:'none', outline:'none'}}
-                  id="minimizeSidebar"
-                  onClick={this.props.handleMiniClick}
-                >
-                  <img
-                    alt="..."
-                    src={require("../../assets/images/menu.png")}
-                  />
-                  {/* <i className="nc-icon nc-minimal-right text-center visible-on-sidebar-mini" /> */}
-                  {/* <i className="nc-icon nc-minimal-left text-center visible-on-sidebar-regular" /> */}
-                </button>
-              </div>
+                style={{
+                  backgroundColor: "white",
+                  border: 0,
+                  boxShadow: "none",
+                  outline: "none"
+                }}
+                id="minimizeSidebar"
+                onClick={this.props.handleMiniClick}
+              >
+                <img alt="..." src={require("../../assets/images/menu.png")} />
+              </button>
+              {/* </div> */}
               <div
                 className={classnames("navbar-toggle", {
-                  toggled: this.state.sidebarOpen,
+                  toggled: this.state.sidebarOpen
                 })}
               >
                 <button
@@ -126,10 +235,34 @@ class AdminNavbar extends React.Component {
                   <span className="navbar-toggler-bar bar3" />
                 </button>
               </div>
-              <NavbarBrand href="#pablo" onClick={(e) => e.preventDefault()}>
-                <span className="d-md-block">
-                  Cleaning Maid Easy Pro
-                </span>
+              <NavbarBrand>
+                {this.props?.htmlText?.toolbar ? (
+                  this.CustomToolbar()
+                ) : (
+                  <span
+                    className="d-md-block"
+                    style={{
+                      fontFamily: "Ubuntu",
+                      fontWeight: "400",
+                      fontSize: 36,
+                      color: "#000000",
+                      paddingLeft: 5
+                    }}
+                    dangerouslySetInnerHTML={{ __html: this.props.htmlText }}
+                  />
+                )}
+
+                {/* <span
+                  className="d-md-block"
+                  style={{
+                    fontFamily: "Ubuntu",
+                    fontWeight: "400",
+                    fontSize: 36,
+                    color:'#000000',
+                    paddingLeft:5
+                  }}
+                  dangerouslySetInnerHTML={{ __html: this.props.htmlText }}
+                ></span> */}
               </NavbarBrand>
             </div>
 
@@ -144,22 +277,79 @@ class AdminNavbar extends React.Component {
                 <NavLink
                   className="btn-magnify"
                   href="#"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={e => e.preventDefault()}
                 >
-                  <img
-                    alt="..."
-                    src={require("assets/images/logo_img.png")}
-                  />
+                  <img alt="..." src={require("assets/images/logo_img.png")} />
                 </NavLink>
               </NavItem>
-
             </Nav>
             {/* </Collapse> */}
           </Container>
         </Navbar>
       </>
-    );
+    )
   }
 }
 
-export default AdminNavbar;
+const mapStateToProps = state => ({
+  htmlText: state.services.htmlText
+})
+
+export default connect(mapStateToProps, null)(AdminNavbar)
+
+const styles = {
+  addBtnText: {
+    background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%)",
+    fontWeight: "bold",
+    fontSize: 17,
+    marginLeft: 200
+  },
+  btnStyle: {
+    background:
+      "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), #FFFFFF",
+    fontWeight: "700",
+    fontFamily: "Montserrat",
+    fontSize: 14,
+    marginTop: 3
+  },
+  btnWrapperStyle: {
+    border: "none",
+    backgroundColor: "rgb(231, 231, 231)",
+    color: "black",
+    fontSize: 14,
+    fontWeight: "500",
+    marginTop: 3
+  },
+  monthLabel: {
+    marginLeft: 10,
+    fontFamily: "Montserrat",
+    fontWeight: "500",
+    fontSize: 20,
+    color: "#000000",
+    marginRight: 22
+    // paddingTop: 8
+  },
+  arrowStyle: {
+    backgroundColor: "white",
+    height: 38,
+    width: 38,
+    marginLeft: 16,
+    borderRadius: 20,
+    shadowColor: "0px 2px 4px -2px rgba(0, 0, 0, 0.25)",
+    shadowOffset: {
+      width: 0,
+      height: 1
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1
+  },
+  toolbarStyle: {
+    backgroundColor: "#E7E7E7",
+    paddingLeft: 3,
+    paddingRight: 3,
+    width: 265,
+    height: 48,
+    borderRadius: 10
+  }
+}

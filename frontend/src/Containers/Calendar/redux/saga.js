@@ -35,6 +35,7 @@ function* getDayAcceptedAppointments({date}) {
 
   } catch (e) {
     const { response } = e
+
   }
 }
 
