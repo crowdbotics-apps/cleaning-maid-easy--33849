@@ -36,7 +36,6 @@ const Profile = props => {
   }, [])
 
   const [userInfo, setUserInfo] = useState(false)
-
   const { history } = props
 
   return (

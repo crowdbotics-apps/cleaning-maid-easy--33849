@@ -8,10 +8,10 @@ import { BASE_URL } from "../../../config/app"
 import XHR from "../../../utils/XHR"
 
 // types
-import { GET_USER_INFO } from "./types"
+import { GET_USER_INFO,EDIT_USER_INFO} from "./types"
 
 // actions
-import { getUserInfoSuccess } from "./actions"
+import { getUserInfoSuccess,editUserFailure } from "./actions"
 
 async function getUserInfoAPI() {
   const URL = `${BASE_URL}/api/v1/users/user_info/me/`
@@ -39,4 +39,36 @@ function* getUserInfo() {
   }
 }
 
-export default all([takeLatest(GET_USER_INFO, getUserInfo)])
+async function editUserInfoApi(data,id) {
+  const URL = `${BASE_URL}/api/v1/users/user_info/${id}/`
+  const token = await sessionStorage.getItem("authToken")
+  const options = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Token ${token}`
+    },
+    method: "PATCH",
+    data
+  }
+
+  return XHR(URL, options)
+}
+
+function* editUserInfo({data,id}) {
+  try {
+    const response = yield call(editUserInfoApi,data,id)
+    // yield put(getUserInfoSuccess(response.data))
+    // sessionStorage.setItem('userInfo', JSON.stringify(response.data))
+
+  } catch (e) {
+    const { response } = e
+    yield put(editUserFailure())
+    
+  }
+}
+
+export default all([
+  takeLatest(GET_USER_INFO, getUserInfo),
+  takeLatest(EDIT_USER_INFO, editUserInfo)
+
+])

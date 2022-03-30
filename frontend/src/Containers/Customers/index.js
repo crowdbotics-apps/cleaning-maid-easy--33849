@@ -3,25 +3,15 @@ import React, { useState, useEffect } from "react"
 // reactstrap components
 import {
   Button,
-  ButtonGroup,
   Card,
-  CardHeader,
   CardBody,
-  CardTitle,
-  Label,
-  FormGroup,
   Input,
   Table,
   Row,
   Modal,
-  ModalFooter,
-  InputGroup,
-  ModalHeader,
-  InputGroupAddon,
-  InputGroupText,
-  ModalBody,
   Col,
-  UncontrolledTooltip
+  Spinner,
+  UncontrolledAlert
 } from "reactstrap"
 import Switch from "react-bootstrap-switch"
 import "./style.css"
@@ -30,7 +20,13 @@ import { connect } from "react-redux"
 
 //Actions
 import { renderHtmlText } from "../Services/redux/actions"
-import { getAllCustomers,addCustomer } from "./redux/actions"
+import {
+  getAllCustomers,
+  addCustomer,
+  addCustomerFailure,
+  changeNotification,
+  searchCustomers
+} from "./redux/actions"
 import { getServices } from "../Services/redux/actions"
 import { getFrequencies } from "Containers/ScheduleServices/redux/actions"
 
@@ -39,12 +35,11 @@ import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
 const Customers = props => {
-  const { customers, servicesData, frequencies } = props
+  const { customers, servicesData, frequencies, requesting, backendError } =
+    props
   const [modal, setModal] = React.useState(false)
-  const [switchToogle, setSwitchToogle] = useState(false)
   const [notificationsValue, setNotificationsValue] = useState(false)
-
-  
+  const [notificationsId, setNotificationsId] = useState([])
 
   useEffect(() => {
     props.renderHtmlText("Customers")
@@ -52,14 +47,34 @@ const Customers = props => {
     props.getServices()
     props.getFrequencies()
   }, [])
-  // Toggle for Modal
-  const toggle = () => setModal(!modal)
+
+  useEffect(() => {
+    customers && filterNotifications()
+    if(customers.length){
+      let mydiv=document.getElementsByClassName('table-responsive-xl')
+      mydiv[0].style.height='600px'
+      mydiv[0].style.overflowY='auto'
+    }
+    else{
+      let mydiv=document.getElementsByClassName('table-responsive-xl')
+      mydiv[0].style.height=''
+      mydiv[0].style.overflowY=''
+    }
+    
+  }, [customers])
+
+  useEffect(() => {
+    if (backendError) {
+      setTimeout(() => {
+        props.addCustomerFailure(false)
+      }, 1500)
+    }
+  }, [backendError])
   const [selectedClient, setSelectedClient] = useState("none")
   function handleSelectChange(event) {
     setSelectedClient(event.target.value)
   }
 
-  
   const stateSchema = {
     fullName: {
       value: "",
@@ -96,7 +111,7 @@ const Customers = props => {
     freq_id: {
       value: "",
       error: ""
-    },
+    }
   }
 
   const validationStateSchema = {
@@ -129,8 +144,51 @@ const Customers = props => {
     },
     freq_id: {
       required: true
-    },
-   
+    }
+  }
+
+  const resetValues = () => {
+    state.fullName.value = null
+    state.email.value = null
+    state.company_name.value = ""
+    state.phone_number.value = ""
+    state.zip_code.value = null
+    state.address.value = null
+    state.service_id.value = ""
+    state.other.value = null
+    state.freq_id.value = ""
+  }
+
+  const filterNotifications = () => {
+    const filteredItems =
+      customers &&
+      customers
+        .map(item => {
+          if (item.notifications_enabled) {
+            return item.id
+          }
+        })
+        .filter(e => e !== undefined)
+    setNotificationsId(filteredItems ? filteredItems : [])
+  }
+
+  const handleChange = (item, state) => {
+    if (notificationsId.includes(item.id)) {
+      setNotificationsId(
+        notificationsId.filter(elements => elements !== item.id)
+      )
+    } else {
+      setNotificationsId(notificationsId => [...notificationsId, item.id])
+    }
+    let data = new FormData()
+    data.append("notifications_enabled", state)
+    props.changeNotification(data, item.id)
+  }
+
+  // Toggle for Modal
+  const toggle = () => {
+    resetValues()
+    setModal(!modal)
   }
 
   const { state, handleOnChange, disable } = useForm(
@@ -138,22 +196,22 @@ const Customers = props => {
     validationStateSchema
   )
 
-  const addNewCustomer=()=>{
-    const data={
-      name:state.fullName.value,
-      email:state.email.value,
-      company_name:state.company_name.value,
-      phone_number:state.phone_number.value,
-      zip_code:state.zip_code.value,
-      address:state.address.value,
-      service_id:parseInt(state.service_id.value),
-      other:state.other.value,
-      freq_id:parseInt(state.freq_id.value),
-      notifications:notificationsValue
+  const addNewCustomer = () => {
+    const data = {
+      name: state.fullName.value,
+      email: state.email.value,
+      company_name: state.company_name.value,
+      phone_number: state.phone_number.value,
+      zip_code: state.zip_code.value,
+      address: state.address.value,
+      service_id: parseInt(state.service_id.value),
+      other: state.other.value,
+      freq_id: parseInt(state.freq_id.value),
+      notifications: notificationsValue
     }
-    props.addCustomer(data)
-
+    props.addCustomer(data, toggle)
   }
+
   return (
     <div
       className="content "
@@ -185,45 +243,67 @@ const Customers = props => {
               </label>
             </div>
           </div>
+          <div style={{ paddingRight: 40, paddingLeft: 40 }}>
+            {backendError ? (
+              <UncontrolledAlert color="danger" fade={false}>
+                <span>{backendError}</span>
+              </UncontrolledAlert>
+            ) : (
+              ""
+            )}
+          </div>
+
           <div className="modal-body ">
             <label style={styles.labelTextStyle}>Full Name*</label>
-            <Input 
-            style={styles.inputTextStyle}
-             className="border-0 pl-0"
-             onChange={e =>
-              handleOnChange("fullName", e.target.value)
-            } 
-             />
+            <Input
+              style={styles.inputTextStyle}
+              className="border-0 pl-0"
+              onChange={e => handleOnChange("fullName", e.target.value)}
+            />
             <div style={styles.inputLineStyle} />
+            {state.fullName.error && (
+              <label style={{ color: "red" }}>{state.fullName.error}</label>
+            )}
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Email*</label>
-              <Input 
-              style={styles.inputTextStyle} 
-              className="border-0 pl-0" 
-              onChange={e =>
-                handleOnChange("email", e.target.value)
-              } 
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                onChange={e => handleOnChange("email", e.target.value)}
               />
               <div style={styles.inputLineStyle} />
+              {state.email.error && (
+                <label style={{ color: "red" }}>{state.email.error}</label>
+              )}
             </div>
 
             <div className="mt-4">
-              <label style={styles.labelTextStyle}>Company Name</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" 
-               onChange={e =>
-                handleOnChange("company_name", e.target.value)
-              } 
+              <label style={styles.labelTextStyle}>Company Name*</label>
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                onChange={e => handleOnChange("company_name", e.target.value)}
               />
               <div style={styles.inputLineStyle} />
+              {state.company_name.error && (
+                <label style={{ color: "red" }}>
+                  {state.company_name.error}
+                </label>
+              )}
             </div>
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Phone Number*</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" 
-               onChange={e =>
-                handleOnChange("phone_number", e.target.value)
-              } 
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                onChange={e => handleOnChange("phone_number", e.target.value)}
               />
               <div style={styles.inputLineStyle} />
+              {state.phone_number.error && (
+                <label style={{ color: "red" }}>
+                  {state.phone_number.error}
+                </label>
+              )}
             </div>
             <Row>
               <Col lg={4}>
@@ -232,11 +312,14 @@ const Customers = props => {
                   <Input
                     style={styles.inputTextStyle}
                     className="border-0 pl-0"
-                    onChange={e =>
-                      handleOnChange("zip_code", e.target.value)
-                    } 
+                    onChange={e => handleOnChange("zip_code", e.target.value)}
                   />
                   <div style={styles.inputLineStyle} />
+                  {state.zip_code.error && (
+                    <label style={{ color: "red" }}>
+                      {state.zip_code.error}
+                    </label>
+                  )}
                 </div>
               </Col>
               <Col lg={8}>
@@ -245,11 +328,14 @@ const Customers = props => {
                   <Input
                     style={styles.inputTextStyle}
                     className="border-0 pl-0"
-                    onChange={e =>
-                      handleOnChange("address", e.target.value)
-                    } 
+                    onChange={e => handleOnChange("address", e.target.value)}
                   />
                   <div style={styles.inputLineStyle} />
+                  {state.address.error && (
+                    <label style={{ color: "red" }}>
+                      {state.address.error}
+                    </label>
+                  )}
                 </div>
               </Col>
             </Row>
@@ -259,26 +345,32 @@ const Customers = props => {
                 <select
                   style={styles.selectStyle}
                   value={state.service_id.value}
-                  onChange={e =>
-                    handleOnChange("service_id", e.target.value)
-                  } 
+                  onChange={e => handleOnChange("service_id", e.target.value)}
                 >
-                  <option value="none" selected disabled hidden></option>
+                  <option value="" selected disabled>
+                    Select
+                  </option>
                   {servicesData &&
                     servicesData.map(itemdata => (
                       <option value={itemdata.id}>{itemdata.name}</option>
                     ))}
                 </select>
               </div>
+              {state.service_id.error && (
+                <label style={{ color: "red" }}>{state.service_id.error}</label>
+              )}
             </div>
             <div className="mt-4">
               <label style={styles.labelTextStyle}>Others</label>
-              <Input style={styles.inputTextStyle} className="border-0 pl-0" 
-               onChange={e =>
-                handleOnChange("other", e.target.value)
-              } 
+              <Input
+                style={styles.inputTextStyle}
+                className="border-0 pl-0"
+                onChange={e => handleOnChange("other", e.target.value)}
               />
               <div style={styles.inputLineStyle} />
+              {state.other.error && (
+                <label style={{ color: "red" }}>{state.other.error}</label>
+              )}
             </div>
 
             <div className="mt-4">
@@ -287,11 +379,11 @@ const Customers = props => {
                 <select
                   style={styles.selectStyle}
                   value={state.freq_id.value}
-                  onChange={e =>
-                    handleOnChange("freq_id", e.target.value)
-                  }
+                  onChange={e => handleOnChange("freq_id", e.target.value)}
                 >
-                  <option value="none" selected disabled hidden></option>
+                  <option value="" selected disabled>
+                    Select
+                  </option>
 
                   {frequencies &&
                     frequencies.map(frequenciesList => (
@@ -300,6 +392,9 @@ const Customers = props => {
                       </option>
                     ))}
                 </select>
+                {state.freq_id.error && (
+                  <label style={{ color: "red" }}>{state.freq_id.error}</label>
+                )}
               </div>
             </div>
             <div className="mt-4 d-flex justify-content-between">
@@ -309,16 +404,29 @@ const Customers = props => {
                 offText=""
                 onColor="success"
                 fontSize={"small"}
-                onChange={(el, state) =>
-                  setNotificationsValue(state)
-                }
+                onChange={(el, state) => setNotificationsValue(state)}
               />{" "}
             </div>
           </div>
         </div>
         <div className="modal-footer border-top-0  justify-content-center">
-          <Button className="mb-3" style={styles.btnTextStyle} onClick={addNewCustomer}>
-            Save Service
+          <Button
+            disabled={disable}
+            className="mb-3"
+            style={styles.btnTextStyle}
+            onClick={addNewCustomer}
+          >
+            {requesting ? (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            ) : (
+              "Save Service"
+            )}
           </Button>
         </div>
       </Modal>
@@ -326,7 +434,7 @@ const Customers = props => {
         <Col md="12">
           <Card style={styles.cardStyle}>
             <CardBody>
-              <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center pb-3">
                 <img
                   style={styles.searchImg}
                   src={require("assets/icons/search_icon.png")}
@@ -336,7 +444,7 @@ const Customers = props => {
                   type="search"
                   name="search"
                   style={styles.searchStyle}
-                  onChange={e => console.log(e)}
+                  onChange={e => props.searchCustomers(e.target.value)}
                 />
 
                 <img
@@ -349,7 +457,7 @@ const Customers = props => {
                   Add Customer
                 </Button>
               </div>
-              <Table responsive="xl" bordered>
+              <Table responsive="xl" bordered >
                 <thead style={{ opacity: 0.5 }}>
                   <tr>
                     <th style={styles.theadText}>Client Information</th>
@@ -359,7 +467,7 @@ const Customers = props => {
                   </tr>
                 </thead>
                 <tbody>
-                  {customers &&
+                  {customers.length ? (
                     customers.map((item, index) => (
                       <tr>
                         <td className="align-top">
@@ -456,9 +564,14 @@ const Customers = props => {
                               <Switch
                                 offColor="black"
                                 offText=""
-                                onColor="yellow"
-                                onChange={e => setSwitchToogle(!switchToogle)}
-                                value={switchToogle}
+                                onChange={(el, state) =>
+                                  handleChange(item, state)
+                                }
+                                value={
+                                  notificationsId.includes(item.id)
+                                    ? true
+                                    : false
+                                }
                               />{" "}
                             </div>
                             <div>
@@ -468,7 +581,32 @@ const Customers = props => {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  ) : (
+                    <tr style={{ textAlign: "end" }}>
+                      <td style={{ border: 0 }}></td>
+                      <td style={{ border: 0 }}>
+                        {requesting ? (
+                          <div style={{ paddingTop: 40, paddingBottom: 40 }}>
+                            <Spinner
+                              as="span"
+                              animation="border"
+                              size="lg"
+                              role="status"
+                              aria-hidden="true"
+                            />
+                          </div>
+                        ) : (
+                          <label style={styles.notFoundStyle}>
+                            No Record Found
+                          </label>
+                        )}
+                      </td>
+
+                      <td style={{ border: 0 }}></td>
+                      <td style={{ border: 0 }}></td>
+                    </tr>
+                  )}
                 </tbody>
               </Table>
             </CardBody>
@@ -479,9 +617,11 @@ const Customers = props => {
   )
 }
 const mapStateToProps = state => ({
+  requesting: state.customers.requesting,
   customers: state.customers.customers,
   servicesData: state.services.servicesData,
-  frequencies: state.scheduleServices.frequencies
+  frequencies: state.scheduleServices.frequencies,
+  backendError: state.customers.backendError
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -489,7 +629,10 @@ const mapDispatchToProps = dispatch => ({
   getAllCustomers: () => dispatch(getAllCustomers()),
   getServices: () => dispatch(getServices()),
   getFrequencies: () => dispatch(getFrequencies()),
-  addCustomer :(data) => dispatch(addCustomer(data))
+  addCustomer: (data, toggle) => dispatch(addCustomer(data, toggle)),
+  addCustomerFailure: error => dispatch(addCustomerFailure(error)),
+  changeNotification: (data, id) => dispatch(changeNotification(data, id)),
+  searchCustomers: data => dispatch(searchCustomers(data))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Customers)
@@ -580,5 +723,12 @@ const styles = {
     border: 0,
     backgroundColor: "transparent",
     fontSize: 18
+  },
+  notFoundStyle: {
+    color: "black",
+    paddingBottom: 40,
+    paddingTop: 40,
+    fontSize: 20,
+    fontWeight: "bold"
   }
 }
