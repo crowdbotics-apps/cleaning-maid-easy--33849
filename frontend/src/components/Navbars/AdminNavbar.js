@@ -39,6 +39,8 @@ import {
 import { connect } from "react-redux"
 import moment from "moment"
 
+import {getDayAcceptedAppointments} from '../../Containers/Calendar/redux/actions'
+
 class AdminNavbar extends React.Component {
   constructor(props) {
     super(props)
@@ -95,12 +97,14 @@ class AdminNavbar extends React.Component {
   CustomToolbar = () => {
     const toolbar = this.props?.htmlText.toolbar
     const setViewState = this.props?.htmlText.setViewState
+    
     const goToDayView = () => {
       toolbar.onView("day")
       setViewState(1)
       this.setState({
         viewState: 1
       })
+      this.props.getDayAcceptedAppointments(moment(toolbar?.date).format('YYYY-MM-DD'))
       // setViewState(1)
       // this.setState({ viewState: "day" });
     }
@@ -119,14 +123,13 @@ class AdminNavbar extends React.Component {
       })
     }
     const goToBack = () => {
-      toolbar.date.setMonth(toolbar?.date?.getMonth() - 1)
-      toolbar.onNavigate("prev")
+      toolbar.onNavigate('PREV');
+        this.props.getDayAcceptedAppointments(moment(toolbar?.date).format('YYYY-MM-DD'))
     }
     const goToNext = () => {
-      toolbar.date.setMonth(toolbar?.date?.getMonth() + 1)
-      toolbar.onNavigate("next")
+      toolbar.onNavigate('NEXT');
+      this.props.getDayAcceptedAppointments(moment(toolbar?.date).format('YYYY-MM-DD'))
     }
-
     const label = () => {
       const date = moment(toolbar?.date)
       const todayDate = moment(new Date()).format("DD/MM/YYYY")
@@ -141,6 +144,7 @@ class AdminNavbar extends React.Component {
         </span>
       )
     }
+    
     const setModal = item => {
       return this.props?.htmlText?.setModal(item)
     }
@@ -295,7 +299,12 @@ const mapStateToProps = state => ({
   htmlText: state.services.htmlText
 })
 
-export default connect(mapStateToProps, null)(AdminNavbar)
+const mapDispatchToProps = dispatch => ({
+  getDayAcceptedAppointments: date =>
+    dispatch(getDayAcceptedAppointments(date)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdminNavbar)
 
 const styles = {
   addBtnText: {

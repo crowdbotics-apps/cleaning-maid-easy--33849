@@ -36,6 +36,9 @@ const Profile = props => {
   }, [])
 
   const [userInfo, setUserInfo] = useState(false)
+  // const [profileImage, setProfileIMage] = useState(require("assets/img/default-avatar.png"))
+
+  const profileImage={image:require("assets/img/placeholder.jpg")}
   const { history } = props
 
   return (
@@ -60,7 +63,7 @@ const Profile = props => {
                     src={
                       userInfo && userInfo?.profile_picture
                         ? userInfo?.profile_picture
-                        : require("assets/img/default-avatar.png")
+                        : profileImage.image
                     }
                   />
                 </div>

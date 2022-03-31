@@ -166,8 +166,7 @@ class Sidebar extends React.Component {
               }
             >
               <span style={styles.textStyle}>
-                {!document.body.classList.contains('sidebar-mini') ? "User Name" : ''}
-                {/* this.state.userInfo.name */}
+                {!document.body.classList.contains('sidebar-mini') ? this.state.userInfo ? `${this.state.userInfo.name}`:"User Name" : ''}
               </span>
             </a>
           </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react"
+import React, { useState, useEffect, useRef } from "react"
 // reactstrap components
 import {
   Button,
@@ -25,7 +25,8 @@ import {
   createTeam,
   deleteTeam,
   getUnAssignedEmployees,
-  removeTeamMember
+  removeTeamMember,
+  addTeamMember
 } from "./redux/actions"
 import { renderHtmlText } from "../Services/redux/actions"
 
@@ -48,11 +49,11 @@ function Teams(props) {
   const [teamName, setTeamName] = useState(false)
   const [nameError, setNameError] = useState(false)
 
-  const UnAssignedTeamRef = useRef();
+  const UnAssignedTeamRef = useRef()
   const toggle = () => {
     setmodal(!modal)
   }
-
+  console.log("unAssignedEmployees", unAssignedEmployees)
   const [deleteId, setDeleteId] = useState(false)
   const [selectedMembers, setSelectedMebers] = useState([])
   const [searchData, setSearchData] = useState("")
@@ -111,28 +112,44 @@ function Teams(props) {
     }
   }
 
-  // function onStart(event) {
-  //   console.log("on start", event)
-  //   setActiveDrags(++activeDrags)
-  // }
+  const removeTeamDrageStart = (ev, memberId, teamId) => {
+    ev.dataTransfer.setData("memberId", memberId)
+    ev.dataTransfer.setData("teamId", teamId)
+  }
 
-  const handleStart = (event, info) => {
-    setActiveDrags(true)
-}
-const handleStop = (event, info) => {
-  const position = UnAssignedTeamRef?.current?.getBoundingClientRect();
-  // setActiveDrags(false)
-}
-  const removeMember = (memeberId, teamId) => {
+  const removeTeamDrageOver = e => {
+    e.preventDefault()
+    // console.log('removee eeeeeeeee',e)
+  }
+  const removeTeamOnDrop = (ev, cat) => {
+    let memberId = ev.dataTransfer.getData("memberId")
+    let teamId = ev.dataTransfer.getData("teamId")
+
     const data = {
-      member_id: memeberId,
-      team_id: teamId
+      member_id: parseInt(memberId),
+      team_id: parseInt(teamId)
     }
     props.removeTeamMember(data)
   }
 
- const handleEvent = (e, data) => {
+  const addTeamDrageStart = (ev, memberId) => {
+    ev.dataTransfer.setData("memberId", memberId)
   }
+
+  const addTeamDrageOver = e => {
+    e.preventDefault()
+  }
+
+  const addTeamOnDrop = (ev, id, cat) => {
+    let memberId = ev.dataTransfer.getData("memberId")
+
+    const data = {
+      member_id: parseInt(memberId),
+      team_id: parseInt(id)
+    }
+    props.addTeamMember(data)
+  }
+
   return (
     <div
       className="content"
@@ -158,7 +175,7 @@ const handleStop = (event, info) => {
                       <th>Unassigned</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="container-drag">
                     {teamData.length ? (
                       teamData.map((item, index) => (
                         <tr style={styles.borderBottom}>
@@ -168,34 +185,54 @@ const handleStop = (event, info) => {
                           <td className="" style={styles.textFont}>
                             {item.title}
                           </td>
-                          <td style={{ width: "52%", borderLeft: "" }} className="drag-data">
+                          <td
+                            style={{ width: "52%", borderLeft: "" }}
+                            className="task-header"
+                            onDragOver={e => addTeamDrageOver(e)}
+                            onDrop={e => addTeamOnDrop(e, item.id, "items")}
+                          >
                             {item.team_members?.length &&
                               item.team_members.map((items, index) => (
                                 <>
                                   {items.name !== null && (
-                                    <Draggable
-                                    onDrag={handleEvent}
-                                    // bounds="table"
-                                    onStart={handleStart}
-                                    onStop={handleStop}
-                                    position={!activeDrags? { x: 0, y: 0 } : undefined}
-                                      draggableId={items.id.toString()}
-                                      index={index}
-                                      key={items.id}
-                                      // onStop={e =>
-                                      //   removeMember(items.id, item.id)
-                                      // }
+                                    // <Draggable
+                                    // onDrag={handleEvent}
+                                    // // bounds="table"
+                                    // onStart={handleStart}
+                                    // onStop={handleStop}
+                                    // position={!activeDrags? { x: 0, y: 0 } : undefined}
+                                    //   draggableId={items.id.toString()}
+                                    //   index={index}
+                                    //   key={items.id}
+                                    //   // onStop={e =>
+                                    //   //   removeMember(items.id, item.id)
+                                    //   // }
+                                    // >
+                                    // <div
+                                    //   key={items.id}
+                                    //   style={{ flexDirection: "row" }}
+
+                                    // >
+                                    <Button
+                                      className
+                                      onDragStart={e =>
+                                        removeTeamDrageStart(
+                                          e,
+                                          items.id,
+                                          item.id
+                                        )
+                                      }
+                                      draggable
+                                      style={styles.addBtn}
+                                      color="white"
+                                      title=""
+                                      type="button"
+                                      size="sm"
                                     >
-                                      <Button
-                                        style={styles.addBtn}
-                                        color="white"
-                                        title=""
-                                        type="button"
-                                        size="sm"
-                                      >
-                                        {items.name}
-                                      </Button>
-                                    </Draggable>
+                                      {items.name}
+                                    </Button>
+                                    // </div>
+                                    // </Draggable>
                                   )}
                                 </>
                               ))}
@@ -229,69 +266,34 @@ const handleStop = (event, info) => {
                             )}
                           </td>
                           {!index && (
-                            <td 
-                            className="drag-data"
-                            ref={UnAssignedTeamRef}
+                            <td
+                              ref={UnAssignedTeamRef}
                               rowSpan="7"
                               style={{
                                 borderLeft: "1px solid rgb(212, 212, 212)"
                               }}
+                              onDragOver={e => removeTeamDrageOver(e)}
+                              onDrop={e => removeTeamOnDrop(e, "unAssign")}
+                              // className="draggable"
                             >
-                              <div>
-                                <Button
-                                  style={styles.addBtn}
-                                  color="white"
-                                  title=""
-                                  type="button"
-                                  size="sm"
-                                >
-                                  Jane Cooper
-                                </Button>
-                              </div>
-                              <div className="mt-2">
-                                <Button
-                                  style={styles.addBtn}
-                                  color="white"
-                                  title=""
-                                  type="button"
-                                  size="sm"
-                                >
-                                  Jane Cooper
-                                </Button>
-                              </div>
-                              <div className="mt-2">
-                                <Button
-                                  style={styles.addBtn}
-                                  color="white"
-                                  title=""
-                                  type="button"
-                                  size="sm"
-                                >
-                                  Jane Cooper
-                                </Button>
-                              </div>
-                              <div className="mt-2">
-                                <Button
-                                  style={styles.addBtn}
-                                  color="white"
-                                  title=""
-                                  type="button"
-                                  size="sm"
-                                >
-                                  Jane Cooper
-                                </Button>
-                              </div>{" "}
-                              <div className="mt-2">
-                                <Button
-                                  style={styles.addBtn}
-                                  color="white"
-                                  title=""
-                                  type="button"
-                                  size="sm"
-                                >
-                                  Jane Cooper
-                                </Button>
-                              </div>
+                              {unAssignedEmployees &&
+                                unAssignedEmployees.map(items => (
+                                  <div>
+                                    <Button
+                                      style={styles.addBtn}
+                                      color="white"
+                                      title=""
+                                      type="button"
+                                      size="sm"
+                                      onDragStart={e =>
+                                        addTeamDrageStart(e, items.id)
+                                      }
+                                      draggable
+                                    >
+                                      {items.name}
+                                    </Button>
+                                  </div>
+                                ))}
                             </td>
                           )}
                         </tr>
@@ -383,7 +385,7 @@ const handleStop = (event, info) => {
                       ]}
                     />
                   </div>
-                  {filterData().length===0 ? (
+                  {filterData().length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: 24 }}>
                       <label>No record Found</label>
                     </div>
@@ -574,6 +576,7 @@ const mapDispatchToProps = dispatch => ({
   deleteTeam: data => dispatch(deleteTeam(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getUnAssignedEmployees: () => dispatch(getUnAssignedEmployees()),
-  removeTeamMember: data => dispatch(removeTeamMember(data))
+  removeTeamMember: data => dispatch(removeTeamMember(data)),
+  addTeamMember: data => dispatch(addTeamMember(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Teams)

@@ -8,10 +8,10 @@ import { BASE_URL } from '../../../config/app';
 import XHR from '../../../utils/XHR';
 
 // types
-import { GET_TEAM, GET_EMPLOYEES, CREATE_TEAM, DELETE_TEAM,GET_UN_ASSIGNED_EMPLOYEES,REMOVE_TEAM_MEMBER} from './types';
+import { GET_TEAM, GET_EMPLOYEES, CREATE_TEAM, DELETE_TEAM,GET_UN_ASSIGNED_EMPLOYEES,REMOVE_TEAM_MEMBER,ADD_TEAM_MEMBER} from './types';
 
 // actions
-import {getTeamSuccess, resetTeam, getEmployeesSuccess, getTeam,getUnAssignedEmployeesSuccess} from './actions'
+import {getTeamSuccess, resetTeam, getEmployeesSuccess, getTeam,getUnAssignedEmployeesSuccess,getUnAssignedEmployees as getUnAssignedEmployeesData} from './actions'
 
 
 async function getTeamAPI() {
@@ -172,6 +172,34 @@ function* removeTeamMember({data}) {
   try {
     const response = yield call(removeTeamMemberApi,data);
     yield put((getTeam()))
+    yield put (getUnAssignedEmployeesData())
+  } catch (e) {
+    const { response } = e
+  }
+  finally {
+    yield put(resetTeam())
+  }
+}
+
+async function addTeamMemberApi(data) {
+  const URL = `${BASE_URL}/api/v1/operations/add_team_member/`;
+  const token = await sessionStorage.getItem('authToken');
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`
+    },
+    method: 'POST',
+    data
+  };
+
+  return XHR(URL, options);
+}
+
+function* addTeamMember({data}) {
+  try {
+    const response = yield call(addTeamMemberApi,data);
+    yield put((getTeam()))
 
   } catch (e) {
     const { response } = e
@@ -181,12 +209,12 @@ function* removeTeamMember({data}) {
   }
 }
 
-
 export default all([
   takeLatest(GET_TEAM, getTeams),
   takeLatest(GET_EMPLOYEES, getEmployees),
   takeLatest(CREATE_TEAM, createTeam),
   takeLatest(DELETE_TEAM, deleteTeam),
   takeLatest(GET_UN_ASSIGNED_EMPLOYEES, getUnAssignedEmployees),
-  takeLatest(REMOVE_TEAM_MEMBER, removeTeamMember)
+  takeLatest(REMOVE_TEAM_MEMBER, removeTeamMember),
+  takeLatest(ADD_TEAM_MEMBER, addTeamMember)
 ]);
