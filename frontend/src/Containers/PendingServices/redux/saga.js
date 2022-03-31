@@ -18,7 +18,8 @@ import {
 import {
   getPendingRequestsSuccess,
   reset,
-  getAppointmentDetailsSuccess
+  getAppointmentDetailsSuccess,
+  getPendingRequests as getPendingRequestsData
 } from "./actions"
 
 async function getPendingRequestsAPI() {
@@ -64,12 +65,11 @@ async function requestActionAPI(data) {
   return XHR(URL, options)
 }
 
-function* requestAction({ data, request }) {
+function* requestAction({ data, modalToggle }) {
   try {
     const response = yield call(requestActionAPI, data)
-    if (response.data.Error) {
-      request(true)
-    }
+    yield put (getPendingRequestsData())
+    modalToggle()
   } catch (e) {
     const { response } = e
   }

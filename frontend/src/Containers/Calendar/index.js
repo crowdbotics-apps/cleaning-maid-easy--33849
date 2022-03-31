@@ -38,7 +38,7 @@ import {
 
 import { renderHtmlText } from "../Services/redux/actions"
 import { getPendingRequests } from "../PendingServices/redux/actions"
-import { getTeam } from "../Teams/redux/actions"
+import { getUnAssignedEmployees } from "../Teams/redux/actions"
 
 import useForm from "../../utils/useForm"
 
@@ -47,7 +47,7 @@ import { events } from "variables/general.js"
 const localizer = momentLocalizer(moment)
 
 const Calendar = props => {
-  const { pendingRequests, teamData, notes } = props
+  const { pendingRequests, teamData, notes, unAssignedEmployees,appointmentsDays } = props
   const [addEvents, setAddEvents] = useState(events)
   const [alertMsg, setAlertMsg] = useState(null)
   const [viewState, setViewState] = useState(1)
@@ -85,8 +85,9 @@ const Calendar = props => {
 
   useEffect(() => {
     props.getPendingRequests()
-    props.getTeam()
     props.getNotes()
+    props.getUnAssignedEmployees()
+    props.getDayAcceptedAppointments(moment(new Date()).format('YYYY-MM-DD'))
   }, [])
 
   useEffect(() => {
@@ -187,7 +188,7 @@ const Calendar = props => {
     {
       id: 4,
       title: "Appointment 1  1 new data",
-      appointment_date: "2022-03-25",
+      appointment_date: "2022-03-31",
       start_time: "14:00:00",
       end_time: "17:00:00",
       client: {
@@ -229,7 +230,7 @@ const Calendar = props => {
     {
       id: 6,
       title: "Appointment 7",
-      appointment_date: "2022-03-23",
+      appointment_date: "2022-03-31",
       start_time: "15:00:00",
       end_time: "20:00:00",
       client: {
@@ -288,7 +289,10 @@ const Calendar = props => {
             title: member.name,
             resourceId: item.id,
             color: "#8BB031",
-            desc: ""
+            desc: "",
+            memberId:member.id,
+            teamId:item.assigned_team.id
+
             // eventDetail:item
           }
         })
@@ -354,7 +358,7 @@ const Calendar = props => {
       {
         id: 4,
         title: "Appointment",
-        appointment_date: "2022-03-31",
+        appointment_date: "2022-31-31",
         start_time: "14:00:00",
         end_time: "18:00:00",
         client: "JHONE",
@@ -401,7 +405,10 @@ const Calendar = props => {
   }
 
   const CustomToolbar = toolbar => {
-    // props.getDayAcceptedAppointments(moment(toolbar?.date).format('YYYY-MM-DD'))
+    // if(toolbar.date){
+    //   props.getDayAcceptedAppointments(moment(toolbar?.date).format('YYYY-MM-DD'))
+    // }
+    
     props.renderHtmlText({
       toolbar: toolbar,
       setViewState: setViewState,
@@ -415,15 +422,57 @@ const Calendar = props => {
   //   props.renderHtmlText(ca)
 
   // }, [])
+  const addTeamDrageStart = (ev, memberId) => {
+    ev.dataTransfer.setData("memberId", memberId)
+  }
+  
+  const addTeamDrageOver = e => {
+    e.preventDefault();
+  }
+
+  const addTeamOnDrop=(ev,id, cat)=>{
+    let memberId = ev.dataTransfer.getData("memberId");
+    // const data = {
+    //   member_id: parseInt(memberId),
+    //   team_id: parseInt(id)
+    // }
+    // props.addTeamMember(data)
+  }
+
+  const removeTeamDrageStart = (ev,memberId,teamId) => {
+    ev.dataTransfer.setData("memberId",memberId);
+    ev.dataTransfer.setData("teamId",teamId);
+  }
+
+  const removeTeamDrageOver = e => {
+    e.preventDefault();
+    // console.log('removee eeeeeeeee',e)
+  }
+  const removeTeamOnDrop=(ev, cat)=>{
+    let memberId = ev.dataTransfer.getData("memberId");
+    let teamId = ev.dataTransfer.getData("teamId");
+// console.log("memberId",memberId,teamId)
+    // const data = {
+    //   member_id: parseInt(memberId),
+    //   team_id: parseInt(teamId)
+    // }
+    // props.removeTeamMember(data)
+  }
+
   function CustomEvent({ event }) {
     return (
-      <div className={viewState === 3 ? "" : "pt-1"}>
+      <div className={viewState === 3 ? "" : "pt-1"} 
+      onDragStart={(e)=>removeTeamDrageStart(e, event.memberId,event.teamId)}
+      draggable
+      >
         <span
+         onDragOver={e => addTeamDrageOver(e)}
+         onDrop={(e)=>addTeamOnDrop(e,event.teamId,'items')}
           style={{
             fontWeight: event.allDay || viewState === 3 ? "500" : "600",
             fontFamily: "Montserrat",
             fontSize: 12,
-            color: event.allDay ? "white" : "black"
+            color: event.allDay ? "white" : "black",
           }}
         >
           {event.title}
@@ -553,6 +602,7 @@ const Calendar = props => {
   //   );
   // }
 
+
   return (
     <>
       <div className="content">
@@ -669,21 +719,27 @@ const Calendar = props => {
                             >
                               <span>Teams</span>
                             </div>
-                            <div
+                            <div 
+                            onDragOver={e => removeTeamDrageOver(e)}
+                            onDrop={(e)=>removeTeamOnDrop(e,'unAssign')}  
                               style={{
                                 overflowY: "scroll",
                                 height: 200,
                                 whiteSpace: "nowrap"
                               }}
                             >
-                              {teamData &&
-                                teamData.map((item, index) => (
+                              {unAssignedEmployees &&
+                                unAssignedEmployees.map((item, index) => (
                                   <div
+                                    onDragStart={e =>
+                                      addTeamDrageStart(e, item.id)
+                                    }
+                                    draggable
                                     className="text-center"
                                     style={teamListStyle}
                                   >
                                     <label style={labelStyle}>
-                                      {item.title}
+                                      {item.name}
                                     </label>
                                   </div>
                                 ))}
@@ -740,7 +796,7 @@ const Calendar = props => {
                               <span>Pending Requests</span>
                             </div>
                             <div style={{ overflowY: "scroll", height: 300 }}>
-                              {pendingRequestsList.results.map(
+                              {pendingRequests && pendingRequests.map(
                                 (item, index) => (
                                   <div
                                     className="text-center"
@@ -1431,8 +1487,8 @@ const mapStateToProps = state => ({
   requesting: state.calendar.requesting,
   appointmentsDays: state.calendar.appointmentsDays,
   notes: state.calendar.notes,
-  teamData: state.teams.teamData,
-  pendingRequests: state.pendingRequests.pendingRequests
+  pendingRequests: state.pendingRequests.pendingRequests,
+  unAssignedEmployees: state.teams.unAssignedEmployees
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -1440,7 +1496,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(getDayAcceptedAppointments(date)),
   getNotes: () => dispatch(getNotes()),
   getPendingRequests: () => dispatch(getPendingRequests()),
-  getTeam: () => dispatch(getTeam()),
+  getUnAssignedEmployees: () => dispatch(getUnAssignedEmployees()),
   addNotes: (data, setNoteModal) => dispatch(addNotes(data, setNoteModal)),
   updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle)),
   renderHtmlText: data => dispatch(renderHtmlText(data))

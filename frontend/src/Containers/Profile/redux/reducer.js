@@ -12,6 +12,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    
     case EDIT_USER_INFO:
       return {
         ...state,

@@ -25,10 +25,10 @@ import validator from "../../utils/validation"
 
 // Actions
 import { editUserInfo } from "../Profile/redux/actions"
-import {renderHtmlText} from '../Services/redux/actions'
+import { renderHtmlText } from "../Services/redux/actions"
 
 const EditProfile = props => {
-  const { history , requesting} = props
+  const { history, requesting } = props
   const [userInfo, setUserInfo] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
 
@@ -100,6 +100,7 @@ const EditProfile = props => {
   const updateProfile = () => {
     const data = new FormData()
     data.append("name", state.fullName.value)
+    // data.append("profile_picture", selectedImage)
     data.append("company_name", state.company_name.value)
     data.append("address", state.address.value)
     data.append("phone_number", state.phone_number.value)
@@ -108,7 +109,6 @@ const EditProfile = props => {
     //     type: `${selectedImage?.type}`,
     //     name: `${selectedImage?.name}`,
     //   });
-    // data.append("profile_picture", selectedImage)
     props.editUserInfo(data, userInfo.id)
   }
 
@@ -185,11 +185,7 @@ const EditProfile = props => {
                 </div>
                 <div className="pt-4 text-center">
                   <Button onClick={updateProfile} style={styles.editBtn}>
-                      {
-                          requesting ? (
-                            <Spinner size="sm" />
-                          ):"Save"
-                      }
+                    {requesting ? <Spinner size="sm" /> : "Save"}
                   </Button>
                 </div>
               </div>
@@ -202,13 +198,12 @@ const EditProfile = props => {
 }
 
 const mapStateToProps = state => ({
-  requesting: state.profile.requesting,
+  requesting: state.profile.requesting
 })
 
 const mapDispatchToProps = dispatch => ({
-  // loginRequest: (data) => dispatch(loginRequest(data)),
-  editUserInfo: (data, id) => dispatch(editUserInfo(data, id)),
-  renderHtmlText: (data) => dispatch(renderHtmlText(data))
+  renderHtmlText: data => dispatch(renderHtmlText(data)),
+  editUserInfo: (data, id) => dispatch(editUserInfo(data, id))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfile)
 
