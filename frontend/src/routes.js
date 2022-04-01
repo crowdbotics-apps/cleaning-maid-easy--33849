@@ -53,7 +53,7 @@ const routes = [
   },
   {
     path: '/PendingServices',
-    name: 'PendingServices',
+    name: 'Pending Services',
     icon: 'fa fa-question',
     component: PendingServices,
     layout: '/admin',

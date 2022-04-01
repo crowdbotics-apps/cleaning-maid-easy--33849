@@ -1,0 +1,28 @@
+.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input {
+    box-sizing: unset !important;
+    
+}
+
+.css-1u3bzj6-MuiFormControl-root-MuiTextField-root{
+    width: 11% !important;
+}
+.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root{
+    height: 37px
+}
+.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input:focus {
+    outline: 4ch !important;
+}
+.css-hdw1oc{
+    width: 0% !important;
+}
+.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused.MuiOutlinedInput-notchedOutline{
+border-color: none !important;
+border-width: 0 !important;
+}
+
+.css-1d3z3hw-MuiOutlinedInput-notchedOutline{
+    border-style: none !important;
+}
+.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
+    padding: 0px !important;
+}

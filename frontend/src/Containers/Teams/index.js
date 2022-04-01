@@ -53,7 +53,7 @@ function Teams(props) {
   const toggle = () => {
     setmodal(!modal)
   }
-  console.log("unAssignedEmployees", unAssignedEmployees)
+
   const [deleteId, setDeleteId] = useState(false)
   const [selectedMembers, setSelectedMebers] = useState([])
   const [searchData, setSearchData] = useState("")
@@ -65,6 +65,20 @@ function Teams(props) {
     props.getUnAssignedEmployees()
     props.getEmployees()
   }, [])
+
+  useEffect(() => {
+    if(teamData.length){
+      let mydiv=document.getElementsByClassName('table-responsive-lg')
+      mydiv[0].style.maxHeight='600px'
+      mydiv[0].style.overflowY='auto'
+    }
+    else{
+      let mydiv=document.getElementsByClassName('table-responsive-lg')
+      mydiv[0].style.maxHeight=''
+      mydiv[0].style.overflowY=''
+    }
+    
+  }, [teamData])
 
   const arrayData = [
     { image: require("assets/img/mike.jpg"), name: "muddasir", id: 1 },

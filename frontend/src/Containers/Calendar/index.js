@@ -47,7 +47,13 @@ import { events } from "variables/general.js"
 const localizer = momentLocalizer(moment)
 
 const Calendar = props => {
-  const { pendingRequests, teamData, notes, unAssignedEmployees,appointmentsDays } = props
+  const {
+    pendingRequests,
+    teamData,
+    notes,
+    unAssignedEmployees,
+    appointmentsDays
+  } = props
   const [addEvents, setAddEvents] = useState(events)
   const [alertMsg, setAlertMsg] = useState(null)
   const [viewState, setViewState] = useState(1)
@@ -61,6 +67,11 @@ const Calendar = props => {
 
   const calendarRef = useRef()
 
+  const resourceDummyData = [{
+    resourceId: -1,
+    resourceTitle: "No appointment"
+  }]
+
   const {
     addBtnText,
     btnStyle,
@@ -69,6 +80,7 @@ const Calendar = props => {
     arrowStyle,
     toolbarStyle,
     labelStyle,
+    notFoundStyle,
     teamListStyle,
     notesListStyle,
     headerTextStyle,
@@ -87,7 +99,7 @@ const Calendar = props => {
     props.getPendingRequests()
     props.getNotes()
     props.getUnAssignedEmployees()
-    props.getDayAcceptedAppointments(moment(new Date()).format('YYYY-MM-DD'))
+    props.getDayAcceptedAppointments(moment(new Date()).format("YYYY-MM-DD"))
   }, [])
 
   useEffect(() => {
@@ -96,9 +108,9 @@ const Calendar = props => {
       let rbcEvent = document.getElementsByClassName("rbc-event")
       myDivs[0].style.display = "none"
       if (rbcEvent.length) {
-        rbcEvent[4].style.width = "30px"
-        rbcEvent[5].style.width = "30px"
-        rbcEvent[6].style.width = "30px"
+        // rbcEvent[4].style.width = "30px"
+        // rbcEvent[5].style.width = "30px"
+        // rbcEvent[6].style.width = "30px"
       }
     }
   }, [viewState])
@@ -279,39 +291,46 @@ const Calendar = props => {
     //   eventData && eventData.map(item => item.assigned_team.team_members.length)
     // totalTeams = totalTeams.reduce((a, b) => a + b, 0) - 1
 
-    const items = eventData
-      .map((item, index) => {
-        return item.assigned_team.team_members.map(member => {
-          return {
-            allDay: true,
-            end: new Date(item.appointment_date),
-            start: new Date(item.appointment_date),
-            title: member.name,
-            resourceId: item.id,
-            color: "#8BB031",
-            desc: "",
-            memberId:member.id,
-            teamId:item.assigned_team.id
+    const items =
+      appointmentsDays &&
+      appointmentsDays
+        .map((item, index) => {
+          return (
+            item &&
+            item?.assigned_team?.team_members?.map(member => {
+              return {
+                allDay: true,
+                end: new Date(item?.appointment_date),
+                start: new Date(item?.appointment_date),
+                title: member?.name,
+                resourceId: item?.id,
+                color: "#8BB031",
+                desc: "",
+                memberId: member?.id,
+                teamId: item?.assigned_team.id
 
-            // eventDetail:item
-          }
+                // eventDetail:item
+              }
+            })
+          )
         })
-      })
-      .flat(1)
+        .flat(1)
 
-    const service = eventData.map((item, index) => {
-      const data = {
-        allDay: false,
-        end: new Date(`${item.appointment_date}T${item.end_time}Z`),
-        start: new Date(`${item.appointment_date}T${item.start_time}Z`),
-        title: item.title,
-        resourceId: item.id,
-        color: "#8BB031",
-        desc: item.service.description,
-        eventDetail: item
-      }
-      return data
-    })
+    const service =
+      appointmentsDays &&
+      appointmentsDays.map((item, index) => {
+        const data = {
+          allDay: false,
+          end: new Date(`${item?.appointment_date}T${item?.end_time}Z`),
+          start: new Date(`${item?.appointment_date}T${item?.start_time}Z`),
+          title: item?.title,
+          resourceId: item?.id,
+          color: "#8BB031",
+          desc: item?.service?.description,
+          eventDetail: item
+        }
+        return data
+      })
     if (service && service.length) {
       items.push(...service)
     }
@@ -331,16 +350,21 @@ const Calendar = props => {
     // if (teams && teams.length) {
     //   items.push(...teams)
     // }
-    const resourceList = eventData.map(element => {
-      return {
-        resourceId: element.id,
-        resourceTitle: element.assigned_team.title
-      }
-    })
+
+    const resourceData =
+      appointmentsDays &&
+      appointmentsDays.map(element => {
+        return {
+          resourceId: element.id,
+          resourceTitle: element?.assigned_team?.title
+        }
+      })
     // resourceList.push({ resourceId: -1, resourceTitle: "Unassigned/Notes" })
 
+    const resourceList = resourceData.length ? resourceData : resourceDummyData
     return { items, resourceList }
   }
+
 
   const allNotes = [
     {
@@ -408,7 +432,7 @@ const Calendar = props => {
     // if(toolbar.date){
     //   props.getDayAcceptedAppointments(moment(toolbar?.date).format('YYYY-MM-DD'))
     // }
-    
+
     props.renderHtmlText({
       toolbar: toolbar,
       setViewState: setViewState,
@@ -425,13 +449,13 @@ const Calendar = props => {
   const addTeamDrageStart = (ev, memberId) => {
     ev.dataTransfer.setData("memberId", memberId)
   }
-  
+
   const addTeamDrageOver = e => {
-    e.preventDefault();
+    e.preventDefault()
   }
 
-  const addTeamOnDrop=(ev,id, cat)=>{
-    let memberId = ev.dataTransfer.getData("memberId");
+  const addTeamOnDrop = (ev, id, cat) => {
+    let memberId = ev.dataTransfer.getData("memberId")
     // const data = {
     //   member_id: parseInt(memberId),
     //   team_id: parseInt(id)
@@ -439,19 +463,18 @@ const Calendar = props => {
     // props.addTeamMember(data)
   }
 
-  const removeTeamDrageStart = (ev,memberId,teamId) => {
-    ev.dataTransfer.setData("memberId",memberId);
-    ev.dataTransfer.setData("teamId",teamId);
+  const removeTeamDrageStart = (ev, memberId, teamId) => {
+    ev.dataTransfer.setData("memberId", memberId)
+    ev.dataTransfer.setData("teamId", teamId)
   }
 
   const removeTeamDrageOver = e => {
-    e.preventDefault();
-    // console.log('removee eeeeeeeee',e)
+    e.preventDefault()
   }
-  const removeTeamOnDrop=(ev, cat)=>{
-    let memberId = ev.dataTransfer.getData("memberId");
-    let teamId = ev.dataTransfer.getData("teamId");
-// console.log("memberId",memberId,teamId)
+  const removeTeamOnDrop = (ev, cat) => {
+    let memberId = ev.dataTransfer.getData("memberId")
+    let teamId = ev.dataTransfer.getData("teamId")
+    // console.log("memberId",memberId,teamId)
     // const data = {
     //   member_id: parseInt(memberId),
     //   team_id: parseInt(teamId)
@@ -461,18 +484,19 @@ const Calendar = props => {
 
   function CustomEvent({ event }) {
     return (
-      <div className={viewState === 3 ? "" : "pt-1"} 
-      onDragStart={(e)=>removeTeamDrageStart(e, event.memberId,event.teamId)}
-      draggable
+      <div
+        className={viewState === 3 ? "" : "pt-1"}
+        onDragStart={e => removeTeamDrageStart(e, event.memberId, event.teamId)}
+        draggable
       >
         <span
-         onDragOver={e => addTeamDrageOver(e)}
-         onDrop={(e)=>addTeamOnDrop(e,event.teamId,'items')}
+          onDragOver={e => addTeamDrageOver(e)}
+          onDrop={e => addTeamOnDrop(e, event.teamId, "items")}
           style={{
             fontWeight: event.allDay || viewState === 3 ? "500" : "600",
             fontFamily: "Montserrat",
             fontSize: 12,
-            color: event.allDay ? "white" : "black",
+            color: event.allDay ? "white" : "black"
           }}
         >
           {event.title}
@@ -602,7 +626,6 @@ const Calendar = props => {
   //   );
   // }
 
-
   return (
     <>
       <div className="content">
@@ -665,9 +688,11 @@ const Calendar = props => {
                           endAccessor="end"
                           onSelectEvent={event => selectEvent(event)}
                           eventPropGetter={event => {
-                            const eventData = getTeamMembers().items.find(
-                              ot => ot.id === event.id
-                            )
+                            const eventData =
+                              getTeamMembers().items &&
+                              getTeamMembers().items.find(
+                                ot => ot?.id === event?.id
+                              )
                             const backgroundColor = eventData && eventData.color
                             return {
                               style: {
@@ -719,16 +744,16 @@ const Calendar = props => {
                             >
                               <span>Teams</span>
                             </div>
-                            <div 
-                            onDragOver={e => removeTeamDrageOver(e)}
-                            onDrop={(e)=>removeTeamOnDrop(e,'unAssign')}  
+                            <div
+                              onDragOver={e => removeTeamDrageOver(e)}
+                              onDrop={e => removeTeamOnDrop(e, "unAssign")}
                               style={{
                                 overflowY: "scroll",
                                 height: 200,
                                 whiteSpace: "nowrap"
                               }}
                             >
-                              {unAssignedEmployees &&
+                              {unAssignedEmployees.length ?
                                 unAssignedEmployees.map((item, index) => (
                                   <div
                                     onDragStart={e =>
@@ -742,7 +767,16 @@ const Calendar = props => {
                                       {item.name}
                                     </label>
                                   </div>
-                                ))}
+                                )):(
+                                  <div
+                                  className="text-center"
+                                >
+                                  <label style={notFoundStyle}>
+                                    No record found
+                                  </label>
+                                </div>
+                                )
+                              }
                             </div>
                             <div
                               className="text-center"
@@ -769,7 +803,7 @@ const Calendar = props => {
                               </Row>
                             </div>
                             <div style={{ overflowY: "scroll", height: 300 }}>
-                              {notes &&
+                              {notes.length ?
                                 notes.map((item, index) => (
                                   <div
                                     onClick={() => updateValue(item)}
@@ -787,7 +821,17 @@ const Calendar = props => {
                                       </label>
                                     </div>
                                   </div>
-                                ))}
+                                )):
+                                (
+                                  <div
+                                  className="text-center"
+                                >
+                                  <label style={notFoundStyle}>
+                                    No record found
+                                  </label>
+                                </div>
+                                )
+                              }
                             </div>
                             <div
                               className="text-center"
@@ -796,8 +840,8 @@ const Calendar = props => {
                               <span>Pending Requests</span>
                             </div>
                             <div style={{ overflowY: "scroll", height: 300 }}>
-                              {pendingRequests && pendingRequests.map(
-                                (item, index) => (
+                              {pendingRequests.length ?
+                                pendingRequests.map((item, index) => (
                                   <div
                                     className="text-center"
                                     style={teamListStyle}
@@ -806,8 +850,16 @@ const Calendar = props => {
                                       {item.title}
                                     </label>
                                   </div>
+                                )):(
+                                  <div
+                                  className="text-center"
+                                >
+                                  <label style={notFoundStyle}>
+                                    No record found
+                                  </label>
+                                </div>
                                 )
-                              )}
+                              }
                             </div>
                           </div>
                         </th>
@@ -1389,6 +1441,13 @@ const styles = {
     color: "#FFFFFF",
     fontFamily: "Montserrat",
     width: 150
+  },
+  notFoundStyle: {
+    fontWeight: "600",
+    fontSize: 12,
+    textAlign: "center",
+    color: "black",
+    fontFamily: "Montserrat",
   },
   headerTextStyle: {
     fontWeight: "500",

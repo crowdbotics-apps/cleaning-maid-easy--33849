@@ -52,7 +52,7 @@ const Customers = props => {
     customers && filterNotifications()
     if(customers.length){
       let mydiv=document.getElementsByClassName('table-responsive-xl')
-      mydiv[0].style.height='600px'
+      mydiv[0].style.maxHeight='600px'
       mydiv[0].style.overflowY='auto'
     }
     else{
