@@ -108,9 +108,8 @@ const Calendar = props => {
       let rbcEvent = document.getElementsByClassName("rbc-event")
       myDivs[0].style.display = "none"
       if (rbcEvent.length) {
-        // rbcEvent[4].style.width = "30px"
-        // rbcEvent[5].style.width = "30px"
-        // rbcEvent[6].style.width = "30px"
+        const lastIndex = rbcEvent.length -1
+        rbcEvent[lastIndex].style.width = "30px"
       }
     }
   }, [viewState])
@@ -559,8 +558,8 @@ const Calendar = props => {
                 <span
                   // className="rbc-day-slot rbc-event-labe"
                   style={desStyle}
-                >{`${moment(event.end).format("h:mm A")}-${moment(
-                  event.start
+                >{`${moment(event.start).format("h:mm A")}-${moment(
+                  event.end
                 ).format("h:mm A")}`}</span>
               </div>
             )}
