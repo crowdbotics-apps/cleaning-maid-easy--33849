@@ -20,14 +20,16 @@ from operations.api.v1.serializers import (
     FrequencySerializer,
     ServiceSerializer,
     AppointmentSerializer,
-    BriefAppointmentSerializer
+    BriefAppointmentSerializer,
+    NotificationSerializer
 )
 from operations.models import (
     Note,
     Team,
     Frequency,
     Service,
-    Appointment
+    Appointment,
+    Notification
 )
 
 from users.models import User
@@ -261,3 +263,86 @@ class DayCalendarViewSet(ViewSet):
 
         appointments = Appointment.objects.filter(appointment_date=day, status="Accepted")
         return Response(BriefAppointmentSerializer(appointments, many=True).data)
+
+
+class NotificationListViewSet(generics.ListAPIView):
+    authentication_classes = [TokenAuthentication]
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PendingRequestListPagination
+    queryset = Notification.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        return Notification.objects.filter(to_user=self.request.user).order_by('-created_at')
+
+
+class ReadNotificationViewSet(ViewSet):
+    authentication_classes = (
+        TokenAuthentication,
+    )
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Notification.objects.all()
+
+    http_method_names = ["post"]
+
+    def create(self, request):
+        try:
+            notification_id = request.data['id']
+        except:
+            return Response({
+                'Error': "Please Specify notification ID."
+            }, 400)
+
+        try:
+            notification = Notification.objects.get(id=notification_id)
+        except:
+            return Response({
+                'Error': "Invalid ID."
+            }, 400)
+
+        notification.is_read = True
+        notification.save()
+
+        return Response(NotificationSerializer(notification).data)
+
+
+class ReplyNotificationViewSet(ViewSet):
+    authentication_classes = (
+        TokenAuthentication,
+    )
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Notification.objects.all()
+
+    http_method_names = ["post"]
+
+    def create(self, request):
+        try:
+            notification_id = request.data['id']
+        except:
+            return Response({
+                'Error': "Please Specify notification ID."
+            }, 400)
+
+        try:
+            notification = Notification.objects.get(id=notification_id)
+        except:
+            return Response({
+                'Error': "Invalid ID."
+            }, 400)
+
+        try:
+            content = request.data['content']
+        except:
+            return Response({
+                'Error': "Please Specify content."
+            }, 400)
+
+        new_note = Note.objects.create(
+            title=notification.content,
+            description=content
+        )
+        notification.notes.add(new_note)
+
+        return Response(NotificationSerializer(notification).data)

@@ -2,10 +2,14 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from home.models import TermsAndConditions, PrivacyPolicy
 
 from home.api.v1.serializers import (
     SignupSerializer,
     UserSerializer,
+    TermsAndConditionsSerializer,
+    PrivacyPolicySerializer
+
 )
 
 
@@ -28,3 +32,31 @@ class LoginViewSet(ViewSet):
         token, created = Token.objects.get_or_create(user=user)
         user_serializer = UserSerializer(user)
         return Response({"token": token.key, "user": user_serializer.data})
+
+
+class TermsAndConditionsViewSet(ModelViewSet):
+    queryset = TermsAndConditions.objects.all()
+    serializer_class = TermsAndConditionsSerializer
+    http_method_names = ["get"]
+
+    def retrieve(self, request, pk=None):
+        """
+        If provided 'pk' is "me" then return the current user.
+        """
+        if pk == "latest":
+            return Response(TermsAndConditionsSerializer(TermsAndConditions.objects.all().last()).data)
+        return super(TermsAndConditionsViewSet, self).retrieve(request, pk)
+
+
+class PrivacyPolicyViewSet(ModelViewSet):
+    queryset = PrivacyPolicy.objects.all()
+    serializer_class = PrivacyPolicySerializer
+    http_method_names = ["get"]
+
+    def retrieve(self, request, pk=None):
+        """
+        If provided 'pk' is "me" then return the current user.
+        """
+        if pk == "latest":
+            return Response(PrivacyPolicySerializer(PrivacyPolicy.objects.all().last()).data)
+        return super(PrivacyPolicyViewSet, self).retrieve(request, pk)

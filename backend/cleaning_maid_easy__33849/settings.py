@@ -85,6 +85,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'drf_yasg',
     'storages',
+    'ckeditor'
 ]
 MODULES_APPS = get_modules()
 
