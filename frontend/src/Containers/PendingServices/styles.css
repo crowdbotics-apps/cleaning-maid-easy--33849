@@ -29,6 +29,16 @@ border-radius: 20px !important;
 
 .calnderStyle{
     width: 95%;    
+    border: none;
+    flex-direction: row;
+    
     /* border: 2px green solid !important; */
 }
-    
+
+.react-datepicker-wrapper {
+    border: none !important;
+}
+
+.timeStyle{
+  border: none !important;
+}

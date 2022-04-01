@@ -29,8 +29,8 @@ export const getAppointmentDetailsSuccess = data => ({
   data
 })
 
-export const requestAction = (data, request) => ({
+export const requestAction = (data, modalToggle) => ({
   type: REQUEST_ACTION,
   data,
-  request
+  modalToggle
 })

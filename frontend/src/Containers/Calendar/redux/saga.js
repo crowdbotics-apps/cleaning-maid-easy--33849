@@ -31,10 +31,11 @@ async function getDayAcceptedAppointmentsApi(date) {
 function* getDayAcceptedAppointments({date}) {
   try {
     const response = yield call(getDayAcceptedAppointmentsApi,date);
-    // yield put(getDayAcceptedAppointmentsSuccess(response.data))
+    yield put(getDayAcceptedAppointmentsSuccess(response.data))
 
   } catch (e) {
     const { response } = e
+
   }
 }
 

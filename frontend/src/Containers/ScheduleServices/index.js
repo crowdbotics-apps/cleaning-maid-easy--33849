@@ -12,7 +12,8 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalFooter
+  ModalFooter,
+  Spinner
 } from "reactstrap"
 import Select from "react-select"
 import { connect } from "react-redux"
@@ -33,26 +34,41 @@ import { getState } from "utils/functions"
 
 //Actions
 import { getTeam } from "Containers/Teams/redux/actions"
-import { getServices } from "Containers/Services/redux/actions"
-import { scheduleServices } from "./redux/actions"
+import { getServices, renderHtmlText } from "Containers/Services/redux/actions"
+import { getFrequencies, scheduleServices } from "./redux/actions"
+import { getAllCustomers } from "../Customers/redux/actions"
+
+//Images
+import locationImage from "../../assets/icons/mapPin.png"
+import calenderImage from "../../assets/icons/calendar.png"
+import clockImage from "../../assets/icons/Clock.png"
 
 function ScheduleService(props) {
   useEffect(() => {
     props.getTeam()
     props.getServices()
+    props.renderHtmlText("Schedule Service")
+    props.getFrequencies()
+    props.getAllCustomers()
   }, [])
 
-  const { teamData, servicesData } = props
+  const { teamData, servicesData, frequencies, requesting, customers } = props
+
+  //StatesForTimeDateValidation
+  const [selectTime, setSelectTime] = useState(false)
+  const [selectedDate, setSelectedDate] = useState(false)
 
   //StatesForCalender
-  const [calendarValue, setCalenderValue] = useState(new Date())
+  const [calendarValue, setCalenderValue] = useState()
   const [calenderModal, setCalenderModal] = useState(false)
 
   //StatesForTimePicker
   const [fromTime, setFromTime] = useState("14:00")
   const [toTime, setToTime] = useState("14:00")
 
-  const [appointmentData, setAppoinmentData] = useState({})
+  const [appointmentData, setAppoinmentData] = useState({
+    appointment_date: new Date()
+  })
 
   //Useform
   const stateSchema = {
@@ -76,7 +92,8 @@ function ScheduleService(props) {
 
   const validationStateSchema = {
     price: {
-      required: true
+      required: true,
+      validator: validator.numeric
     },
     description: {
       required: true
@@ -94,21 +111,39 @@ function ScheduleService(props) {
     validationStateSchema
   )
   const onSave = (title, value) => {
-    // let data = getState(state)
-    // data["client_id"] = 3
     let data = { ...appointmentData }
     data[title] = value
     setAppoinmentData(data)
-    console.log("data", data)
   }
 
   const onHandleSave = () => {
     const data = { ...appointmentData, ...getState(state) }
-    data["client_id"] = 3
-    data["status"] = "pending"
-    console.log("data", data)
-    props.getScheduleServices(data)
+    data["status"] = "Pending"
+
+    if (data.appointment_date) {
+      setSelectedDate(false)
+    } else {
+      setSelectedDate(true)
+    }
+
+    if (data.start_time && data.end_time) {
+      setSelectTime(false)
+    } else {
+      setSelectTime(true)
+    }
+    if (
+      data.end_time &&
+      data.start_time &&
+      data.appointment_date &&
+      data.assigned_team_id &&
+      data.service_id &&
+      data.frequency_id
+      // data.client_id
+    ) {
+      props.getScheduleServices(data)
+    } 
   }
+
   return (
     <div
       className="content"
@@ -131,31 +166,46 @@ function ScheduleService(props) {
                       cursor: "pointer"
                     }}
                   >
-                    <i class="nc-icon nc-headphones pr-2"></i>
+                    <img
+                      // alt="..."
+                      src={calenderImage}
+                      style={{ marginRight: 5 }}
+                    />
+
                     <DatePicker
                       className={"calnderStyle"}
-                      clearIcon
+                      // clearIcon={false}
+                      wrapperClassName="datePickerBorder"
                       value={calendarValue}
                       onChange={date => {
-                        const selectedDate = moment(date).format("YYYY-MM-DD")
-                        onSave("appointment_date", selectedDate)
+                        setCalenderValue(date)
+                        const selectedDatee = moment(date).format("YYYY-MM-DD")
+                        onSave("appointment_date", selectedDatee)
                       }}
                     />
                   </div>
+                  {selectedDate ? (
+                    <label style={{ color: "red" }}>
+                      *Please select a date.
+                    </label>
+                  ) : null}
                   <div
                     className="mt-4"
                     style={{
                       borderBottom: "1px solid rgb(212, 212, 212)"
                     }}
                   >
-                    <i class="nc-icon nc-headphones pr-2"></i>
+                    <img src={clockImage} style={{ marginRight: 10 }} />
                     {/* <label style={styles.inputStyle}>09:00AM - 11:30AM</label> */}
                     <TimePicker
                       value={fromTime}
                       clearIcon
+                      clearAriaLabel={false}
+                      className={"timeStyle"}
                       clockIcon
                       onChange={e => {
                         onSave("start_time", e)
+                        setFromTime(e)
                       }}
                     />
                     <label
@@ -166,16 +216,31 @@ function ScheduleService(props) {
                     <TimePicker
                       value={toTime}
                       clearIcon
+                      className={"timeStyle"}
                       clockIcon
                       autoFocus={false}
-                      onChange={e => onSave("end_time", e)}
+                      onChange={e => {
+                        onSave("end_time", e)
+                        setToTime(e)
+                      }}
                     />
+                  </div>
+                  <div>
+                    {selectTime ? (
+                      <label style={{ color: "red" }}>
+                        *Please select start/end time.
+                      </label>
+                    ) : null}
                   </div>
                   <div
                     className="mt-4"
                     style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}
                   >
-                    <i class="nc-icon nc-headphones pr-2"></i>
+                    <img
+                      // alt="..."
+                      src={locationImage}
+                      style={{ marginRight: 10 }}
+                    />
                     <label style={styles.inputStyle}>
                       9400 Ninove Street, SA
                     </label>
@@ -206,10 +271,24 @@ function ScheduleService(props) {
                   >
                     <Col lg="7" md="6" sm="3">
                       <label style={styles.labelFont}>Client Name</label>
-                      <Input
+                      <Select
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="singleSelect"
+                        options={
+                          customers &&
+                          customers.map(item => ({
+                            label: item.name,
+                            value: item.id
+                          }))
+                        }
+                        onChange={e => onSave("client_id", e.value)}
+                        placeholder="Select Customer"
+                      />
+                      {/* <Input
                         style={styles.inputStyle}
                         className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
-                      />
+                      /> */}
                     </Col>
                     <Col lg="4" md="6" sm="3">
                       <label style={styles.labelFont}>Number</label>
@@ -268,13 +347,17 @@ function ScheduleService(props) {
                     <Col lg="6" md="6" sm="3">
                       <label style={styles.labelFont}>Frequency</label>
                       <Select
-                        className="react-select primary "
+                        className="react-select  "
                         classNamePrefix="react-select"
                         name="singleSelect"
-                        options={[
-                          { value: "1", label: "1 week" },
-                          { value: "2", label: "2 weeks" }
-                        ]}
+                        options={
+                          ({ label: "Select Frequency" },
+                          frequencies &&
+                            frequencies.map(item => ({
+                              label: item.title,
+                              value: item.id
+                            })))
+                        }
                         placeholder="Single Select"
                         onChange={e => onSave("frequency_id", e.value)}
                       />
@@ -302,12 +385,11 @@ function ScheduleService(props) {
                         className="textarea"
                         type="textarea"
                         rows="3"
+                        placeholder="Enter description"
                         style={styles.textArea}
                         onChange={val =>
                           handleOnChange("description", val.target.value)
                         }
-                        defaultValue="Oh so, your weak rhyme You doubt I'll bother,
-                        reading into it"
                       />
                       {state.description.error && (
                         <label style={{ color: "red" }}>
@@ -351,10 +433,11 @@ function ScheduleService(props) {
                 color="white"
                 title=""
                 type="button"
+                disabled={disable}
                 size="lg"
                 onClick={() => onHandleSave()}
               >
-                Save{" "}
+                {requesting ? <Spinner size="sm" /> : "Save"}
               </Button>
             </CardFooter>
           </Card>
@@ -400,13 +483,18 @@ const styles = {
 
 const mapStateToProps = state => ({
   teamData: state.teams.teamData,
-  servicesData: state.services.servicesData
+  servicesData: state.services.servicesData,
+  frequencies: state.scheduleServices.frequencies,
+  requesting: state.scheduleServices.requesting,
+  customers: state.customers.customers
 })
 
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: (data) => dispatch(scheduleServices(data))
-
+  getScheduleServices: data => dispatch(scheduleServices(data)),
+  renderHtmlText: data => dispatch(renderHtmlText(data)),
+  getFrequencies: () => dispatch(getFrequencies()),
+  getAllCustomers: () => dispatch(getAllCustomers())
 })
 export default connect(mapStateToProps, mapDispatchToProps)(ScheduleService)

@@ -18,6 +18,7 @@ import {
   loginSuccess,
   loginFaluire,
 } from './actions';
+import { getUserInfo } from 'Containers/Profile/redux/actions';
 
 function loginAPI(data) {
   const URL = `${BASE_URL}/rest-auth/login/`;
@@ -39,6 +40,7 @@ function* login({ data }) {
     const response = yield call(loginAPI, data);
     sessionStorage.setItem('authToken', response.data.key)
     yield put(loginSuccess(response.data));
+    yield put(getUserInfo())
     
     yield put(
       push({

@@ -6,6 +6,8 @@ import { connect } from "react-redux"
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
+import moment from "moment"
+
 // reactstrap components
 import {
   Button,
@@ -44,11 +46,15 @@ import {
   requestAction
 } from "./redux/actions"
 
+import { renderHtmlText } from "../Services/redux/actions"
+
 const PendingServices = props => {
   const { requesting, pendingRequests } = props
 
   const [modal, setModal] = React.useState(false)
   const [requestError, setRequestError] = useState(false)
+  const [pendingDetails, setPendingDetails] = useState(false)
+
 
   const stateSchema = {
     serviceName: {
@@ -86,37 +92,29 @@ const PendingServices = props => {
   const toggle = () => {}
 
   const closeModal = () => {
+    setPendingDetails('')
     setModal(!modal)
+  }
+
+  const modalToggle = () => {
+    setModal(!modal)
+    setPendingDetails('')
   }
 
   useEffect(() => {
     props.getPendingRequests()
+    props.renderHtmlText("Pending Services")
   }, [])
 
-  // const tableData = [
-  //   {
-  //     name: "Jacob jones",
-  //     description: "top to bottom cleaning of the house",
-  //     service: "basic cleaning"
-  //   },
-  //   {
-  //     name: "Jacob jones",
-  //     description: "top to bottom cleaning of the house",
-  //     service: "basic cleaning"
-  //   },
-  //   {
-  //     name: "Jacob jones",
-  //     description: "top to bottom cleaning of the house",
-  //     service: "basic cleaning"
-  //   },
-  //   {
-  //     name: "Jacob jones",
-  //     description: "top to bottom cleaning of the house",
-  //     service: "basic cleaning"
-  //   }
-  // ]
-
-  const modalToggle = () => setModal(!modal)
+  const acceptRequest=(requestAction)=>{
+    const data={
+      appointment_id: pendingDetails.id,
+      action: requestAction
+    }
+    props.requestAction(data,modalToggle)
+    setRequestError(false)
+  }
+  
   return (
     <div
       className="content "
@@ -129,7 +127,20 @@ const PendingServices = props => {
     >
       <Modal isOpen={modal} toggle={modalToggle}>
         <ModalHeader style={{ borderBottom: 0 }}>
-          <b>Courtney Henry</b>
+          <span><b style={{paddingTop:10}}>{pendingDetails?.title}</b></span>
+          <button
+                aria-hidden={true}
+                className="close"
+                data-dismiss="modal"
+                type="button"
+                style={{ outline: "none" }}
+                onClick={modalToggle}
+              >
+                <i
+                  className="nc-icon nc-simple-remove"
+                  style={{ color: " #438B44" }}
+                />
+              </button>
         </ModalHeader>
         <ModalBody>
           <Row>
@@ -146,7 +157,11 @@ const PendingServices = props => {
                   class="nc-icon nc-calendar-60"
                   style={{ marginRight: 10, color: "grey" }}
                 ></i>
-                <label style={styles.inputStyle}>09 September 2021</label>
+                <label style={styles.inputStyle}>
+                {moment(
+                        pendingDetails?.appointment_date
+                      ).format("d MMMM yyy")}
+                  </label>
               </div>
             </Col>
           </Row>
@@ -155,9 +170,19 @@ const PendingServices = props => {
               <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
                 <i
                   class="fa fa-clock-o"
-                  style={{ marginRight: 15, color: "grey" }}
+                  style={{ marginRight: 10, color: "grey" }}
                 ></i>
-                <label style={styles.inputStyle}>09:00AM - 11:30AM</label>
+                <label style={styles.inputStyle}>
+                {moment(
+                       pendingDetails?.start_time,
+                        "hh:mm"
+                      ).format("hh:mmA")}{" "}
+                      -{" "}
+                      {moment(
+                        pendingDetails?.end_time,
+                        "hh:mm"
+                      ).format("hh:mmA")}
+                  </label>
               </div>
             </Col>
           </Row>
@@ -177,8 +202,9 @@ const PendingServices = props => {
             <Col md="8">
               <label style={styles.labelfontStyles}>Client Name</label>
               <Input
-                style={{ width: 300, backgroundColor: "white" }}
+                style={{ width: 300, backgroundColor: "white", fontSize:14, fontWeight:'500',color:'#000000' }}
                 readOnly={true}
+                value={pendingDetails?.client?.name}
                 className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
               />
             </Col>
@@ -186,7 +212,7 @@ const PendingServices = props => {
               <label style={styles.labelfontStyles}>Number</label>
               <Input
                 readOnly={true}
-                style={{ backgroundColor: "white" }}
+                style={{ backgroundColor: "white" , fontSize:14, fontWeight:'500',color:'#000000'}}
                 className="border-top-0 border-right-0 border-left-0 p-0"
               />
             </Col>
@@ -200,7 +226,8 @@ const PendingServices = props => {
                 </label>
                 <Input
                   readOnly={true}
-                  style={{ backgroundColor: "white" }}
+                  value={pendingDetails?.assigned_team?.title}
+                  style={styles.inputWraper}
                   className="border-top-0 border-right-0 border-left-0 p-0"
                 />
               </div>
@@ -214,15 +241,11 @@ const PendingServices = props => {
                 className="react-select "
                 classNamePrefix="react-select"
                 name="singleSelect"
-                options={[
-                  {
-                    value: "",
-                    label: "Single Option",
-                    isDisabled: true
-                  },
-                  { value: "2", label: "Basic Cleaning" },
-                  { value: "3", label: "Is great" }
-                ]}
+                isDisabled={true}
+                style={{ fontSize:14, fontWeight:'500',color:'#000000'}}
+                value={{
+                  value: pendingDetails?.service?.id, label: pendingDetails?.service?.name
+                }}
                 placeholder="Single Select"
               />
             </Col>
@@ -232,15 +255,11 @@ const PendingServices = props => {
                 className="react-select  "
                 classNamePrefix="react-select"
                 name="singleSelect"
-                options={[
-                  {
-                    value: "",
-                    label: "Single Option",
-                    isDisabled: true
-                  },
-                  { value: "2", label: "4 weeks/ monthly" },
-                  { value: "3", label: "Is great" }
-                ]}
+                style={{ fontSize:14, fontWeight:'500',color:'#000000'}}
+                isDisabled={true}
+                value={{
+                  value: pendingDetails?.frequency?.id, label: pendingDetails?.frequency?.title
+                }}
                 placeholder="Single Select"
               />
             </Col>
@@ -252,7 +271,8 @@ const PendingServices = props => {
                 <label style={styles.labelfontStyles}>Price</label>
                 <Input
                   readOnly={true}
-                  style={{ backgroundColor: "white" }}
+                  style={styles.inputWraper}
+                  value={pendingDetails.price}
                   className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
                 />
               </div>
@@ -267,8 +287,10 @@ const PendingServices = props => {
                   readOnly={true}
                   className="textarea"
                   type="textarea"
+                  value={pendingDetails.description}
                   rows="3"
                   style={styles.textArea}
+                  Modal
                   defaultValue="Oh so, your weak rhyme You doubt I'll bother,
                         "
                 />
@@ -281,6 +303,7 @@ const PendingServices = props => {
                   readOnly={true}
                   className="textarea"
                   type="textarea"
+                  value={pendingDetails.notes}
                   rows="3"
                   style={styles.textArea}
                   defaultValue=""
@@ -294,17 +317,7 @@ const PendingServices = props => {
               <Button
                 className="btnTest"
                 style={styles.addBtnText}
-                onClick={() => {
-                  props.requestAction(
-                    {
-                      appointment_id: 6,
-                      action: "Accept"
-                    },
-                    setRequestError
-                  )
-                  setRequestError(false)
-                  // setModal(false)
-                }}
+                onClick={()=>acceptRequest("Accept")}
               >
                 Accept
               </Button>
@@ -315,15 +328,7 @@ const PendingServices = props => {
                 style={styles.addBtnText2}
                 outline
                 color="success"
-                onClick={() => {
-                  props.requestAction({
-                    appointment_id: 6,
-                    action: "Reject"
-                  })
-                  setRequestError(false)
-
-                  // setModal(false)
-                }}
+                onClick={()=>acceptRequest("Reject")}
               >
                 Reject
               </Button>
@@ -373,18 +378,22 @@ const PendingServices = props => {
                   ) : (
                     pendingRequests &&
                     pendingRequests.map((item, i) => (
-                      <tr
-                        onClick={() => {
-                          props.getAppointmentDetails()
-                          setModal(true)
-                          setRequestError(false)
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
+                      <tr>
                         <td style={styles.tdataText1}>{i + 1}.</td>
-                        <td style={styles.tdataText2}>{item.name}</td>
+                        <td
+                          style={styles.tdataText2}
+                          onClick={() => {
+                            // props.getAppointmentDetails()
+                            setPendingDetails(item)
+                            setModal(true)
+                            setRequestError(false)
+
+                          }}
+                        >
+                          {item.title}
+                        </td>
                         <td style={styles.tdataText}>{item.description}</td>
-                        <td style={styles.tdataText}>{item.service}</td>
+                        <td style={styles.tdataText}>{item.service.name}</td>
                       </tr>
                     ))
                   )}
@@ -407,7 +416,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getPendingRequests: () => dispatch(getPendingRequests()),
   getAppointmentDetails: data => dispatch(getAppointmentDetails(data)),
-  requestAction: (data, request) => dispatch(requestAction(data, request))
+  requestAction: (data, modalToggle) => dispatch(requestAction(data, modalToggle)),
+  renderHtmlText: data => dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(PendingServices)
 
@@ -431,6 +441,12 @@ const styles = {
     fontWeight: "500",
     fontSize: 18,
     color: "#000000"
+  },
+  inputWraper:{
+    backgroundColor: "white",
+    fontSize:14, 
+    fontWeight:'500',
+    color:'#000000'
   },
   btnTextStyle: {
     background:
@@ -475,7 +491,6 @@ const styles = {
     color: "#000000"
   },
   textArea: {
-    opacity: "0.6",
     webkitBoxShadow: "1px 3px 1px #9E9E9E",
     mozBoxShadow: "1px 3px 1px #9E9E9E",
     boxShadow: "1px 3px 1px #9E9E9E",
