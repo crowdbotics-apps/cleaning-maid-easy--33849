@@ -265,6 +265,42 @@ class DayCalendarViewSet(ViewSet):
         return Response(BriefAppointmentSerializer(appointments, many=True).data)
 
 
+class RangeCalendarViewSet(ViewSet):
+    authentication_classes = (
+        TokenAuthentication,
+    )
+    serializer_class = BriefAppointmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Appointment.objects.all()
+
+    http_method_names = ["get"]
+
+    def list(self, request):
+        try:
+            date_from = self.request.GET.get('date_from')
+        except:
+            date_from = None
+
+        try:
+            date_to = self.request.GET.get('date_to')
+        except:
+            date_to = None
+
+        if not date_from:
+            return Response({
+                'Error': "Please Specify the Date from."
+            }, 400)
+
+        if not date_to:
+            return Response({
+                'Error': "Please Specify the Date to."
+            }, 400)
+
+        appointments = Appointment.objects.filter(appointment_date__range=[date_from, date_to],
+                                                  status="Accepted")
+        return Response(BriefAppointmentSerializer(appointments, many=True).data)
+
+
 class NotificationListViewSet(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = NotificationSerializer
