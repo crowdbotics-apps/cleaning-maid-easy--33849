@@ -13,10 +13,17 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
+  UncontrolledAlert,
   Spinner
 } from "reactstrap"
 import Select from "react-select"
 import { connect } from "react-redux"
+import TextField from '@mui/material/TextField';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import MobileTimePicker from '@mui/lab/MobileTimePicker';
+import '../ScheduleServices/style.css'
+
 
 //Calender
 import DatePicker from "react-date-picker"
@@ -50,7 +57,11 @@ function ScheduleService(props) {
     props.renderHtmlText("Schedule Service")
     props.getFrequencies()
     props.getAllCustomers()
+    let mydiv=document.getElementsByClassName('react-date-picker__wrapper')
+    mydiv[0].style.border='none'
   }, [])
+
+  // react-date-picker__wrapper
 
   const { teamData, servicesData, frequencies, requesting, customers } = props
 
@@ -65,6 +76,8 @@ function ScheduleService(props) {
   //StatesForTimePicker
   const [fromTime, setFromTime] = useState("14:00")
   const [toTime, setToTime] = useState("14:00")
+  const [startTime, setStartTime] = useState(false);
+  const [endTime, setEndTime] =useState(false);
 
   const [appointmentData, setAppoinmentData] = useState({
     appointment_date: new Date()
@@ -158,6 +171,11 @@ function ScheduleService(props) {
         <Col md="12">
           <Card style={styles.cardStyle}>
             <CardBody className="pl-5 pr-5 pt-5">
+              {/* <div>
+              <UncontrolledAlert color="success" fade={false}>
+                <span>Success</span>
+              </UncontrolledAlert>
+              </div> */}
               <Row>
                 <Col lg="6">
                   <div
@@ -197,23 +215,46 @@ function ScheduleService(props) {
                   >
                     <img src={clockImage} style={{ marginRight: 10 }} />
                     {/* <label style={styles.inputStyle}>09:00AM - 11:30AM</label> */}
-                    <TimePicker
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <MobileTimePicker
+                          value={startTime}
+                          onChange={(newValue) => {
+                            onSave("start_time", moment(newValue).format('HH:mm'))
+                            setStartTime(newValue);
+                          }}
+                          renderInput={(params) => <TextField {...params} placeholder='Start time' />}
+                        />
+                  </LocalizationProvider>
+                    {/* <TimePicker
                       value={fromTime}
-                      clearIcon
-                      clearAriaLabel={false}
+                      clearIcon={(
+                        <i
+                         class="nc-icon nc-simple-remove"
+                       ></i>
+                     )}
                       className={"timeStyle"}
                       clockIcon
                       onChange={e => {
                         onSave("start_time", e)
                         setFromTime(e)
                       }}
-                    />
+                    /> */}
                     <label
-                      style={{ marginLeft: 10, marginRight: 10, fontSize: 20 }}
+                      style={{ marginLeft: 10, marginRight: 15, fontSize: 20 }}
                     >
                       -
                     </label>
-                    <TimePicker
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <MobileTimePicker
+                          value={endTime}
+                          onChange={(newValue) => {
+                            onSave("end_time", moment(newValue).format('HH:mm'))
+                            setEndTime(newValue);
+                          }}
+                          renderInput={(params) => <TextField {...params} placeholder='Start time' />}
+                        />
+                  </LocalizationProvider>
+                    {/* <TimePicker
                       value={toTime}
                       clearIcon
                       className={"timeStyle"}
@@ -221,9 +262,10 @@ function ScheduleService(props) {
                       autoFocus={false}
                       onChange={e => {
                         onSave("end_time", e)
+                        console.log("e",e);
                         setToTime(e)
                       }}
-                    />
+                    /> */}
                   </div>
                   <div>
                     {selectTime ? (

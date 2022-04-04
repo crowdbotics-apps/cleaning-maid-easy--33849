@@ -35,6 +35,23 @@ import { reduceEachLeadingCommentRange } from "typescript"
 const Services = props => {
   const { servicesData, requesting, servicesError } = props
 
+  useEffect(() => {
+    props.getServices()
+    props.renderHtmlText('Services')
+  }, [])
+
+  useEffect(() => {
+    if(servicesData.length){
+      let mydiv=document.getElementsByClassName('table-responsive')
+      mydiv[0].style.maxHeight='600px'
+    }
+    else{
+      let mydiv=document.getElementsByClassName('table-responsive')
+      mydiv[0].style.maxHeight=''
+    }
+    
+  }, [servicesData])
+
   const [modal, setModal] = React.useState(false)
 
   const stateSchema = {
@@ -82,11 +99,6 @@ const Services = props => {
   const closeModal = () => {
     setModal(!modal)
   }
-
-  useEffect(() => {
-    props.getServices()
-    props.renderHtmlText('Services')
-  }, [])
 
   return (
     <div

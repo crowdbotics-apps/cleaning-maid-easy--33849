@@ -55,6 +55,23 @@ const PendingServices = props => {
   const [requestError, setRequestError] = useState(false)
   const [pendingDetails, setPendingDetails] = useState(false)
 
+  useEffect(() => {
+    props.getPendingRequests()
+    props.renderHtmlText("Pending Services")
+  }, [])
+
+  useEffect(() => {
+    if(pendingRequests.length){
+      let mydiv=document.getElementsByClassName('table-responsive')
+      mydiv[0].style.maxHeight='600px'
+    }
+    else{
+      let mydiv=document.getElementsByClassName('table-responsive')
+      mydiv[0].style.maxHeight=''
+    }
+    
+  }, [pendingRequests])
+
 
   const stateSchema = {
     serviceName: {
@@ -100,11 +117,6 @@ const PendingServices = props => {
     setModal(!modal)
     setPendingDetails('')
   }
-
-  useEffect(() => {
-    props.getPendingRequests()
-    props.renderHtmlText("Pending Services")
-  }, [])
 
   const acceptRequest=(requestAction)=>{
     const data={

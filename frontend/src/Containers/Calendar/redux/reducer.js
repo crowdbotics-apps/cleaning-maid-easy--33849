@@ -9,7 +9,7 @@ import {
 
 const initialState = {
   requesting: false,
-  appointmentsDays: false,
+  appointmentsDays: [],
   notes: false
 }
 

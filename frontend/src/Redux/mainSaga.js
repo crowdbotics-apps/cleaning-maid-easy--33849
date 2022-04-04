@@ -12,7 +12,9 @@ import calendar from 'Containers/Calendar/redux/saga'
 import employees from 'Containers/Employees/redux/saga'
 import profile from "Containers/Profile/redux/saga"
 import customers from "Containers/Customers/redux/saga"
+import termsConditions from '../Containers/TermsConditions/redux/saga'
+import notifications from '../Containers/Notifications/redux/saga'
 
 export function* mainSaga() {
-  yield all([login, forgotPassword, services, teams, pendingRequests,calendar,scheduleServices,employees,profile,customers])
+  yield all([login, forgotPassword, services, teams, pendingRequests,calendar,scheduleServices,employees,profile,customers,termsConditions,notifications])
 }

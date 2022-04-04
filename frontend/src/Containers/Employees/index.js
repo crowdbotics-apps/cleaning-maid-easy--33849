@@ -57,13 +57,25 @@ function Employees(props) {
   }, [])
 
   useEffect(() => {
+    if(employeesList?.results?.length){
+      let mydiv=document.getElementsByClassName('table-responsive')
+      mydiv[0].style.maxHeight='600px'
+    }
+    else{
+      let mydiv=document.getElementsByClassName('table-responsive')
+      mydiv[0].style.maxHeight=''
+    }
+    
+  }, [employeesList])
+
+  useEffect(() => {
     if (editValues) {
       handleOnChange("firstName", editValues.name)
       handleOnChange("phone_number", editValues.phone_number)
       handleOnChange("zip_code", editValues.zip_code)
       handleOnChange("company_name", editValues.company_name)
       handleOnChange("display_company", editValues.display_company)
-      handleOnChange("team_id", editValues.assigned_team.id)
+      handleOnChange("team_id", editValues?.assigned_team?.id)
       handleOnChange("address", editValues.address)
     }
   }, [editValues])
