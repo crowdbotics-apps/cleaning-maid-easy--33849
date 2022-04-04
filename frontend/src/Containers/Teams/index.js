@@ -52,6 +52,9 @@ function Teams(props) {
   const UnAssignedTeamRef = useRef()
   const toggle = () => {
     setmodal(!modal)
+    setSelectedMebers([])
+    setTeamName(false)
+
   }
 
   const [deleteId, setDeleteId] = useState(false)
@@ -59,6 +62,7 @@ function Teams(props) {
   const [searchData, setSearchData] = useState("")
   const [activeDrags, setActiveDrags] = useState(false)
 
+  console.log("selectedMembers",selectedMembers);
   useEffect(() => {
     props.getTeam()
     props.renderHtmlText("Teams")
@@ -113,13 +117,14 @@ function Teams(props) {
   }
 
   const createTeam = () => {
-    const regEx = /^([a-zA-Z]+\s)*[a-zA-Z]+$/
-    if (regEx.test(teamName)) {
+    // const regEx = /^([a-zA-Z]+\s)*[a-zA-Z]+$/
+    if (teamName.length) {
       let apiData = {
         member_ids: selectedMembers,
         team_name: teamName
       }
       props.createTeam(apiData, setmodal)
+      setTeamName(false)
       setNameError(false)
     } else {
       setNameError(true)
@@ -379,7 +384,7 @@ function Teams(props) {
                   />
                   <div style={styles.inputLineStyle} />
                   {nameError && (
-                    <p style={{ color: "red" }}>please enter valid Name</p>
+                    <p style={{ color: "red" }}>Please enter valid Name</p>
                   )}
                   <label className="mt-4 mb-4 ">Team Members</label>
                   <div className="d-flex align-items-center">
@@ -476,7 +481,7 @@ function Teams(props) {
                       title=""
                       type="button"
                       size="lg"
-                      disabled={!teamName}
+                      disabled={!teamName || !selectedMembers.length}
                       onClick={createTeam}
                     >
                       {createRequesting ? (
@@ -570,7 +575,12 @@ const styles = {
   inputLineStyle: {
     backgroundColor: "#D9D9D9",
     height: 1
-  }
+  },
+  inputTextStyle: {
+    fontWeight: "500",
+    fontSize: 18,
+    color: "#000000"
+  },
 }
 
 const mapStateToProps = state => ({

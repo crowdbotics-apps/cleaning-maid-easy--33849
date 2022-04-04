@@ -106,10 +106,14 @@ const Calendar = props => {
     if (viewState === 2) {
       let myDivs = document.getElementsByClassName("rbc-allday-cell")
       let rbcEvent = document.getElementsByClassName("rbc-event")
+      // let rbcEventContent = document.getElementsByClassName("rbc-event-content")
+      
+      // rbcEventContent[0].style.width = "30px"
       myDivs[0].style.display = "none"
       if (rbcEvent.length) {
         const lastIndex = rbcEvent.length -1
         rbcEvent[lastIndex].style.width = "30px"
+        
       }
     }
   }, [viewState])

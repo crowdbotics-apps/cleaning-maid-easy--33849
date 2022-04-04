@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
 // reactstrap components
 import {
@@ -6,8 +6,20 @@ import {
     Col,
 } from "reactstrap";
 
+import { connect } from "react-redux"
+import { renderHtmlText } from "../Services/redux/actions"
+import {getPrivacyPolicy} from '../TermsConditions/redux/actions'
 
-function PrivacyPolicy() {
+function PrivacyPolicy(props) {
+
+    const {privacyPolicy}=props
+
+    useEffect(()=>{
+        props.renderHtmlText("Privacy Policy")
+        props.getPrivacyPolicy()
+    },[])
+
+    // console.log("privacyPolicy",privacyPolicy);
 
     return (
         <div
@@ -38,4 +50,12 @@ function PrivacyPolicy() {
     )
 
 }
-export default PrivacyPolicy
+const mapStateToProps = state => ({
+    privacyPolicy: state.termsConditions.privacyPolicy
+  })
+  
+  const mapDispatchToProps = dispatch => ({
+    renderHtmlText: data => dispatch(renderHtmlText(data)),
+    getPrivacyPolicy: () => dispatch(getPrivacyPolicy())
+  })
+  export default connect(mapStateToProps, mapDispatchToProps)(PrivacyPolicy)

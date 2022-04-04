@@ -39,7 +39,11 @@ import {
 import { connect } from "react-redux"
 import moment from "moment"
 
-import { getDayAcceptedAppointments } from "../../Containers/Calendar/redux/actions"
+import {
+  getDayAcceptedAppointments,
+  getWeekAcceptedAppointments,
+  getMonthAcceptedAppointments
+} from "../../Containers/Calendar/redux/actions"
 import { getUserInfo } from "../../Containers/Profile/redux/actions"
 
 class AdminNavbar extends React.Component {
@@ -99,6 +103,7 @@ class AdminNavbar extends React.Component {
   CustomToolbar = () => {
     const toolbar = this.props?.htmlText.toolbar
     const setViewState = this.props?.htmlText.setViewState
+
     const goToDayView = () => {
       toolbar.onView("day")
       setViewState(1)
@@ -113,6 +118,13 @@ class AdminNavbar extends React.Component {
     }
     const goToWeekView = () => {
       toolbar.onView("week")
+
+      const startOfWeek = moment(toolbar.date).startOf("week").toDate()
+      const endOfWeek = moment(toolbar.date).endOf("week").toDate()
+      const startDate = moment(startOfWeek).format("YYYY-MM-DD")
+      const endDate = moment(endOfWeek).format("YYYY-MM-DD")
+      this.props.getWeekAcceptedAppointments(startDate, endDate)
+
       setViewState(2)
       this.setState({
         viewState: 2
@@ -124,13 +136,25 @@ class AdminNavbar extends React.Component {
       this.setState({
         viewState: 3
       })
+      const startOfMonth = moment(toolbar.date).startOf("month").toDate()
+      const endOfMonth = moment(toolbar.date).endOf("month").toDate()
+      const startDate = moment(startOfMonth).format("YYYY-MM-DD")
+      const endDate = moment(endOfMonth).format("YYYY-MM-DD")
+      this.props.getMonthAcceptedAppointments(startDate, endDate)
     }
     const goToBack = () => {
       let view = this.state.viewState
       let mDate = toolbar?.date
       let newDate
+
       if (view === 3) {
         newDate = new Date(mDate.getFullYear(), mDate.getMonth() - 1, 1)
+        const startOfMonth = moment(newDate).startOf("month")
+        const endOfMonth = moment(newDate).endOf("month")
+        const startDate = moment(startOfMonth)
+          .format("YYYY-MM-DD")
+        const endDate = moment(endOfMonth).format("YYYY-MM-DD")
+        this.props.getMonthAcceptedAppointments(startDate, endDate)
       } else if (view === 2) {
         newDate = new Date(
           mDate.getFullYear(),
@@ -138,6 +162,13 @@ class AdminNavbar extends React.Component {
           mDate.getDate() - 7,
           1
         )
+        const startOfWeek = moment(mDate).startOf("week").toDate()
+        const endOfWeek = moment(mDate).endOf("week").toDate()
+        const startDate = moment(startOfWeek)
+          .subtract(1, "w")
+          .format("YYYY-MM-DD")
+        const endDate = moment(endOfWeek).subtract(1, "w").format("YYYY-MM-DD")
+        this.props.getWeekAcceptedAppointments(startDate, endDate)
       } else {
         newDate = new Date(
           mDate.getFullYear(),
@@ -156,6 +187,12 @@ class AdminNavbar extends React.Component {
       let newDate
       if (view === 3) {
         newDate = new Date(mDate.getFullYear(), mDate.getMonth() + 1, 1)
+        const startOfMonth = moment(newDate).startOf("month")
+        const endOfMonth = moment(newDate).endOf("month")
+        const startDate = moment(startOfMonth).format("YYYY-MM-DD")
+        const endDate = moment(endOfMonth).format("YYYY-MM-DD")
+
+        this.props.getMonthAcceptedAppointments(startDate, endDate)
       } else if (view === 2) {
         newDate = new Date(
           mDate.getFullYear(),
@@ -163,6 +200,11 @@ class AdminNavbar extends React.Component {
           mDate.getDate() + 7,
           1
         )
+        const startOfWeek = moment(mDate).startOf("week").toDate()
+        const endOfWeek = moment(mDate).endOf("week").toDate()
+        const startDate = moment(startOfWeek).add(1, "w").format("YYYY-MM-DD")
+        const endDate = moment(endOfWeek).add(1, "w").format("YYYY-MM-DD")
+        this.props.getWeekAcceptedAppointments(startDate, endDate)
       } else {
         newDate = new Date(
           mDate.getFullYear(),
@@ -289,7 +331,7 @@ class AdminNavbar extends React.Component {
               <NavbarBrand>
                 {this.props?.htmlText?.toolbar ? (
                   this.CustomToolbar()
-                ) : (
+                ) : this.props.htmlText.length ? (
                   <span
                     className="d-md-block"
                     style={{
@@ -301,7 +343,7 @@ class AdminNavbar extends React.Component {
                     }}
                     dangerouslySetInnerHTML={{ __html: this.props.htmlText }}
                   />
-                )}
+                ):''}
 
                 {/* <span
                   className="d-md-block"
@@ -349,7 +391,11 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getDayAcceptedAppointments: date =>
     dispatch(getDayAcceptedAppointments(date)),
-  getUserInfo: () => dispatch(getUserInfo())
+  getUserInfo: () => dispatch(getUserInfo()),
+  getWeekAcceptedAppointments: (startDate, endDate) =>
+    dispatch(getWeekAcceptedAppointments(startDate, endDate)),
+  getMonthAcceptedAppointments: (startDate, endDate) =>
+    dispatch(getMonthAcceptedAppointments(startDate, endDate))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminNavbar)

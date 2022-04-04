@@ -14,6 +14,9 @@ import calendar from 'Containers/Calendar/redux/reducer'
 import employees from 'Containers/Employees/redux/reducer'
 
 import customers from 'Containers/Customers/redux/reducer'
+import termsConditions from '../Containers/TermsConditions/redux/reducer'
+import notifications from '../Containers/Notifications/redux/reducer'
+
 
 // const signInPersistConfig = {
 //     key: 'login',
@@ -32,5 +35,7 @@ export const combinedReducers = history => ({
   calendar,
   scheduleServices,
   employees,
-  customers
+  customers,
+  termsConditions,
+  notifications
 })

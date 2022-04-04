@@ -8,10 +8,10 @@ import { BASE_URL } from '../../../config/app';
 import XHR from '../../../utils/XHR';
 
 // types
-import { GET_DAY_ACCEPTED_APPOINTEMENTS,GET_NOTES,ADD_NOTES,UPDATE_NOTES} from './types';
+import { GET_DAY_ACCEPTED_APPOINTEMENTS,GET_NOTES,ADD_NOTES,UPDATE_NOTES,GET_WEEK_ACCEPTED_APPOINTEMENTS,GET_MONTH_ACCEPTED_APPOINTEMENTS} from './types';
 
 // actions
-import {getDayAcceptedAppointmentsSuccess,getNotesSuccess, getNotes as getLatestNotes} from './actions'
+import {getDayAcceptedAppointmentsSuccess,getNotesSuccess, getNotes as getLatestNotes,} from './actions'
 
 
 async function getDayAcceptedAppointmentsApi(date) {
@@ -31,6 +31,57 @@ async function getDayAcceptedAppointmentsApi(date) {
 function* getDayAcceptedAppointments({date}) {
   try {
     const response = yield call(getDayAcceptedAppointmentsApi,date);
+    yield put(getDayAcceptedAppointmentsSuccess(response.data))
+
+  } catch (e) {
+    const { response } = e
+
+  }
+}
+
+async function getWeekAcceptedAppointmentsApi(startDate,endDate) {
+  const URL = `${BASE_URL}/api/v1/operations/range_calendar/?date_from=${startDate}&date_to=${endDate}`;
+  const token = await sessionStorage.getItem('authToken');
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`
+    },
+    method: 'GET',
+  };
+
+  return XHR(URL, options);
+}
+
+function* getWeekAcceptedAppointments({startDate,endDate}) {
+  try {
+    const response = yield call(getWeekAcceptedAppointmentsApi,startDate,endDate);
+    yield put(getDayAcceptedAppointmentsSuccess(response.data))
+
+  } catch (e) {
+    const { response } = e
+
+  }
+}
+
+
+async function getMonthAcceptedAppointmentsApi(startDate,endDate) {
+  const URL = `${BASE_URL}/api/v1/operations/range_calendar/?date_from=${startDate}&date_to=${endDate}`;
+  const token = await sessionStorage.getItem('authToken');
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`
+    },
+    method: 'GET',
+  };
+
+  return XHR(URL, options);
+}
+
+function* getMonthAcceptedAppointments({startDate,endDate}) {
+  try {
+    const response = yield call(getMonthAcceptedAppointmentsApi,startDate,endDate);
     yield put(getDayAcceptedAppointmentsSuccess(response.data))
 
   } catch (e) {
@@ -91,7 +142,6 @@ function* addNotes({data,setNoteModal}) {
   }
 }
 
-
 async function updateNotesApi(data, id) {
   const URL = `${BASE_URL}/api/v1/operations/notes/${id}/`;
   const token = await sessionStorage.getItem('authToken');
@@ -124,5 +174,7 @@ export default all([
   takeLatest(GET_NOTES, getNotes),
   takeLatest(ADD_NOTES, addNotes),
   takeLatest(UPDATE_NOTES, updateNotes),
+  takeLatest(GET_WEEK_ACCEPTED_APPOINTEMENTS, getWeekAcceptedAppointments),
+  takeLatest(GET_MONTH_ACCEPTED_APPOINTEMENTS, getMonthAcceptedAppointments),
 
 ]);
