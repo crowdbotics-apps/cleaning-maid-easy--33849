@@ -49,12 +49,26 @@ import {
 import { renderHtmlText } from "../Services/redux/actions"
 
 const PendingServices = props => {
-  const { requesting, pendingRequests } = props
+  const { requesting, pendingRequests,actionRequesting } = props
 
   const [modal, setModal] = React.useState(false)
   const [requestError, setRequestError] = useState(false)
   const [pendingDetails, setPendingDetails] = useState(false)
 
+  useEffect(() => {
+    props.getPendingRequests()
+    props.renderHtmlText("Pending Services")
+  }, [])
+
+  useEffect(() => {
+    if (pendingRequests.length) {
+      let mydiv = document.getElementsByClassName("table-responsive")
+      mydiv[0].style.maxHeight = "600px"
+    } else {
+      let mydiv = document.getElementsByClassName("table-responsive")
+      mydiv[0].style.maxHeight = ""
+    }
+  }, [pendingRequests])
 
   const stateSchema = {
     serviceName: {
@@ -92,29 +106,24 @@ const PendingServices = props => {
   const toggle = () => {}
 
   const closeModal = () => {
-    setPendingDetails('')
+    setPendingDetails("")
     setModal(!modal)
   }
 
   const modalToggle = () => {
     setModal(!modal)
-    setPendingDetails('')
+    setPendingDetails("")
   }
 
-  useEffect(() => {
-    props.getPendingRequests()
-    props.renderHtmlText("Pending Services")
-  }, [])
-
-  const acceptRequest=(requestAction)=>{
-    const data={
+  const acceptRequest = requestAction => {
+    const data = {
       appointment_id: pendingDetails.id,
       action: requestAction
     }
-    props.requestAction(data,modalToggle)
+    props.requestAction(data, modalToggle)
     setRequestError(false)
   }
-  
+
   return (
     <div
       className="content "
@@ -127,20 +136,22 @@ const PendingServices = props => {
     >
       <Modal isOpen={modal} toggle={modalToggle}>
         <ModalHeader style={{ borderBottom: 0 }}>
-          <span><b style={{paddingTop:10}}>{pendingDetails?.title}</b></span>
+          <span>
+            <b style={{ paddingTop: 10 }}>{pendingDetails?.title}</b>
+          </span>
           <button
-                aria-hidden={true}
-                className="close"
-                data-dismiss="modal"
-                type="button"
-                style={{ outline: "none" }}
-                onClick={modalToggle}
-              >
-                <i
-                  className="nc-icon nc-simple-remove"
-                  style={{ color: " #438B44" }}
-                />
-              </button>
+            aria-hidden={true}
+            className="close"
+            data-dismiss="modal"
+            type="button"
+            style={{ outline: "none" }}
+            onClick={modalToggle}
+          >
+            <i
+              className="nc-icon nc-simple-remove"
+              style={{ color: " #438B44" }}
+            />
+          </button>
         </ModalHeader>
         <ModalBody>
           <Row>
@@ -158,10 +169,10 @@ const PendingServices = props => {
                   style={{ marginRight: 10, color: "grey" }}
                 ></i>
                 <label style={styles.inputStyle}>
-                {moment(
-                        pendingDetails?.appointment_date
-                      ).format("d MMMM yyy")}
-                  </label>
+                  {moment(pendingDetails?.appointment_date).format(
+                    "d MMMM yyy"
+                  )}
+                </label>
               </div>
             </Col>
           </Row>
@@ -173,16 +184,9 @@ const PendingServices = props => {
                   style={{ marginRight: 10, color: "grey" }}
                 ></i>
                 <label style={styles.inputStyle}>
-                {moment(
-                       pendingDetails?.start_time,
-                        "hh:mm"
-                      ).format("hh:mmA")}{" "}
-                      -{" "}
-                      {moment(
-                        pendingDetails?.end_time,
-                        "hh:mm"
-                      ).format("hh:mmA")}
-                  </label>
+                  {moment(pendingDetails?.start_time, "hh:mm").format("hh:mmA")}{" "}
+                  - {moment(pendingDetails?.end_time, "hh:mm").format("hh:mmA")}
+                </label>
               </div>
             </Col>
           </Row>
@@ -202,7 +206,13 @@ const PendingServices = props => {
             <Col md="8">
               <label style={styles.labelfontStyles}>Client Name</label>
               <Input
-                style={{ width: 300, backgroundColor: "white", fontSize:14, fontWeight:'500',color:'#000000' }}
+                style={{
+                  width: 300,
+                  backgroundColor: "white",
+                  fontSize: 14,
+                  fontWeight: "500",
+                  color: "#000000"
+                }}
                 readOnly={true}
                 value={pendingDetails?.client?.name}
                 className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
@@ -212,7 +222,12 @@ const PendingServices = props => {
               <label style={styles.labelfontStyles}>Number</label>
               <Input
                 readOnly={true}
-                style={{ backgroundColor: "white" , fontSize:14, fontWeight:'500',color:'#000000'}}
+                style={{
+                  backgroundColor: "white",
+                  fontSize: 14,
+                  fontWeight: "500",
+                  color: "#000000"
+                }}
                 className="border-top-0 border-right-0 border-left-0 p-0"
               />
             </Col>
@@ -242,9 +257,10 @@ const PendingServices = props => {
                 classNamePrefix="react-select"
                 name="singleSelect"
                 isDisabled={true}
-                style={{ fontSize:14, fontWeight:'500',color:'#000000'}}
+                style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
                 value={{
-                  value: pendingDetails?.service?.id, label: pendingDetails?.service?.name
+                  value: pendingDetails?.service?.id,
+                  label: pendingDetails?.service?.name
                 }}
                 placeholder="Single Select"
               />
@@ -255,10 +271,11 @@ const PendingServices = props => {
                 className="react-select  "
                 classNamePrefix="react-select"
                 name="singleSelect"
-                style={{ fontSize:14, fontWeight:'500',color:'#000000'}}
+                style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
                 isDisabled={true}
                 value={{
-                  value: pendingDetails?.frequency?.id, label: pendingDetails?.frequency?.title
+                  value: pendingDetails?.frequency?.id,
+                  label: pendingDetails?.frequency?.title
                 }}
                 placeholder="Single Select"
               />
@@ -317,9 +334,19 @@ const PendingServices = props => {
               <Button
                 className="btnTest"
                 style={styles.addBtnText}
-                onClick={()=>acceptRequest("Accept")}
+                onClick={() => acceptRequest("Accept")}
               >
-                Accept
+               {actionRequesting ? (
+            <Spinner
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+            />
+          ) : (
+            "Accept"
+          )}
               </Button>
             </Col>
             <Col md="6">
@@ -328,7 +355,7 @@ const PendingServices = props => {
                 style={styles.addBtnText2}
                 outline
                 color="success"
-                onClick={()=>acceptRequest("Reject")}
+                onClick={() => acceptRequest("Reject")}
               >
                 Reject
               </Button>
@@ -387,7 +414,6 @@ const PendingServices = props => {
                             setPendingDetails(item)
                             setModal(true)
                             setRequestError(false)
-
                           }}
                         >
                           {item.title}
@@ -409,6 +435,7 @@ const PendingServices = props => {
 
 const mapStateToProps = state => ({
   requesting: state.pendingRequests.requesting,
+  actionRequesting:state.pendingRequests.requesting,
   pendingRequests: state.pendingRequests.pendingRequests
   //   servicesError: state.services.servicesError
 })
@@ -416,7 +443,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getPendingRequests: () => dispatch(getPendingRequests()),
   getAppointmentDetails: data => dispatch(getAppointmentDetails(data)),
-  requestAction: (data, modalToggle) => dispatch(requestAction(data, modalToggle)),
+  requestAction: (data, modalToggle) =>
+    dispatch(requestAction(data, modalToggle)),
   renderHtmlText: data => dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(PendingServices)
@@ -442,11 +470,11 @@ const styles = {
     fontSize: 18,
     color: "#000000"
   },
-  inputWraper:{
+  inputWraper: {
     backgroundColor: "white",
-    fontSize:14, 
-    fontWeight:'500',
-    color:'#000000'
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000000"
   },
   btnTextStyle: {
     background:

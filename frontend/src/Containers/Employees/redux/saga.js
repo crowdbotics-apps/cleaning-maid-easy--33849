@@ -122,7 +122,7 @@ function* updateEmployee({ data, id, toggle }) {
   try {
     const response = yield call(updateEmployeeApi, data, id)
     toggle()
-    // yield put(getEmployeeListData())
+    yield put(getEmployeeListData())
   } catch (e) {
     const { response } = e
     yield put(addEmployeeFailure(response?.data))

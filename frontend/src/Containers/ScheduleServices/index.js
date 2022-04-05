@@ -13,10 +13,13 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
+  UncontrolledAlert,
   Spinner
 } from "reactstrap"
 import Select from "react-select"
 import { connect } from "react-redux"
+import '../ScheduleServices/style.css'
+
 
 //Calender
 import DatePicker from "react-date-picker"
@@ -50,7 +53,11 @@ function ScheduleService(props) {
     props.renderHtmlText("Schedule Service")
     props.getFrequencies()
     props.getAllCustomers()
+    let mydiv=document.getElementsByClassName('react-date-picker__wrapper')
+    mydiv[0].style.border='none'
   }, [])
+
+  // react-date-picker__wrapper
 
   const { teamData, servicesData, frequencies, requesting, customers } = props
 
@@ -65,6 +72,8 @@ function ScheduleService(props) {
   //StatesForTimePicker
   const [fromTime, setFromTime] = useState("14:00")
   const [toTime, setToTime] = useState("14:00")
+  const [startTime, setStartTime] = useState(false);
+  const [endTime, setEndTime] =useState(false);
 
   const [appointmentData, setAppoinmentData] = useState({
     appointment_date: new Date()
@@ -110,6 +119,24 @@ function ScheduleService(props) {
     stateSchema,
     validationStateSchema
   )
+  const resetValues=()=>{
+    setCalenderValue('')
+    // const data = { ...appointmentData}
+    setFromTime('')
+    setToTime('')
+    setCalenderValue('')
+    state.price.value=''
+    state.description.value=''
+    state.notes.value=''
+    state.title.value=''
+    // data.appointment_date=''
+    // data.assigned_team_id=[]
+    // data.service_id=[]
+    // data.frequency_id=[]
+   
+   
+
+  }
   const onSave = (title, value) => {
     let data = { ...appointmentData }
     data[title] = value
@@ -158,6 +185,11 @@ function ScheduleService(props) {
         <Col md="12">
           <Card style={styles.cardStyle}>
             <CardBody className="pl-5 pr-5 pt-5">
+              {/* <div>
+              <UncontrolledAlert color="success" fade={false}>
+                <span>Success</span>
+              </UncontrolledAlert>
+              </div> */}
               <Row>
                 <Col lg="6">
                   <div
@@ -177,6 +209,7 @@ function ScheduleService(props) {
                       // clearIcon={false}
                       wrapperClassName="datePickerBorder"
                       value={calendarValue}
+                      minDate={new Date()}
                       onChange={date => {
                         setCalenderValue(date)
                         const selectedDatee = moment(date).format("YYYY-MM-DD")
@@ -197,33 +230,52 @@ function ScheduleService(props) {
                   >
                     <img src={clockImage} style={{ marginRight: 10 }} />
                     {/* <label style={styles.inputStyle}>09:00AM - 11:30AM</label> */}
+                    {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <MobileTimePicker
+                          value={startTime}
+                          onChange={(newValue) => {
+                            onSave("start_time", moment(newValue).format('HH:mm'))
+                            setStartTime(newValue);
+                          }}
+                          renderInput={(params) => <div><TextField {...params} placeholder='Start time' /></div>}
+                        />
+                  </LocalizationProvider> */}
                     <TimePicker
                       value={fromTime}
-                      clearIcon
-                      clearAriaLabel={false}
                       className={"timeStyle"}
                       clockIcon
+                      disableClock={true}
                       onChange={e => {
                         onSave("start_time", e)
                         setFromTime(e)
                       }}
                     />
                     <label
-                      style={{ marginLeft: 10, marginRight: 10, fontSize: 20 }}
+                      style={{ marginLeft: 10, marginRight: 15, fontSize: 20 }}
                     >
                       -
                     </label>
-                    <TimePicker
+                    {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <MobileTimePicker
+                          value={endTime}
+                          onChange={(newValue) => {
+                            onSave("end_time", moment(newValue).format('HH:mm'))
+                            setEndTime(newValue);
+                          }}
+                          renderInput={(params) => 
+                          <div><TextField {...params} placeholder='Start time' /></div>}
+                        />
+                  </LocalizationProvider> */}
+                  <TimePicker
                       value={toTime}
-                      clearIcon
                       className={"timeStyle"}
-                      clockIcon
-                      autoFocus={false}
+                      disableClock={true}
                       onChange={e => {
                         onSave("end_time", e)
                         setToTime(e)
                       }}
                     />
+                    
                   </div>
                   <div>
                     {selectTime ? (
@@ -492,7 +544,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: data => dispatch(scheduleServices(data)),
+  getScheduleServices: (data) => dispatch(scheduleServices(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getFrequencies: () => dispatch(getFrequencies()),
   getAllCustomers: () => dispatch(getAllCustomers())

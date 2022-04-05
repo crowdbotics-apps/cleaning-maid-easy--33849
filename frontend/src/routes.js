@@ -12,7 +12,7 @@ import Profile from 'Containers/Profile'
 import EditProfile from 'Containers/EditProfile'
 import PrivacyPolicy from 'Containers/PrivacyPolicy'
 import TermsConditions from 'Containers/TermsConditions'
-import Notifiaction from 'Containers/Notifications'
+import Notification from 'Containers/Notifications'
 import PendingServices from 'Containers/PendingServices'
 
 
@@ -53,7 +53,7 @@ const routes = [
   },
   {
     path: '/PendingServices',
-    name: 'PendingServices',
+    name: 'Pending Services',
     icon: 'fa fa-question',
     component: PendingServices,
     layout: '/admin',
@@ -116,10 +116,10 @@ const routes = [
     layout: '/admin',
   },
   {
-    path: '/notifiaction',
-    name: 'Notifiaction',
+    path: '/notification',
+    name: 'Notification',
     icon: 'fa fa-bell-o',
-    component: Notifiaction,
+    component: Notification,
     layout: '/admin',
     isShow: 1,
   },

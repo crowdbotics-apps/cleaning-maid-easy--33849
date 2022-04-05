@@ -3,6 +3,8 @@ import {
   GET_NOTES,
   GET_NOTES_SUCCESS,
   GET_DAY_ACCEPTED_APPOINTEMENTS_SUCCESS,
+  GET_WEEK_ACCEPTED_APPOINTEMENTS,
+  GET_MONTH_ACCEPTED_APPOINTEMENTS,
   ADD_NOTES,
   UPDATE_NOTES
 } from "./types"
@@ -10,6 +12,18 @@ import {
 export const getDayAcceptedAppointments = (date) => ({
   type: GET_DAY_ACCEPTED_APPOINTEMENTS,
   date,
+})
+
+export const getWeekAcceptedAppointments = (startDate, endDate) => ({
+  type: GET_WEEK_ACCEPTED_APPOINTEMENTS,
+  startDate,
+  endDate
+})
+
+export const getMonthAcceptedAppointments = (startDate, endDate) => ({
+  type: GET_MONTH_ACCEPTED_APPOINTEMENTS,
+  startDate,
+  endDate
 })
 
 export const getNotes = () => ({

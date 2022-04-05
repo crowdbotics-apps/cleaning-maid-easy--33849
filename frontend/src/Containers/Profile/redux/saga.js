@@ -38,7 +38,7 @@ function* getUserInfo() {
 }
 
 async function editUserInfoApi(data, id) {
-  console.log("dataa",...data);
+
   const URL = `${BASE_URL}/api/v1/users/user_info/${id}/`
   const token = await sessionStorage.getItem("authToken")
   const options = {
@@ -56,8 +56,8 @@ async function editUserInfoApi(data, id) {
 function* editUserInfo({ data, id }) {
   try {
     const response = yield call(editUserInfoApi, data, id)
-    // yield put(getUserInfoSuccess(response.data))
-    // sessionStorage.setItem('userInfo', JSON.stringify(response.data))
+    yield put(getUserInfoSuccess(response.data))
+    sessionStorage.setItem('userInfo', JSON.stringify(response.data))
   } catch (e) {
     const { response } = e
     yield put(editUserFailure())

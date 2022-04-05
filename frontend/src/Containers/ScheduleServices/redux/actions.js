@@ -5,9 +5,9 @@ import {
   GET_FREQUENCIES_SUCCESS
 } from "./types"
 
-export const scheduleServices = data => ({
+export const scheduleServices = (data) => ({
   type: SCHEDULE_SERVICE,
-  data
+  data,
 })
 
 export const scheduleServicesSuccess = () => ({
