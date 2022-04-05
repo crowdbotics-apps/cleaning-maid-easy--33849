@@ -18,10 +18,6 @@ import {
 } from "reactstrap"
 import Select from "react-select"
 import { connect } from "react-redux"
-import TextField from '@mui/material/TextField';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import MobileTimePicker from '@mui/lab/MobileTimePicker';
 import '../ScheduleServices/style.css'
 
 
@@ -123,6 +119,24 @@ function ScheduleService(props) {
     stateSchema,
     validationStateSchema
   )
+  const resetValues=()=>{
+    setCalenderValue('')
+    // const data = { ...appointmentData}
+    setFromTime('')
+    setToTime('')
+    setCalenderValue('')
+    state.price.value=''
+    state.description.value=''
+    state.notes.value=''
+    state.title.value=''
+    // data.appointment_date=''
+    // data.assigned_team_id=[]
+    // data.service_id=[]
+    // data.frequency_id=[]
+   
+   
+
+  }
   const onSave = (title, value) => {
     let data = { ...appointmentData }
     data[title] = value
@@ -195,6 +209,7 @@ function ScheduleService(props) {
                       // clearIcon={false}
                       wrapperClassName="datePickerBorder"
                       value={calendarValue}
+                      minDate={new Date()}
                       onChange={date => {
                         setCalenderValue(date)
                         const selectedDatee = moment(date).format("YYYY-MM-DD")
@@ -215,57 +230,52 @@ function ScheduleService(props) {
                   >
                     <img src={clockImage} style={{ marginRight: 10 }} />
                     {/* <label style={styles.inputStyle}>09:00AM - 11:30AM</label> */}
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileTimePicker
                           value={startTime}
                           onChange={(newValue) => {
                             onSave("start_time", moment(newValue).format('HH:mm'))
                             setStartTime(newValue);
                           }}
-                          renderInput={(params) => <TextField {...params} placeholder='Start time' />}
+                          renderInput={(params) => <div><TextField {...params} placeholder='Start time' /></div>}
                         />
-                  </LocalizationProvider>
-                    {/* <TimePicker
+                  </LocalizationProvider> */}
+                    <TimePicker
                       value={fromTime}
-                      clearIcon={(
-                        <i
-                         class="nc-icon nc-simple-remove"
-                       ></i>
-                     )}
                       className={"timeStyle"}
                       clockIcon
+                      disableClock={true}
                       onChange={e => {
                         onSave("start_time", e)
                         setFromTime(e)
                       }}
-                    /> */}
+                    />
                     <label
                       style={{ marginLeft: 10, marginRight: 15, fontSize: 20 }}
                     >
                       -
                     </label>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileTimePicker
                           value={endTime}
                           onChange={(newValue) => {
                             onSave("end_time", moment(newValue).format('HH:mm'))
                             setEndTime(newValue);
                           }}
-                          renderInput={(params) => <TextField {...params} placeholder='Start time' />}
+                          renderInput={(params) => 
+                          <div><TextField {...params} placeholder='Start time' /></div>}
                         />
-                  </LocalizationProvider>
-                    {/* <TimePicker
+                  </LocalizationProvider> */}
+                  <TimePicker
                       value={toTime}
-                      clearIcon
                       className={"timeStyle"}
-                      clockIcon
-                      autoFocus={false}
+                      disableClock={true}
                       onChange={e => {
                         onSave("end_time", e)
-                        console.log("e",e);
                         setToTime(e)
                       }}
-                    /> */}
+                    />
+                    
                   </div>
                   <div>
                     {selectTime ? (
@@ -534,7 +544,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: data => dispatch(scheduleServices(data)),
+  getScheduleServices: (data) => dispatch(scheduleServices(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getFrequencies: () => dispatch(getFrequencies()),
   getAllCustomers: () => dispatch(getAllCustomers())

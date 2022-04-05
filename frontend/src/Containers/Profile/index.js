@@ -111,13 +111,13 @@ const Profile = props => {
   )
 }
 
-const mapStateToProps = state => ({})
+// const mapStateToProps = state => ({})
 
 const mapDispatchToProps = dispatch => ({
     getUserInfo: () => dispatch(getUserInfo()),
     renderHtmlText: data => dispatch(renderHtmlText(data)),
 })
-export default connect(mapStateToProps, mapDispatchToProps)(Profile)
+export default connect(null, mapDispatchToProps)(Profile)
 
 const styles = {
   cardStyle: {

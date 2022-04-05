@@ -35,7 +35,6 @@ const EditProfile = props => {
   useEffect(() => {
     props.renderHtmlText("Edit Profile")
     const userData = sessionStorage.getItem("userInfo")
-
     setUserInfo(JSON.parse(userData))
   }, [])
 
@@ -100,15 +99,10 @@ const EditProfile = props => {
   const updateProfile = () => {
     const data = new FormData()
     data.append("name", state.fullName.value)
-    // data.append("profile_picture", selectedImage)
+    data.append("profile_picture", selectedImage)
     data.append("company_name", state.company_name.value)
     data.append("address", state.address.value)
     data.append("phone_number", state.phone_number.value)
-    // data.append('profile_picture', {
-    //     uri: "file:///...",
-    //     type: `${selectedImage?.type}`,
-    //     name: `${selectedImage?.name}`,
-    //   });
     props.editUserInfo(data, userInfo.id)
   }
 

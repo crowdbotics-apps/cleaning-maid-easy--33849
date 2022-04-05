@@ -3,6 +3,7 @@ import {
   GET_PENDING_REQUESTS_SUCCESS,
   GET_APPOINTMENT_DETAILS,
   GET_APPOINTMENT_DETAILS_SUCCESS,
+  REQUEST_ACTION,
   RESET
 } from "./types"
 const initialState = {
@@ -14,6 +15,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case GET_PENDING_REQUESTS:
+    case REQUEST_ACTION:
       return {
         ...state,
         requesting: true
