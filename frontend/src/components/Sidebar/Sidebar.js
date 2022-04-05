@@ -1,8 +1,10 @@
 import React from 'react'
 import { NavLink,Link } from 'react-router-dom'
 import { Nav, Collapse,Button } from 'reactstrap'
+// import { connect } from "react-redux"
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from 'perfect-scrollbar'
+
 
 import avatar from 'assets/img/ayo-ogunseinde-2.jpg'
 
@@ -228,7 +230,13 @@ class Sidebar extends React.Component {
   }
 }
 
-export default Sidebar
+// const mapStateToProps = state => ({
+//   userData:state.profile.userInfo
+// })
+
+
+// export default connect(mapStateToProps, null)(Sidebar)
+export  default Sidebar
 
 export const styles = {
   textStyle: {

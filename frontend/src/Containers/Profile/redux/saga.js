@@ -60,7 +60,6 @@ function* editUserInfo({ data, id }) {
     sessionStorage.setItem('userInfo', JSON.stringify(response.data))
   } catch (e) {
     const { response } = e
-    console.log("fail",response);
     yield put(editUserFailure())
   }
 }

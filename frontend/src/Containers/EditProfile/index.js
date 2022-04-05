@@ -99,16 +99,10 @@ const EditProfile = props => {
   const updateProfile = () => {
     const data = new FormData()
     data.append("name", state.fullName.value)
-    // data.append("profile_picture", selectedImage)
+    data.append("profile_picture", selectedImage)
     data.append("company_name", state.company_name.value)
     data.append("address", state.address.value)
     data.append("phone_number", state.phone_number.value)
-    // data.append('profile_picture', {
-    //     uri: "file:///...",
-    //     type: `${selectedImage?.type}`,
-    //     name: `${selectedImage?.name}`,
-    //   });
-    console.log("new data",...data);
     props.editUserInfo(data, userInfo.id)
   }
 

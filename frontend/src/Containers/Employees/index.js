@@ -57,15 +57,13 @@ function Employees(props) {
   }, [])
 
   useEffect(() => {
-    if(employeesList?.results?.length){
-      let mydiv=document.getElementsByClassName('table-responsive')
-      mydiv[0].style.maxHeight='600px'
+    if (employeesList?.results?.length) {
+      let mydiv = document.getElementsByClassName("table-responsive")
+      mydiv[0].style.maxHeight = "600px"
+    } else {
+      let mydiv = document.getElementsByClassName("table-responsive")
+      mydiv[0].style.maxHeight = ""
     }
-    else{
-      let mydiv=document.getElementsByClassName('table-responsive')
-      mydiv[0].style.maxHeight=''
-    }
-    
   }, [employeesList])
 
   useEffect(() => {
@@ -176,6 +174,12 @@ function Employees(props) {
     setEditValues(item)
   }
 
+  const toggle = () => {
+    setmodal(!modal)
+    resetValues()
+    setEditValues(false)
+  }
+
   const updateEmployee = () => {
     // const data = {
     //   name: state.firstName.value,
@@ -186,14 +190,17 @@ function Employees(props) {
     //   address: state.address.value,
     //   team_id: parseInt(state.team_id.value)
     // }
-    const formBody=new FormData()
-    formBody.append("name",state.firstName.value)
-    formBody.append("company_name",state.company_name.value)
-    formBody.append("display_company",state.display_company.value ? false : true)
-    formBody.append("phone_number",state.phone_number.value)
-    formBody.append("zip_code",state.zip_code.value)
-    formBody.append("address",state.address.value)
-    formBody.append("team_id",parseInt(state.team_id.value))
+    const formBody = new FormData()
+    formBody.append("name", state.firstName.value)
+    formBody.append("company_name", state.company_name.value)
+    formBody.append(
+      "display_company",
+      state.display_company.value ? false : true
+    )
+    formBody.append("phone_number", state.phone_number.value)
+    formBody.append("zip_code", state.zip_code.value)
+    formBody.append("address", state.address.value)
+    formBody.append("team_id", parseInt(state.team_id.value))
 
     props.updateEmployee(formBody, editValues.id, toggle)
   }
@@ -208,11 +215,7 @@ function Employees(props) {
     state.phone_number.value = ""
     state.zip_code.value = null
     state.address.value = null
-    state.team_id.value = ''
-  }
-  const toggle = () => {
-    setmodal(!modal)
-    resetValues()
+    state.team_id.value = ""
   }
 
   const changeTeam = (teamId, eomployId) => {
@@ -431,14 +434,11 @@ function Employees(props) {
                 >
                   Add Employee{" "}
                 </Button>
-
                 <Modal isOpen={modal} toggle={toggle}>
                   <div className="modal-header border-bottom-0">
                     <label style={{ fontSize: 24, fontWeight: "600" }}>
-                     {
-                       editValues? 'Update Employee':'Add Employee'
-                     } 
-                     </label>
+                      {editValues ? "Update Employee" : "Add Employee"}
+                    </label>
                     <button
                       aria-hidden={true}
                       className="close"

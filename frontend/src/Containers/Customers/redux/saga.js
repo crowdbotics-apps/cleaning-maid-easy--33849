@@ -72,7 +72,6 @@ function* addCustomer({ data,toggle }) {
 
 async function changeNotificationApi(data,id) {
   const URL = `${BASE_URL}/api/v1/users/user_info/${id}/`
-  console.log("url",URL);
 
   const token = await sessionStorage.getItem("authToken")
   const options = {
@@ -90,7 +89,7 @@ async function changeNotificationApi(data,id) {
 function* changeNotification({ data,id }) {
   try {
     const response = yield call(changeNotificationApi, data,id)
-    // yield put(getAllCustomersData())
+    yield put(getAllCustomersData())
   } catch (e) {
     const { response } = e
   }

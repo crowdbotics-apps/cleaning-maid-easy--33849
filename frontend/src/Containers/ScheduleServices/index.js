@@ -119,6 +119,24 @@ function ScheduleService(props) {
     stateSchema,
     validationStateSchema
   )
+  const resetValues=()=>{
+    setCalenderValue('')
+    // const data = { ...appointmentData}
+    setFromTime('')
+    setToTime('')
+    setCalenderValue('')
+    state.price.value=''
+    state.description.value=''
+    state.notes.value=''
+    state.title.value=''
+    // data.appointment_date=''
+    // data.assigned_team_id=[]
+    // data.service_id=[]
+    // data.frequency_id=[]
+   
+   
+
+  }
   const onSave = (title, value) => {
     let data = { ...appointmentData }
     data[title] = value
@@ -191,6 +209,7 @@ function ScheduleService(props) {
                       // clearIcon={false}
                       wrapperClassName="datePickerBorder"
                       value={calendarValue}
+                      minDate={new Date()}
                       onChange={date => {
                         setCalenderValue(date)
                         const selectedDatee = moment(date).format("YYYY-MM-DD")
@@ -525,7 +544,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: data => dispatch(scheduleServices(data)),
+  getScheduleServices: (data) => dispatch(scheduleServices(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getFrequencies: () => dispatch(getFrequencies()),
   getAllCustomers: () => dispatch(getAllCustomers())
