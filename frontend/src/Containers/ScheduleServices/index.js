@@ -18,10 +18,6 @@ import {
 } from "reactstrap"
 import Select from "react-select"
 import { connect } from "react-redux"
-import TextField from '@mui/material/TextField';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import MobileTimePicker from '@mui/lab/MobileTimePicker';
 import '../ScheduleServices/style.css'
 
 
@@ -215,57 +211,52 @@ function ScheduleService(props) {
                   >
                     <img src={clockImage} style={{ marginRight: 10 }} />
                     {/* <label style={styles.inputStyle}>09:00AM - 11:30AM</label> */}
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileTimePicker
                           value={startTime}
                           onChange={(newValue) => {
                             onSave("start_time", moment(newValue).format('HH:mm'))
                             setStartTime(newValue);
                           }}
-                          renderInput={(params) => <TextField {...params} placeholder='Start time' />}
+                          renderInput={(params) => <div><TextField {...params} placeholder='Start time' /></div>}
                         />
-                  </LocalizationProvider>
-                    {/* <TimePicker
+                  </LocalizationProvider> */}
+                    <TimePicker
                       value={fromTime}
-                      clearIcon={(
-                        <i
-                         class="nc-icon nc-simple-remove"
-                       ></i>
-                     )}
                       className={"timeStyle"}
                       clockIcon
+                      disableClock={true}
                       onChange={e => {
                         onSave("start_time", e)
                         setFromTime(e)
                       }}
-                    /> */}
+                    />
                     <label
                       style={{ marginLeft: 10, marginRight: 15, fontSize: 20 }}
                     >
                       -
                     </label>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileTimePicker
                           value={endTime}
                           onChange={(newValue) => {
                             onSave("end_time", moment(newValue).format('HH:mm'))
                             setEndTime(newValue);
                           }}
-                          renderInput={(params) => <TextField {...params} placeholder='Start time' />}
+                          renderInput={(params) => 
+                          <div><TextField {...params} placeholder='Start time' /></div>}
                         />
-                  </LocalizationProvider>
-                    {/* <TimePicker
+                  </LocalizationProvider> */}
+                  <TimePicker
                       value={toTime}
-                      clearIcon
                       className={"timeStyle"}
-                      clockIcon
-                      autoFocus={false}
+                      disableClock={true}
                       onChange={e => {
                         onSave("end_time", e)
-                        console.log("e",e);
                         setToTime(e)
                       }}
-                    /> */}
+                    />
+                    
                   </div>
                   <div>
                     {selectTime ? (

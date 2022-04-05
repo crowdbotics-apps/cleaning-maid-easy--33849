@@ -177,17 +177,25 @@ function Employees(props) {
   }
 
   const updateEmployee = () => {
-    const data = {
-      name: state.firstName.value,
-      company_name: state.company_name.value,
-      display_company: state.display_company.value ? false : true,
-      phone_number: state.phone_number.value,
-      zip_code: state.zip_code.value,
-      address: state.address.value,
-      team_id: parseInt(state.team_id.value)
-    }
+    // const data = {
+    //   name: state.firstName.value,
+    //   company_name: state.company_name.value,
+    //   display_company: state.display_company.value ? false : true,
+    //   phone_number: state.phone_number.value,
+    //   zip_code: state.zip_code.value,
+    //   address: state.address.value,
+    //   team_id: parseInt(state.team_id.value)
+    // }
+    const formBody=new FormData()
+    formBody.append("name",state.firstName.value)
+    formBody.append("company_name",state.company_name.value)
+    formBody.append("display_company",state.display_company.value ? false : true)
+    formBody.append("phone_number",state.phone_number.value)
+    formBody.append("zip_code",state.zip_code.value)
+    formBody.append("address",state.address.value)
+    formBody.append("team_id",parseInt(state.team_id.value))
 
-    props.updateEmployee(data, editValues.id, toggle)
+    props.updateEmployee(formBody, editValues.id, toggle)
   }
 
   const [modal, setmodal] = useState(false)
@@ -427,8 +435,10 @@ function Employees(props) {
                 <Modal isOpen={modal} toggle={toggle}>
                   <div className="modal-header border-bottom-0">
                     <label style={{ fontSize: 24, fontWeight: "600" }}>
-                      Add Employee
-                    </label>
+                     {
+                       editValues? 'Update Employee':'Add Employee'
+                     } 
+                     </label>
                     <button
                       aria-hidden={true}
                       className="close"

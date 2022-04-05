@@ -35,7 +35,6 @@ const EditProfile = props => {
   useEffect(() => {
     props.renderHtmlText("Edit Profile")
     const userData = sessionStorage.getItem("userInfo")
-
     setUserInfo(JSON.parse(userData))
   }, [])
 
@@ -109,6 +108,7 @@ const EditProfile = props => {
     //     type: `${selectedImage?.type}`,
     //     name: `${selectedImage?.name}`,
     //   });
+    console.log("new data",...data);
     props.editUserInfo(data, userInfo.id)
   }
 
