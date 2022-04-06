@@ -78,6 +78,7 @@ const Calendar = props => {
     resourceTitle: "No appointment"
   }]
 
+  console.log("eventDetail",eventDetail);
   const {
     addBtnText,
     btnStyle,
@@ -1202,7 +1203,7 @@ const Calendar = props => {
                       style={{ marginRight: 15, color: "grey" }}
                     ></i>
                     <label style={styles.inputStyle}>
-                      9400 Ninove Street, SA
+                      {eventDetail?.client_address}
                     </label>
                   </div>
                 </Col>
@@ -1228,6 +1229,7 @@ const Calendar = props => {
                   <label style={styles.labelfontStyles}>Number</label>
                   <Input
                     readOnly={true}
+                    value={eventDetail?.eventDetail?.client_number}
                     style={{
                       backgroundColor: "white",
                       fontSize: 14,
@@ -1300,7 +1302,7 @@ const Calendar = props => {
                     <label style={styles.labelfontStyles}>Price</label>
                     <Input
                       readOnly={true}
-                      value={eventDetail?.price}
+                      value={eventDetail?.eventDetail?.price}
                       style={{
                         backgroundColor: "white",
                         fontSize: 14,
@@ -1323,7 +1325,7 @@ const Calendar = props => {
                       type="textarea"
                       rows="3"
                       style={styles.textArea}
-                      value={eventDetail?.description}
+                      value={eventDetail?.eventDetail?.description}
                       Modal
                     />
                   </FormGroup>
@@ -1337,7 +1339,7 @@ const Calendar = props => {
                       type="textarea"
                       rows="3"
                       style={styles.textArea}
-                      value={eventDetail?.notes}
+                      value={eventDetail?.eventDetail?.notes}
                     />
                   </FormGroup>
                 </Col>

@@ -67,6 +67,7 @@ const PendingServices = props => {
     if (pendingRequests.length) {
       let mydiv = document.getElementsByClassName("table-responsive")
       mydiv[0].style.maxHeight = "600px"
+      mydiv[0].style.overflowY='auto'
     } else {
       let mydiv = document.getElementsByClassName("table-responsive")
       mydiv[0].style.maxHeight = ""
