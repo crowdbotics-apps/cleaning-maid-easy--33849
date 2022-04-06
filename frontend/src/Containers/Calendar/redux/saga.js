@@ -7,11 +7,13 @@ import { BASE_URL } from '../../../config/app';
 // utils
 import XHR from '../../../utils/XHR';
 
+import toast from "react-hot-toast"
+
 // types
 import { GET_DAY_ACCEPTED_APPOINTEMENTS,GET_NOTES,ADD_NOTES,UPDATE_NOTES,GET_WEEK_ACCEPTED_APPOINTEMENTS,GET_MONTH_ACCEPTED_APPOINTEMENTS} from './types';
 
 // actions
-import {getDayAcceptedAppointmentsSuccess,getNotesSuccess, getNotes as getLatestNotes,} from './actions'
+import {getDayAcceptedAppointmentsSuccess,getNotesSuccess, getNotes as getLatestNotes,reset} from './actions'
 
 
 async function getDayAcceptedAppointmentsApi(date) {
@@ -130,15 +132,19 @@ async function addNotesApi(data) {
   return XHR(URL, options);
 }
 
-function* addNotes({data,setNoteModal}) {
+function* addNotes({data,toggle}) {
   try {
     yield call(addNotesApi,data);
     yield put(getLatestNotes())
-    setNoteModal(false)
-
+    toggle()
+    toast.success("Successfully saved!")
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
 
+  }
+  finally {
+    yield put(reset())
   }
 }
 
@@ -162,10 +168,13 @@ function* updateNotes({data,id,toggle}) {
     yield call(updateNotesApi,data,id);
     yield put(getLatestNotes())
     toggle()
-
+    toast.success("Successfully updated!")
   } catch (e) {
     const { response } = e
-
+    toast.error('Someting wrong!');
+  }
+  finally {
+    yield put(reset())
   }
 }
 

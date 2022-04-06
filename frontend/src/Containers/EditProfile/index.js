@@ -31,7 +31,6 @@ const EditProfile = props => {
   const { history, requesting } = props
   const [userInfo, setUserInfo] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
-
   useEffect(() => {
     props.renderHtmlText("Edit Profile")
     const userData = sessionStorage.getItem("userInfo")
@@ -99,7 +98,7 @@ const EditProfile = props => {
   const updateProfile = () => {
     const data = new FormData()
     data.append("name", state.fullName.value)
-    data.append("profile_picture", selectedImage)
+    selectedImage?.name && data.append("profile_picture", selectedImage)
     data.append("company_name", state.company_name.value)
     data.append("address", state.address.value)
     data.append("phone_number", state.phone_number.value)
@@ -126,6 +125,7 @@ const EditProfile = props => {
                     <ImageUpload
                       height={109}
                       width={109}
+                      profileImage={selectedImage && selectedImage}
                       mainImg={true}
                       mainImage={setSelectedImage}
                     />
