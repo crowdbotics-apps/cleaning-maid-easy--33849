@@ -244,7 +244,7 @@ class DayCalendarViewSet(ViewSet):
     authentication_classes = (
         TokenAuthentication,
     )
-    serializer_class = BriefAppointmentSerializer
+    serializer_class = AppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = Appointment.objects.all()
 
@@ -262,14 +262,14 @@ class DayCalendarViewSet(ViewSet):
             }, 400)
 
         appointments = Appointment.objects.filter(appointment_date=day, status="Accepted")
-        return Response(BriefAppointmentSerializer(appointments, many=True).data)
+        return Response(AppointmentSerializer(appointments, many=True).data)
 
 
 class RangeCalendarViewSet(ViewSet):
     authentication_classes = (
         TokenAuthentication,
     )
-    serializer_class = BriefAppointmentSerializer
+    serializer_class = AppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = Appointment.objects.all()
 
@@ -298,7 +298,7 @@ class RangeCalendarViewSet(ViewSet):
 
         appointments = Appointment.objects.filter(appointment_date__range=[date_from, date_to],
                                                   status="Accepted")
-        return Response(BriefAppointmentSerializer(appointments, many=True).data)
+        return Response(AppointmentSerializer(appointments, many=True).data)
 
 
 class NotificationListViewSet(generics.ListAPIView):
