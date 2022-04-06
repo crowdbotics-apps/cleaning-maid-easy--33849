@@ -1,5 +1,6 @@
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 import { push } from "connected-react-router";
+import toast from "react-hot-toast"
 
 // config
 import { BASE_URL } from '../../../config/app';
@@ -61,9 +62,11 @@ function* addServices({data, setModal}) {
     const response = yield call(addServicesAPI, data);
     yield put(getServices())
     setModal(false)
+    toast.success("Successfully saved!")
   } catch (e) {
     const { response } = e
     yield put(addServicesFailure(response.data))
+    toast.error('Someting wrong!');
   }
   finally {
     yield put(resetServices())

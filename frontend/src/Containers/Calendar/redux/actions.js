@@ -6,7 +6,8 @@ import {
   GET_WEEK_ACCEPTED_APPOINTEMENTS,
   GET_MONTH_ACCEPTED_APPOINTEMENTS,
   ADD_NOTES,
-  UPDATE_NOTES
+  UPDATE_NOTES,
+  RESET,
 } from "./types"
 
 export const getDayAcceptedAppointments = (date) => ({
@@ -30,10 +31,10 @@ export const getNotes = () => ({
   type: GET_NOTES
 })
 
-export const addNotes = (data, setNoteModal) => ({
+export const addNotes = (data, toggle) => ({
   type: ADD_NOTES,
   data,
-  setNoteModal
+  toggle
 })
 
 export const updateNotes = (data,id, toggle) => ({
@@ -51,4 +52,8 @@ export const getNotesSuccess = data => ({
 export const getDayAcceptedAppointmentsSuccess = data => ({
   type: GET_DAY_ACCEPTED_APPOINTEMENTS_SUCCESS,
   data
+})
+
+export const reset = () => ({
+  type: RESET
 })

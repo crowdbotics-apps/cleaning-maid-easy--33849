@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef,useEffect } from 'react';
 // used for making the prop types of this component
 import PropTypes from 'prop-types';
 
@@ -11,7 +11,7 @@ import defaultImage from "assets/img/image_placeholder.jpg";
 import defaultAvatar from "assets/img/placeholder.jpg";
 
 function ImageUpload(props) {
-  const { allServices, index, mainImg, mainImage,width,height, setImage} = props;
+  const { allServices, index, mainImg, mainImage,width,height, setImage,profileImage} = props;
 
   const [previewImage, setPreviewImage] = useState(false);
   const [showImg, setShowImg]=useState('')
@@ -19,6 +19,10 @@ function ImageUpload(props) {
   const imageRef = useRef();
 
 
+  useEffect(()=>{
+    profileImage && setPreviewImage(profileImage)
+  },[profileImage])
+  
   const handleImageChange = (e) => {
     e.preventDefault();
     let reader = new FileReader();
@@ -46,7 +50,6 @@ function ImageUpload(props) {
   const handleClick = () => {
     imageRef.current.click();
   };
-
   // const handleRemove = () => {
   //   this.setState({
   //     file: null,

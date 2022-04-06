@@ -54,7 +54,7 @@ const routes = [
   {
     path: '/PendingServices',
     name: 'Pending Services',
-    icon: 'fa fa-question',
+    icon: 'fa fa-question-circle',
     component: PendingServices,
     layout: '/admin',
     isShow: 1,

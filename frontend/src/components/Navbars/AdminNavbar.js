@@ -227,7 +227,7 @@ class AdminNavbar extends React.Component {
         <span>
           {this.state.viewState === 1
             ? todayDate === nowDay
-              ? "Today" + ", " + date.format("DD/MM/YYYY")
+              ? "Today" + ", " + date.format("MM/DD/YYYY")
               : nowDay
             : date.format("MMMM")}
         </span>

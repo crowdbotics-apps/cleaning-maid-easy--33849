@@ -4,6 +4,8 @@ import { push } from "connected-react-router"
 // config
 import { BASE_URL } from "../../../config/app"
 
+import toast from "react-hot-toast"
+
 // utils
 import XHR from "../../../utils/XHR"
 
@@ -53,12 +55,15 @@ function* getFrequencies() {
   }
 }
 
-function* scheduleServices({ data }) {
+function* scheduleServices({ data, resetValues }) {
   try {
     const response = yield call(scheduleServicesAPI, data)
+    toast.success("Successfully schedule services saved!")
     yield
+    resetValues()
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   } finally {
     yield put(scheduleServicesSuccess())
   }

@@ -21,6 +21,7 @@ import { connect } from "react-redux"
 import { Link } from "react-router-dom"
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
+import { Toaster } from "react-hot-toast"
 
 //Actions
 import { getUserInfo } from "./redux/actions"
@@ -42,6 +43,8 @@ const Profile = props => {
   const { history } = props
 
   return (
+    <>
+    <Toaster position="top-center" />
     <div
       className="content "
       style={{
@@ -108,6 +111,7 @@ const Profile = props => {
         </Col>
       </Row>
     </div>
+    </>
   )
 }
 
@@ -128,7 +132,7 @@ const styles = {
   },
   imagWrapper: {
     width: 194,
-    heigt: 194,
+    height: 194,
     borderRadius: "50%"
   },
   userNameText: {

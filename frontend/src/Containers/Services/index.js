@@ -1,13 +1,19 @@
 import React, { useEffect } from "react"
 
 import { connect } from "react-redux"
+import { Toaster } from "react-hot-toast"
 
 //utils
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
 //Actions
-import { getServices, addServices, addServicesFailure,renderHtmlText } from "./redux/actions"
+import {
+  getServices,
+  addServices,
+  addServicesFailure,
+  renderHtmlText
+} from "./redux/actions"
 
 // reactstrap components
 import {
@@ -37,19 +43,17 @@ const Services = props => {
 
   useEffect(() => {
     props.getServices()
-    props.renderHtmlText('Services')
+    props.renderHtmlText("Services")
   }, [])
 
   useEffect(() => {
-    if(servicesData.length){
-      let mydiv=document.getElementsByClassName('table-responsive')
-      mydiv[0].style.maxHeight='600px'
+    if (servicesData.length) {
+      let mydiv = document.getElementsByClassName("table-responsive")
+      mydiv[0].style.maxHeight = "600px"
+    } else {
+      let mydiv = document.getElementsByClassName("table-responsive")
+      mydiv[0].style.maxHeight = ""
     }
-    else{
-      let mydiv=document.getElementsByClassName('table-responsive')
-      mydiv[0].style.maxHeight=''
-    }
-    
   }, [servicesData])
 
   const [modal, setModal] = React.useState(false)
@@ -101,198 +105,202 @@ const Services = props => {
   }
 
   return (
-    <div
-      className="content "
-      style={{
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundImage: `url(${require("assets/images/bg_content.png")})`,
-        flex: 1
-      }}
-    >
-      <Modal isOpen={modal} closeModal={closeModal}>
-        <div style={{ height: 600 }}>
-          <div className="modal-header border-bottom-0">
-            <button
-              aria-hidden={true}
-              className="close"
-              data-dismiss="modal"
-              type="button"
-              onClick={closeModal}
-            >
-              <i
-                style={{
-                  color:
-                    "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF"
-                }}
-                className="nc-icon nc-simple-remove"
-              />
-            </button>
-            <div>
-              <label className="mt-5" style={styles.titleTextStyle}>
-                Add Service
-              </label>
-            </div>
-          </div>
-          <div className="modal-body ">
-            <label style={styles.labelTextStyle}>Service Name</label>
-            <Input
-              style={styles.inputTextStyle}
-              className="border-0 pl-0"
-              onChange={e => handleOnChange("serviceName", e.target.value)}
-            />
-            <div style={styles.inputLineStyle} />
-            {servicesError.name && (
-              <label style={{ color: "red" }}>{servicesError.name}</label>
-            )}
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Service Description</label>
-              <Input
-                style={styles.inputTextStyle}
-                className="border-0 pl-0"
-                onChange={e =>
-                  handleOnChange("serviceDescription", e.target.value)
-                }
-              />
-              <div style={styles.inputLineStyle} />
-            </div>
-            {servicesError.description && (
-              <label style={{ color: "red" }}>
-                {servicesError.description}
-              </label>
-            )}
+    <>
+      <Toaster position="top-center" />
 
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Service Price</label>
+      <div
+        className="content "
+        style={{
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundImage: `url(${require("assets/images/bg_content.png")})`,
+          flex: 1
+        }}
+      >
+        <Modal isOpen={modal} closeModal={closeModal}>
+          <div style={{ height: 600 }}>
+            <div className="modal-header border-bottom-0">
+              <button
+                aria-hidden={true}
+                className="close"
+                data-dismiss="modal"
+                type="button"
+                onClick={closeModal}
+              >
+                <i
+                  style={{
+                    color:
+                      "linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%), linear-gradient(0deg, #4A8E44, #4A8E44), #DFDFDF"
+                  }}
+                  className="nc-icon nc-simple-remove"
+                />
+              </button>
+              <div>
+                <label className="mt-5" style={styles.titleTextStyle}>
+                  Add Service
+                </label>
+              </div>
+            </div>
+            <div className="modal-body ">
+              <label style={styles.labelTextStyle}>Service Name</label>
               <Input
                 style={styles.inputTextStyle}
                 className="border-0 pl-0"
-                onChange={e => handleOnChange("servicePrice", e.target.value)}
+                onChange={e => handleOnChange("serviceName", e.target.value)}
               />
               <div style={styles.inputLineStyle} />
-            </div>
-            {servicesError.price && (
-              <label style={{ color: "red" }}>{servicesError.price}</label>
-            )}
-          </div>
-        </div>
-        <div className="modal-footer border-top-0  justify-content-center">
-          <Button
-            className="mb-3"
-            style={styles.btnTextStyle}
-            onClick={toggle}
-            disabled={disable}
-          >
-            {requesting ? (
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
-              />
-            ) : (
-              "Save Service"
-            )}
-          </Button>
-        </div>
-      </Modal>
-      <Row>
-        <Col md="12">
-          <Card
-            style={{
-              marginTop: 54,
-              marginLeft: 54,
-              marginRight: 54,
-              opacity: 0.94
-            }}
-          >
-            <CardBody>
-              <Table responsive>
-                <thead style={{ opacity: 0.5 }}>
-                  <tr>
-                    <th style={styles.theadText}></th>
-                    <th style={styles.theadText}>Service Name</th>
-                    <th style={styles.theadText}>Service Description</th>
-                    <th style={styles.theadText}>Service Price</th>
-                    <th style={styles.theadText}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {servicesData ? (
-                    servicesData.map((item, i) => (
-                      <tr>
-                        <td style={styles.tdataText1}>{i + 1}.</td>
-                        <td style={styles.tdataText2}>{item.name}</td>
-                        <td style={styles.tdataText}>{item.description}</td>
-                        <td style={styles.tdataText}>{item.price}</td>
-                        <td className="text-right">
-                          <Button
-                            className="btn-icon btn-neutral"
-                            size="sm"
-                            type="button"
-                          >
-                            <img
-                              alt="..."
-                              src={require("assets/images/delete_btn.png")}
-                            />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td className="justify-content-center d-flex pt-7">
-                        {requesting ? (
-                          <Spinner
-                            as="span"
-                            animation="border"
-                            size="lg"
-                            role="status"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <h6>No Record Found</h6>
-                        )}
-                      </td>
-                      <td></td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
-              <div className="d-flex justify-content-end">
-                <Button
-                  className="mb-3 "
-                  style={styles.addBtnText}
-                  onClick={() => [
-                    setModal(!modal),
-                    props.addServicesFailure(false)
-                  ]}
-                >
-                  Add Service
-                </Button>
+              {servicesError.name && (
+                <label style={{ color: "red" }}>{servicesError.name}</label>
+              )}
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Service Description</label>
+                <Input
+                  style={styles.inputTextStyle}
+                  className="border-0 pl-0"
+                  onChange={e =>
+                    handleOnChange("serviceDescription", e.target.value)
+                  }
+                />
+                <div style={styles.inputLineStyle} />
               </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+              {servicesError.description && (
+                <label style={{ color: "red" }}>
+                  {servicesError.description}
+                </label>
+              )}
+
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Service Price</label>
+                <Input
+                  style={styles.inputTextStyle}
+                  className="border-0 pl-0"
+                  onChange={e => handleOnChange("servicePrice", e.target.value)}
+                />
+                <div style={styles.inputLineStyle} />
+              </div>
+              {servicesError.price && (
+                <label style={{ color: "red" }}>{servicesError.price}</label>
+              )}
+            </div>
+          </div>
+          <div className="modal-footer border-top-0  justify-content-center">
+            <Button
+              className="mb-3"
+              style={styles.btnTextStyle}
+              onClick={toggle}
+              disabled={disable}
+            >
+              {requesting ? (
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+              ) : (
+                "Save Service"
+              )}
+            </Button>
+          </div>
+        </Modal>
+        <Row>
+          <Col md="12">
+            <Card
+              style={{
+                marginTop: 54,
+                marginLeft: 54,
+                marginRight: 54,
+                opacity: 0.94
+              }}
+            >
+              <CardBody>
+                <Table responsive>
+                  <thead style={{ opacity: 0.5 }}>
+                    <tr>
+                      <th style={styles.theadText}></th>
+                      <th style={styles.theadText}>Service Name</th>
+                      <th style={styles.theadText}>Service Description</th>
+                      <th style={styles.theadText}>Service Price</th>
+                      <th style={styles.theadText}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {servicesData ? (
+                      servicesData.map((item, i) => (
+                        <tr>
+                          <td style={styles.tdataText1}>{i + 1}.</td>
+                          <td style={styles.tdataText2}>{item.name}</td>
+                          <td style={styles.tdataText}>{item.description}</td>
+                          <td style={styles.tdataText}>{item.price}</td>
+                          <td className="text-right">
+                            <Button
+                              className="btn-icon btn-neutral"
+                              size="sm"
+                              type="button"
+                            >
+                              <img
+                                alt="..."
+                                src={require("assets/images/delete_btn.png")}
+                              />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td className="justify-content-center d-flex pt-7">
+                          {requesting ? (
+                            <Spinner
+                              as="span"
+                              animation="border"
+                              size="lg"
+                              role="status"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <h6>No Record Found</h6>
+                          )}
+                        </td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </Table>
+                <div className="d-flex justify-content-end">
+                  <Button
+                    className="mb-3 "
+                    style={styles.addBtnText}
+                    onClick={() => [
+                      setModal(!modal),
+                      props.addServicesFailure(false)
+                    ]}
+                  >
+                    Add Service
+                  </Button>
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    </>
   )
 }
 
 const mapStateToProps = state => ({
   requesting: state.services.requesting,
   servicesData: state.services.servicesData,
-  servicesError: state.services.servicesError,
+  servicesError: state.services.servicesError
 })
 
 const mapDispatchToProps = dispatch => ({
   getServices: () => dispatch(getServices()),
   addServices: (data, setModal) => dispatch(addServices(data, setModal)),
   addServicesFailure: data => dispatch(addServicesFailure(data)),
-  renderHtmlText: (data)=> dispatch(renderHtmlText(data))
+  renderHtmlText: data => dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Services)
 
