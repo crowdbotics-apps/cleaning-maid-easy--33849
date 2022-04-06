@@ -73,7 +73,6 @@ const Calendar = props => {
   const [actionRequest, setActionRequest]=useState(0)
 
   const calendarRef = useRef()
-
   const resourceDummyData = [{
     resourceId: -1,
     resourceTitle: "No appointment"
@@ -1428,7 +1427,7 @@ const Calendar = props => {
                   class="fa fa-map-marker"
                   style={{ marginRight: 15, color: "grey" }}
                 ></i>
-                <label style={styles.inputStyle}>9400 Ninove Street, SA</label>
+                <label style={styles.inputStyle}>{pendingDetails?.client_address}</label>
               </div>
             </Col>
           </Row>
@@ -1453,6 +1452,7 @@ const Calendar = props => {
               <label style={styles.labelfontStyles}>Number</label>
               <Input
                 readOnly={true}
+                value={pendingDetails?.client_number}
                 style={{
                   backgroundColor: "white",
                   fontSize: 14,

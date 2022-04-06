@@ -213,7 +213,7 @@ const PendingServices = props => {
                     style={{ marginRight: 15, color: "grey" }}
                   ></i>
                   <label style={styles.inputStyle}>
-                    9400 Ninove Street, SA
+                    {pendingDetails?.client_address}
                   </label>
                 </div>
               </Col>
@@ -239,6 +239,7 @@ const PendingServices = props => {
                 <label style={styles.labelfontStyles}>Number</label>
                 <Input
                   readOnly={true}
+                  value={pendingDetails?.client_number}
                   style={{
                     backgroundColor: "white",
                     fontSize: 14,
