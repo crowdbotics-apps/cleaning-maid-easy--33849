@@ -163,7 +163,7 @@ function Employees(props) {
       name: state.firstName.value + " " + state.lastName.value,
       email: state.email.value,
       company_name: state.company_name.value,
-      display_company: state.display_company.value ? false : true,
+      display_company: state.display_company.value ? true : false,
       phone_number: state.phone_number.value,
       zip_code: state.zip_code.value,
       address: state.address.value,
@@ -181,6 +181,7 @@ function Employees(props) {
     setmodal(!modal)
     resetValues()
     setEditValues(false)
+    state.email.error=''
   }
 
   const updateEmployee = () => {
@@ -198,7 +199,7 @@ function Employees(props) {
     formBody.append("company_name", state.company_name.value)
     formBody.append(
       "display_company",
-      state.display_company.value ? false : true
+      state.display_company.value===true ? true : state.display_company.value===false? false:state.display_company.value? true : false
     )
     formBody.append("phone_number", state.phone_number.value)
     formBody.append("zip_code", state.zip_code.value)
@@ -311,6 +312,10 @@ function Employees(props) {
                               <p id="TooltipExample" className="mb-0">
                                 {item.display_company && item.company_name}
                               </p>
+
+                              {/* <p id="TooltipExample" className="mb-0">
+                                {item.display_company && item.company_name}
+                              </p>
                               <Tooltip
                                 isOpen={tooltipOpen}
                                 placement="bottom"
@@ -338,7 +343,7 @@ function Employees(props) {
                                     </Label>
                                   </div>
                                 </div>
-                              </Tooltip>
+                              </Tooltip> */}
                             </div>
                           </td>
                           <td>{item.phone_number}</td>
@@ -491,23 +496,31 @@ function Employees(props) {
                         </label>
                       )}
                     </div>
-                    <label style={styles.labelStyle} className="mt-3">
-                      Email
-                    </label>
-                    <div>
-                      <Input
-                        style={styles.inputStyle}
-                        className="border-top-0 border-right-0 border-left-0 pl-0"
-                        onChange={e => handleOnChange("email", e.target.value)}
-                      />
-                      {state.email.error ? (
-                        <label style={{ color: "red" }}>
-                          {state.email.error}
-                        </label>
-                      ) : backendError ? (
-                        <label style={{ color: "red" }}>{backendError}</label>
-                      ) : null}
-                    </div>
+                    {
+                      !editValues ? (
+                        <>
+                        <label style={styles.labelStyle} className="mt-3">
+                        Email
+                      </label>
+                      <div>
+                        <Input
+                          style={styles.inputStyle}
+                          className="border-top-0 border-right-0 border-left-0 pl-0"
+                          onChange={e => handleOnChange("email", e.target.value)}
+                        />
+                        {state.email.error && (
+                          <label style={{ color: "red" }}>
+                            {state.email.error}
+                          </label>
+                        )}
+                        {/* // : backendError ? (
+                        //   <label style={{ color: "red" }}>{backendError}</label>
+                        // ) : null} */}
+                      </div>
+                      </>
+                      ):null
+                    }
+                   
                     <label style={styles.labelStyle} className="mt-3">
                       Company Name
                     </label>
@@ -531,10 +544,10 @@ function Employees(props) {
                       <Label>
                         <Input
                           type="checkbox"
-                          checked={!state.display_company.value}
+                          checked={state.display_company.value}
                           value={state.display_company.value}
                           class="custom-control-input"
-                          onChange={e => handleOnChange("display_company", 0)}
+                          onChange={e => handleOnChange("display_company", 1)}
                         />
                         Yes
                       </Label>
@@ -542,8 +555,8 @@ function Employees(props) {
                         <Input
                           type="checkbox"
                           value={state.display_company.value}
-                          checked={state.display_company.value}
-                          onChange={e => handleOnChange("display_company", 1)}
+                          checked={!state.display_company.value}
+                          onChange={e => handleOnChange("display_company", 0)}
                         />
                         No
                       </Label>
