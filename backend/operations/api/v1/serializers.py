@@ -57,6 +57,8 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'end_time',
             'client',
             'client_id',
+            'client_address',
+            'client_number',
             'assigned_team',
             'assigned_team_id',
             'service',
