@@ -102,7 +102,16 @@ function ScheduleService(props) {
     title: {
       value: "",
       error: ""
+    },
+    client_number: {
+      value: "",
+      error: ""
+    },
+    client_address:{
+      value: "",
+      error: ""
     }
+
   }
 
   const validationStateSchema = {
@@ -118,6 +127,13 @@ function ScheduleService(props) {
     },
     title: {
       required: true
+    },
+    client_number: {
+      required: true,
+      validator: validator.numeric
+    },
+    client_address:{
+      required: true,
     }
   }
 
@@ -282,7 +298,7 @@ function ScheduleService(props) {
                     ) : null}
                   </div>
                   <div
-                    className="mt-4"
+                    className="mt-4 d-flex"
                     style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}
                   >
                     <img
@@ -290,10 +306,16 @@ function ScheduleService(props) {
                       src={locationImage}
                       style={{ marginRight: 10 }}
                     />
-                    <label style={styles.inputStyle}>
-                      9400 Ninove Street, SA
-                    </label>
+                   <Input
+                        style={styles.inputStyle}
+                        className="border-top-0 border-right-0 border-left-0 p-0"
+                        onChange={e => handleOnChange("client_address", e.target.value)}
+                        value={state.client_address.value}
+                      />
                   </div>
+                  <label style={{ color: "red" }}>
+                        {state.client_address.error ? state.client_address.error : null}
+                      </label>
                   {/* <div
                     className="mt-4 d-flex"
                     style={{
@@ -345,7 +367,12 @@ function ScheduleService(props) {
                       <Input
                         style={styles.inputStyle}
                         className="border-top-0 border-right-0 border-left-0 p-0"
+                        onChange={e => handleOnChange("client_number", e.target.value)}
+                        value={state.client_number.value}
                       />
+                       <label style={{ color: "red" }}>
+                        {state.client_number.error ? state.client_number.error : null}
+                      </label>
                     </Col>
                   </Row>
                   {/* </div> */}

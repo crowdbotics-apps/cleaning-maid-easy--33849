@@ -67,6 +67,7 @@ const PendingServices = props => {
     if (pendingRequests.length) {
       let mydiv = document.getElementsByClassName("table-responsive")
       mydiv[0].style.maxHeight = "600px"
+      mydiv[0].style.overflowY='auto'
     } else {
       let mydiv = document.getElementsByClassName("table-responsive")
       mydiv[0].style.maxHeight = ""
@@ -213,7 +214,7 @@ const PendingServices = props => {
                     style={{ marginRight: 15, color: "grey" }}
                   ></i>
                   <label style={styles.inputStyle}>
-                    9400 Ninove Street, SA
+                    {pendingDetails?.client_address}
                   </label>
                 </div>
               </Col>
@@ -239,6 +240,7 @@ const PendingServices = props => {
                 <label style={styles.labelfontStyles}>Number</label>
                 <Input
                   readOnly={true}
+                  value={pendingDetails?.client_number}
                   style={{
                     backgroundColor: "white",
                     fontSize: 14,
