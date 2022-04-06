@@ -75,7 +75,7 @@ function* addEmployee({ data, toggle }) {
   } catch (e) {
     const { response } = e
     yield put(addEmployeeFailure(response?.data?.Error))
-    toast.error('Someting wrong!');
+    toast.error(`${response?.data?.Error ? response?.data?.Error :'Something Wrong!'}`);
   } finally {
     yield put(reset())
   }
@@ -133,7 +133,7 @@ function* updateEmployee({ data, id, toggle }) {
   } catch (e) {
     const { response } = e
     yield put(addEmployeeFailure(response?.data))
-    toast.error('Someting wrong!');
+    console.log('error', response?.data);
   }
   finally {
     yield put(reset())
