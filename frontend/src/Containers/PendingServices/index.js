@@ -6,6 +6,8 @@ import { connect } from "react-redux"
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
+import { Toaster } from "react-hot-toast"
+
 import moment from "moment"
 
 // reactstrap components
@@ -49,11 +51,12 @@ import {
 import { renderHtmlText } from "../Services/redux/actions"
 
 const PendingServices = props => {
-  const { requesting, pendingRequests,actionRequesting } = props
+  const { requesting, pendingRequests, actionRequesting } = props
 
   const [modal, setModal] = React.useState(false)
   const [requestError, setRequestError] = useState(false)
   const [pendingDetails, setPendingDetails] = useState(false)
+  const [actionRequest, setActionRequest] = useState(0)
 
   useEffect(() => {
     props.getPendingRequests()
@@ -113,6 +116,7 @@ const PendingServices = props => {
   const modalToggle = () => {
     setModal(!modal)
     setPendingDetails("")
+    setActionRequest(0)
   }
 
   const acceptRequest = requestAction => {
@@ -122,293 +126,314 @@ const PendingServices = props => {
     }
     props.requestAction(data, modalToggle)
     setRequestError(false)
+    if (requestAction === "Accept") {
+      setActionRequest(1)
+    } else {
+      setActionRequest(2)
+    }
   }
 
   return (
-    <div
-      className="content "
-      style={{
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundImage: `url(${require("assets/images/bg_content.png")})`,
-        flex: 1
-      }}
-    >
-      <Modal isOpen={modal} toggle={modalToggle}>
-        <ModalHeader style={{ borderBottom: 0 }}>
-          <span>
-            <b style={{ paddingTop: 10 }}>{pendingDetails?.title}</b>
-          </span>
-          <button
-            aria-hidden={true}
-            className="close"
-            data-dismiss="modal"
-            type="button"
-            style={{ outline: "none" }}
-            onClick={modalToggle}
-          >
-            <i
-              className="nc-icon nc-simple-remove"
-              style={{ color: " #438B44" }}
-            />
-          </button>
-        </ModalHeader>
-        <ModalBody>
-          <Row>
-            <Col>
-              {requestError ? (
-                <Alert color="danger">Request Failed</Alert>
-              ) : null}
-            </Col>
-          </Row>
-          <Row style={{ justifyContent: "center" }}>
-            <Col md="12">
-              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                <i
-                  class="nc-icon nc-calendar-60"
-                  style={{ marginRight: 10, color: "grey" }}
-                ></i>
-                <label style={styles.inputStyle}>
-                  {moment(pendingDetails?.appointment_date).format(
-                    "d MMMM yyy"
-                  )}
-                </label>
-              </div>
-            </Col>
-          </Row>
-          <Row style={{ justifyContent: "center", marginTop: 20 }}>
-            <Col md="12">
-              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                <i
-                  class="fa fa-clock-o"
-                  style={{ marginRight: 10, color: "grey" }}
-                ></i>
-                <label style={styles.inputStyle}>
-                  {moment(pendingDetails?.start_time, "hh:mm").format("hh:mmA")}{" "}
-                  - {moment(pendingDetails?.end_time, "hh:mm").format("hh:mmA")}
-                </label>
-              </div>
-            </Col>
-          </Row>
-          <Row style={{ justifyContent: "center", marginTop: 20 }}>
-            <Col md="12">
-              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                <i
-                  class="fa fa-map-marker"
-                  style={{ marginRight: 15, color: "grey" }}
-                ></i>
-                <label style={styles.inputStyle}>9400 Ninove Street, SA</label>
-              </div>
-            </Col>
-          </Row>
+    <>
+      <Toaster position="top-center" />
 
-          <Row className="mt-4" style={{ justifyContent: "space-between" }}>
-            <Col md="8">
-              <label style={styles.labelfontStyles}>Client Name</label>
-              <Input
-                style={{
-                  width: 300,
-                  backgroundColor: "white",
-                  fontSize: 14,
-                  fontWeight: "500",
-                  color: "#000000"
-                }}
-                readOnly={true}
-                value={pendingDetails?.client?.name}
-                className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+      <div
+        className="content "
+        style={{
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundImage: `url(${require("assets/images/bg_content.png")})`,
+          flex: 1
+        }}
+      >
+        <Modal isOpen={modal} toggle={modalToggle}>
+          <ModalHeader style={{ borderBottom: 0 }}>
+            <span>
+              <b style={{ paddingTop: 10 }}>{pendingDetails?.title}</b>
+            </span>
+            <button
+              aria-hidden={true}
+              className="close"
+              data-dismiss="modal"
+              type="button"
+              style={{ outline: "none" }}
+              onClick={modalToggle}
+            >
+              <i
+                className="nc-icon nc-simple-remove"
+                style={{ color: " #438B44" }}
               />
-            </Col>
-            <Col md="4">
-              <label style={styles.labelfontStyles}>Number</label>
-              <Input
-                readOnly={true}
-                style={{
-                  backgroundColor: "white",
-                  fontSize: 14,
-                  fontWeight: "500",
-                  color: "#000000"
-                }}
-                className="border-top-0 border-right-0 border-left-0 p-0"
-              />
-            </Col>
-          </Row>
+            </button>
+          </ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col>
+                {requestError ? (
+                  <Alert color="danger">Request Failed</Alert>
+                ) : null}
+              </Col>
+            </Row>
+            <Row style={{ justifyContent: "center" }}>
+              <Col md="12">
+                <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                  <i
+                    class="nc-icon nc-calendar-60"
+                    style={{ marginRight: 10, color: "grey" }}
+                  ></i>
+                  <label style={styles.inputStyle}>
+                    {moment(pendingDetails?.appointment_date).format(
+                      "d MMMM yyy"
+                    )}
+                  </label>
+                </div>
+              </Col>
+            </Row>
+            <Row style={{ justifyContent: "center", marginTop: 20 }}>
+              <Col md="12">
+                <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                  <i
+                    class="fa fa-clock-o"
+                    style={{ marginRight: 10, color: "grey" }}
+                  ></i>
+                  <label style={styles.inputStyle}>
+                    {moment(pendingDetails?.start_time, "hh:mm").format(
+                      "hh:mmA"
+                    )}{" "}
+                    -{" "}
+                    {moment(pendingDetails?.end_time, "hh:mm").format("hh:mmA")}
+                  </label>
+                </div>
+              </Col>
+            </Row>
+            <Row style={{ justifyContent: "center", marginTop: 20 }}>
+              <Col md="12">
+                <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                  <i
+                    class="fa fa-map-marker"
+                    style={{ marginRight: 15, color: "grey" }}
+                  ></i>
+                  <label style={styles.inputStyle}>
+                    9400 Ninove Street, SA
+                  </label>
+                </div>
+              </Col>
+            </Row>
 
-          <Row>
-            <Col md="12">
-              <div className="">
-                <label style={styles.labelfontStyles}>
-                  Assigned Employee/ Team
-                </label>
+            <Row className="mt-4" style={{ justifyContent: "space-between" }}>
+              <Col md="8">
+                <label style={styles.labelfontStyles}>Client Name</label>
                 <Input
+                  style={{
+                    width: 300,
+                    backgroundColor: "white",
+                    fontSize: 14,
+                    fontWeight: "500",
+                    color: "#000000"
+                  }}
                   readOnly={true}
-                  value={pendingDetails?.assigned_team?.title}
-                  style={styles.inputWraper}
-                  className="border-top-0 border-right-0 border-left-0 p-0"
-                />
-              </div>
-            </Col>
-          </Row>
-
-          <Row className="mt-4 " style={{ justifyContent: "space-between" }}>
-            <Col lg="6" md="6" sm="3">
-              <label style={styles.labelfontStyles}>Services</label>
-              <Select
-                className="react-select "
-                classNamePrefix="react-select"
-                name="singleSelect"
-                isDisabled={true}
-                style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
-                value={{
-                  value: pendingDetails?.service?.id,
-                  label: pendingDetails?.service?.name
-                }}
-                placeholder="Single Select"
-              />
-            </Col>
-            <Col lg="6" md="6" sm="3">
-              <label style={styles.labelfontStyles}>Frequency</label>
-              <Select
-                className="react-select  "
-                classNamePrefix="react-select"
-                name="singleSelect"
-                style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
-                isDisabled={true}
-                value={{
-                  value: pendingDetails?.frequency?.id,
-                  label: pendingDetails?.frequency?.title
-                }}
-                placeholder="Single Select"
-              />
-            </Col>
-          </Row>
-
-          <Row style={{ justifyContent: "center", marginTop: 20 }}>
-            <Col md="12">
-              <div className="">
-                <label style={styles.labelfontStyles}>Price</label>
-                <Input
-                  readOnly={true}
-                  style={styles.inputWraper}
-                  value={pendingDetails.price}
+                  value={pendingDetails?.client?.name}
                   className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
                 />
-              </div>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col>
-              <FormGroup>
-                <label style={styles.labelfontStyles}> Description </label>
+              </Col>
+              <Col md="4">
+                <label style={styles.labelfontStyles}>Number</label>
                 <Input
                   readOnly={true}
-                  className="textarea"
-                  type="textarea"
-                  value={pendingDetails.description}
-                  rows="3"
-                  style={styles.textArea}
-                  Modal
-                  defaultValue="Oh so, your weak rhyme You doubt I'll bother,
+                  style={{
+                    backgroundColor: "white",
+                    fontSize: 14,
+                    fontWeight: "500",
+                    color: "#000000"
+                  }}
+                  className="border-top-0 border-right-0 border-left-0 p-0"
+                />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md="12">
+                <div className="">
+                  <label style={styles.labelfontStyles}>
+                    Assigned Employee/ Team
+                  </label>
+                  <Input
+                    readOnly={true}
+                    value={pendingDetails?.assigned_team?.title}
+                    style={styles.inputWraper}
+                    className="border-top-0 border-right-0 border-left-0 p-0"
+                  />
+                </div>
+              </Col>
+            </Row>
+
+            <Row className="mt-4 " style={{ justifyContent: "space-between" }}>
+              <Col lg="6" md="6" sm="3">
+                <label style={styles.labelfontStyles}>Services</label>
+                <Select
+                  className="react-select "
+                  classNamePrefix="react-select"
+                  name="singleSelect"
+                  isDisabled={true}
+                  style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
+                  value={{
+                    value: pendingDetails?.service?.id,
+                    label: pendingDetails?.service?.name
+                  }}
+                  placeholder="Single Select"
+                />
+              </Col>
+              <Col lg="6" md="6" sm="3">
+                <label style={styles.labelfontStyles}>Frequency</label>
+                <Select
+                  className="react-select  "
+                  classNamePrefix="react-select"
+                  name="singleSelect"
+                  style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
+                  isDisabled={true}
+                  value={{
+                    value: pendingDetails?.frequency?.id,
+                    label: pendingDetails?.frequency?.title
+                  }}
+                  placeholder="Single Select"
+                />
+              </Col>
+            </Row>
+
+            <Row style={{ justifyContent: "center", marginTop: 20 }}>
+              <Col md="12">
+                <div className="">
+                  <label style={styles.labelfontStyles}>Price</label>
+                  <Input
+                    readOnly={true}
+                    style={styles.inputWraper}
+                    value={pendingDetails.price}
+                    className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+                  />
+                </div>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col>
+                <FormGroup>
+                  <label style={styles.labelfontStyles}> Description </label>
+                  <Input
+                    readOnly={true}
+                    className="textarea"
+                    type="textarea"
+                    value={pendingDetails.description}
+                    rows="3"
+                    style={styles.textArea}
+                    Modal
+                    defaultValue="Oh so, your weak rhyme You doubt I'll bother,
                         "
-                />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <label style={styles.labelfontStyles}> Notes </label>
-                <Input
-                  readOnly={true}
-                  className="textarea"
-                  type="textarea"
-                  value={pendingDetails.notes}
-                  rows="3"
-                  style={styles.textArea}
-                  defaultValue=""
-                />
-              </FormGroup>
-            </Col>
-          </Row>
+                  />
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <label style={styles.labelfontStyles}> Notes </label>
+                  <Input
+                    readOnly={true}
+                    className="textarea"
+                    type="textarea"
+                    value={pendingDetails.notes}
+                    rows="3"
+                    style={styles.textArea}
+                    defaultValue=""
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
 
-          <Row style={{ justifyContent: "center" }}>
-            <Col md="6">
-              <Button
-                className="btnTest"
-                style={styles.addBtnText}
-                onClick={() => acceptRequest("Accept")}
-              >
-               {actionRequesting ? (
-            <Spinner
-              as="span"
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden="true"
-            />
-          ) : (
-            "Accept"
-          )}
-              </Button>
-            </Col>
-            <Col md="6">
-              <Button
-                className="btnTest2"
-                style={styles.addBtnText2}
-                outline
-                color="success"
-                onClick={() => acceptRequest("Reject")}
-              >
-                Reject
-              </Button>
-            </Col>
-          </Row>
-        </ModalBody>
-      </Modal>
-      <Row>
-        <Col md="12">
-          <Card
-            style={{
-              marginTop: 54,
-              marginLeft: 54,
-              marginRight: 54,
-              opacity: 0.94
-            }}
-          >
-            <CardBody>
-              <Table responsive>
-                <thead style={{ opacity: 0.5 }}>
-                  <tr>
-                    <th style={styles.theadText}></th>
-                    <th style={styles.theadText}>Client Name</th>
-                    <th style={styles.theadText}>Notes</th>
-                    <th style={styles.theadText}>Service </th>
-                    {/* <th style={styles.theadText}></th> */}
-                  </tr>
-                </thead>
-                <tbody>
-                  {requesting ? (
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <Spinner size="lg" />
-                      </td>
-                    </tr>
-                  ) : pendingRequests.length === 0 ? (
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <b>No record found</b>
-                      </td>
-                      <td></td>
-                    </tr>
+            <Row style={{ justifyContent: "center" }}>
+              <Col md="6">
+                <Button
+                  className="btnTest"
+                  style={styles.addBtnText}
+                  onClick={() => acceptRequest("Accept")}
+                >
+                  {actionRequest === 1 && actionRequesting ? (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
                   ) : (
-                    pendingRequests &&
-                    pendingRequests.map((item, i) => (
+                    "Accept"
+                  )}
+                </Button>
+              </Col>
+              <Col md="6">
+                <Button
+                  className="btnTest2"
+                  style={styles.addBtnText2}
+                  outline
+                  color="success"
+                  onClick={() => acceptRequest("Reject")}
+                >
+                  {actionRequest === 2 && actionRequesting ? (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    "Reject"
+                  )}
+                </Button>
+              </Col>
+            </Row>
+          </ModalBody>
+        </Modal>
+        <Row>
+          <Col md="12">
+            <Card
+              style={{
+                marginTop: 54,
+                marginLeft: 54,
+                marginRight: 54,
+                opacity: 0.94
+              }}
+            >
+              <CardBody>
+                <Table responsive>
+                  <thead style={{ opacity: 0.5 }}>
+                    <tr>
+                      <th style={styles.theadText}></th>
+                      <th style={styles.theadText}>Client Name</th>
+                      <th style={styles.theadText}>Notes</th>
+                      <th style={styles.theadText}>Service </th>
+                      {/* <th style={styles.theadText}></th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {requesting ? (
                       <tr>
-                        <td style={styles.tdataText1}>{i + 1}.</td>
-                        <td
-                          style={styles.tdataText2}
+                        <td></td>
+                        <td></td>
+                        <td>
+                          <Spinner size="lg" />
+                        </td>
+                      </tr>
+                    ) : pendingRequests.length === 0 ? (
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                          <b>No record found</b>
+                        </td>
+                        <td></td>
+                      </tr>
+                    ) : (
+                      pendingRequests &&
+                      pendingRequests.map((item, i) => (
+                        <tr
+                          style={{ cursor: "pointer" }}
                           onClick={() => {
                             // props.getAppointmentDetails()
                             setPendingDetails(item)
@@ -416,26 +441,27 @@ const PendingServices = props => {
                             setRequestError(false)
                           }}
                         >
-                          {item.title}
-                        </td>
-                        <td style={styles.tdataText}>{item.description}</td>
-                        <td style={styles.tdataText}>{item.service.name}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </Table>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+                          <td style={styles.tdataText1}>{i + 1}.</td>
+                          <td style={styles.tdataText2}>{item.title}</td>
+                          <td style={styles.tdataText}>{item.description}</td>
+                          <td style={styles.tdataText}>{item.service.name}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </Table>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    </>
   )
 }
 
 const mapStateToProps = state => ({
   requesting: state.pendingRequests.requesting,
-  actionRequesting:state.pendingRequests.requesting,
+  actionRequesting: state.pendingRequests.requesting,
   pendingRequests: state.pendingRequests.pendingRequests
   //   servicesError: state.services.servicesError
 })
@@ -496,7 +522,6 @@ const styles = {
   tdataText2: {
     fontSize: 14,
     lineHeight: 3,
-    cursor: "pointer",
     fontWeight: "600"
   },
   tdataText: {

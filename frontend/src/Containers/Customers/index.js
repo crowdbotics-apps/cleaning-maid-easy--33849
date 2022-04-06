@@ -30,6 +30,8 @@ import {
 import { getServices } from "../Services/redux/actions"
 import { getFrequencies } from "Containers/ScheduleServices/redux/actions"
 
+import { Toaster } from "react-hot-toast"
+
 // /utils
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
@@ -213,6 +215,8 @@ const Customers = props => {
   }
 
   return (
+    <>
+    <Toaster position="top-center" />
     <div
       className="content "
       style={{
@@ -614,6 +618,7 @@ const Customers = props => {
         </Col>
       </Row>
     </div>
+    </>
   )
 }
 const mapStateToProps = state => ({

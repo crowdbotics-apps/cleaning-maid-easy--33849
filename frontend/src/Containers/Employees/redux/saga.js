@@ -4,6 +4,8 @@ import { push } from "connected-react-router"
 // config
 import { BASE_URL } from "../../../config/app"
 
+import toast from "react-hot-toast"
+
 // utils
 import XHR from "../../../utils/XHR"
 
@@ -69,9 +71,11 @@ function* addEmployee({ data, toggle }) {
     const response = yield call(addEmployeeAPi, data)
     yield put(getEmployeeListData())
     toggle()
+    toast.success("Successfully saved!")
   } catch (e) {
     const { response } = e
     yield put(addEmployeeFailure(response?.data?.Error))
+    toast.error('Someting wrong!');
   } finally {
     yield put(reset())
   }
@@ -95,8 +99,10 @@ function* deleteEmployee({ id }) {
   try {
     const response = yield call(deleteEmployeeApi, id)
     yield put(getEmployeeListData())
+    toast.success("Successfully deleted!")
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   }
   finally {
     yield put(reset())
@@ -123,9 +129,11 @@ function* updateEmployee({ data, id, toggle }) {
     const response = yield call(updateEmployeeApi, data, id)
     toggle()
     yield put(getEmployeeListData())
+    toast.success("Successfully updated!")
   } catch (e) {
     const { response } = e
     yield put(addEmployeeFailure(response?.data))
+    toast.error('Someting wrong!');
   }
   finally {
     yield put(reset())
@@ -151,8 +159,10 @@ function* changeEmployeeTeam({ data }) {
   try {
     const response = yield call(changeEmployeeTeamApi, data)
     yield put(getEmployeeListData())
+    toast.success("Successfully employee changed!")
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   }
   finally {
     yield put(reset())

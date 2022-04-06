@@ -1,5 +1,6 @@
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 import { push } from "connected-react-router";
+import toast from "react-hot-toast"
 
 // config
 import { BASE_URL } from '../../../config/app';
@@ -88,8 +89,10 @@ function* createTeam({data, setmodal}) {
     const response = yield call(createTeamApi, data);
     setmodal(false)
     yield put((getTeam()))
+    toast.success("Successfully saved!")
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   }
   finally {
     yield put(resetTeam())
@@ -115,8 +118,10 @@ function* deleteTeam({data}) {
   try {
     const response = yield call(deleteTeamApi, data);
     yield put((getTeam()))
+    toast.success("Successfully deleted!")
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   }
   finally {
     yield put(resetTeam())
@@ -173,8 +178,10 @@ function* removeTeamMember({data}) {
     const response = yield call(removeTeamMemberApi,data);
     yield put((getTeam()))
     yield put (getUnAssignedEmployeesData())
+    // toast.success("Successfully removed!")
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   }
   finally {
     yield put(resetTeam())
@@ -200,9 +207,11 @@ function* addTeamMember({data}) {
   try {
     const response = yield call(addTeamMemberApi,data);
     yield put((getTeam()))
+    // toast.success("Successfully added!")
 
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   }
   finally {
     yield put(resetTeam())

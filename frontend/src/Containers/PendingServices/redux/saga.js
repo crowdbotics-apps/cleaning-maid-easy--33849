@@ -6,6 +6,7 @@ import { BASE_URL } from "../../../config/app"
 
 // utils
 import XHR from "../../../utils/XHR"
+import toast from "react-hot-toast"
 
 // types
 import {
@@ -70,8 +71,10 @@ function* requestAction({ data, modalToggle }) {
     const response = yield call(requestActionAPI, data)
     yield put (getPendingRequestsData())
     modalToggle()
+    toast.success(`Successfully ${data?.action}ed!`)
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   }
 }
 

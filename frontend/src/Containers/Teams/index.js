@@ -18,6 +18,9 @@ import {
   Spinner
 } from "reactstrap"
 import CardFooter from "reactstrap/lib/CardFooter"
+
+import { Toaster } from "react-hot-toast"
+
 //Actions
 import {
   getTeam,
@@ -62,7 +65,6 @@ function Teams(props) {
   const [searchData, setSearchData] = useState("")
   const [activeDrags, setActiveDrags] = useState(false)
 
-  console.log("selectedMembers",selectedMembers);
   useEffect(() => {
     props.getTeam()
     props.renderHtmlText("Teams")
@@ -138,7 +140,6 @@ function Teams(props) {
 
   const removeTeamDrageOver = e => {
     e.preventDefault()
-    // console.log('removee eeeeeeeee',e)
   }
   const removeTeamOnDrop = (ev, cat) => {
     let memberId = ev.dataTransfer.getData("memberId")
@@ -170,6 +171,9 @@ function Teams(props) {
   }
 
   return (
+    <>
+     <Toaster position="top-center" />
+   
     <div
       className="content"
       style={{
@@ -504,6 +508,7 @@ function Teams(props) {
         </Col>
       </Row>
     </div>
+    </>
   )
 }
 const styles = {

@@ -29,6 +29,9 @@ import {
 
 import { connect } from "react-redux"
 import { renderHtmlText } from "../Services/redux/actions"
+
+import { Toaster } from "react-hot-toast"
+
 import {
   addEmployee,
   getEmployeeList,
@@ -233,6 +236,7 @@ function Employees(props) {
 
   return (
     <>
+    <Toaster position="top-center" />
       <div
         className="content "
         style={{

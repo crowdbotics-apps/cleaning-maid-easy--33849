@@ -4,6 +4,8 @@ import { push } from "connected-react-router"
 // config
 import { BASE_URL } from "../../../config/app"
 
+import toast from "react-hot-toast"
+
 // utils
 import XHR from "../../../utils/XHR"
 
@@ -63,10 +65,12 @@ function* addCustomer({ data,toggle }) {
   try {
     const response = yield call(addCustomerApi, data)
     yield put(getAllCustomersData())
+    toast.success("Successfully saved!")
     toggle()
   } catch (e) {
     const { response } = e
     yield put(addCustomerFailure(response?.data?.Error))
+    toast.error('Someting wrong!');
   }
 }
 
@@ -90,8 +94,10 @@ function* changeNotification({ data,id }) {
   try {
     const response = yield call(changeNotificationApi, data,id)
     yield put(getAllCustomersData())
+    toast.success("Successfully notification changed!")
   } catch (e) {
     const { response } = e
+    toast.error('Someting wrong!');
   }
 }
 

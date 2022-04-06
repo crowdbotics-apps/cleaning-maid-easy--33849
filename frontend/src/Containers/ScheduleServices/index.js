@@ -18,8 +18,9 @@ import {
 } from "reactstrap"
 import Select from "react-select"
 import { connect } from "react-redux"
-import '../ScheduleServices/style.css'
+import "../ScheduleServices/style.css"
 
+import { Toaster } from "react-hot-toast"
 
 //Calender
 import DatePicker from "react-date-picker"
@@ -53,8 +54,8 @@ function ScheduleService(props) {
     props.renderHtmlText("Schedule Service")
     props.getFrequencies()
     props.getAllCustomers()
-    let mydiv=document.getElementsByClassName('react-date-picker__wrapper')
-    mydiv[0].style.border='none'
+    let mydiv = document.getElementsByClassName("react-date-picker__wrapper")
+    mydiv[0].style.border = "none"
   }, [])
 
   // react-date-picker__wrapper
@@ -66,18 +67,23 @@ function ScheduleService(props) {
   const [selectedDate, setSelectedDate] = useState(false)
 
   //StatesForCalender
-  const [calendarValue, setCalenderValue] = useState()
-  const [calenderModal, setCalenderModal] = useState(false)
+  const [calendarValue, setCalenderValue] = useState("")
 
   //StatesForTimePicker
-  const [fromTime, setFromTime] = useState("14:00")
-  const [toTime, setToTime] = useState("14:00")
-  const [startTime, setStartTime] = useState(false);
-  const [endTime, setEndTime] =useState(false);
+  const [fromTime, setFromTime] = useState("2:00")
+  const [toTime, setToTime] = useState("5:00")
 
   const [appointmentData, setAppoinmentData] = useState({
     appointment_date: new Date()
   })
+
+
+  // const [otherData, setOtherData] = useState({
+  //   assigned_team_id: [],
+  //   service_id: [],
+  //   frequency_id: [],
+  //   appointment_date: new Date()
+  // })
 
   //Useform
   const stateSchema = {
@@ -115,27 +121,20 @@ function ScheduleService(props) {
     }
   }
 
-  const { state, handleOnChange, disable } = useForm(
+  const { state, handleOnChange, setState, disable } = useForm(
     stateSchema,
     validationStateSchema
   )
-  const resetValues=()=>{
-    setCalenderValue('')
-    // const data = { ...appointmentData}
-    setFromTime('')
-    setToTime('')
-    setCalenderValue('')
-    state.price.value=''
-    state.description.value=''
-    state.notes.value=''
-    state.title.value=''
+  const resetValues = () => {
+    setCalenderValue("")
+    setFromTime("2:00")
+    setToTime("5:00")
+    setState(stateSchema)
+
     // data.appointment_date=''
     // data.assigned_team_id=[]
     // data.service_id=[]
     // data.frequency_id=[]
-   
-   
-
   }
   const onSave = (title, value) => {
     let data = { ...appointmentData }
@@ -167,11 +166,14 @@ function ScheduleService(props) {
       data.frequency_id
       // data.client_id
     ) {
-      props.getScheduleServices(data)
-    } 
+      props.getScheduleServices(data, resetValues)
+    }
   }
 
   return (
+    <>
+     <Toaster position="top-center" />
+  
     <div
       className="content"
       style={{
@@ -185,11 +187,7 @@ function ScheduleService(props) {
         <Col md="12">
           <Card style={styles.cardStyle}>
             <CardBody className="pl-5 pr-5 pt-5">
-              {/* <div>
-              <UncontrolledAlert color="success" fade={false}>
-                <span>Success</span>
-              </UncontrolledAlert>
-              </div> */}
+             
               <Row>
                 <Col lg="6">
                   <div
@@ -266,7 +264,7 @@ function ScheduleService(props) {
                           <div><TextField {...params} placeholder='Start time' /></div>}
                         />
                   </LocalizationProvider> */}
-                  <TimePicker
+                    <TimePicker
                       value={toTime}
                       className={"timeStyle"}
                       disableClock={true}
@@ -275,7 +273,6 @@ function ScheduleService(props) {
                         setToTime(e)
                       }}
                     />
-                    
                   </div>
                   <div>
                     {selectTime ? (
@@ -311,6 +308,7 @@ function ScheduleService(props) {
                         style={styles.inputStyle}
                         className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
                         onChange={e => handleOnChange("title", e.target.value)}
+                        value={state.title.value}
                       />
                       <label style={{ color: "red" }}>
                         {state.title.error ? state.title.error : null}
@@ -363,6 +361,7 @@ function ScheduleService(props) {
                       className="react-select "
                       classNamePrefix="react-select"
                       name="singleSelect"
+                      // value={appointmentData?.assigned_team_id?.value}
                       options={
                         teamData &&
                         teamData.map(item => ({
@@ -385,6 +384,7 @@ function ScheduleService(props) {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="singleSelect"
+                        // value={appointmentData?.service_id?.value}
                         options={
                           servicesData &&
                           servicesData.map(item => ({
@@ -402,6 +402,7 @@ function ScheduleService(props) {
                         className="react-select  "
                         classNamePrefix="react-select"
                         name="singleSelect"
+                        // value={appointmentData?.frequency_id?.value}
                         options={
                           ({ label: "Select Frequency" },
                           frequencies &&
@@ -421,6 +422,7 @@ function ScheduleService(props) {
                       style={styles.inputStyle}
                       className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
                       onChange={e => handleOnChange("price", e.target.value)}
+                      value={state.price.value}
                     />
 
                     <label style={{ color: "red" }}>
@@ -439,6 +441,7 @@ function ScheduleService(props) {
                         rows="3"
                         placeholder="Enter description"
                         style={styles.textArea}
+                        value={state.description.value}
                         onChange={val =>
                           handleOnChange("description", val.target.value)
                         }
@@ -459,6 +462,7 @@ function ScheduleService(props) {
                         rows="3"
                         placeholder="Leave a note here..."
                         style={styles.textArea}
+                        value={state.notes.value}
                         onChange={val =>
                           handleOnChange("notes", val.target.value)
                         }
@@ -496,6 +500,7 @@ function ScheduleService(props) {
         </Col>
       </Row>
     </div>
+    </>
   )
 }
 const styles = {
@@ -544,7 +549,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: (data) => dispatch(scheduleServices(data)),
+  getScheduleServices: (data, resetValues) =>
+    dispatch(scheduleServices(data, resetValues,)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getFrequencies: () => dispatch(getFrequencies()),
   getAllCustomers: () => dispatch(getAllCustomers())
