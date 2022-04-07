@@ -15,6 +15,9 @@ import {
   Col,
   Modal,
   UncontrolledTooltip,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
   Spinner
 } from "reactstrap"
 import CardFooter from "reactstrap/lib/CardFooter"
@@ -57,7 +60,6 @@ function Teams(props) {
     setmodal(!modal)
     setSelectedMebers([])
     setTeamName(false)
-
   }
 
   const [deleteId, setDeleteId] = useState(false)
@@ -73,17 +75,16 @@ function Teams(props) {
   }, [])
 
   useEffect(() => {
-    if(teamData.length){
-      let mydiv=document.getElementsByClassName('table-responsive-lg')
-      mydiv[0].style.maxHeight='600px'
-      mydiv[0].style.overflowY='auto'
+    if (teamData.length) {
+      filterTeam()
+      let mydiv = document.getElementsByClassName("table-responsive-lg")
+      mydiv[0].style.maxHeight = "600px"
+      mydiv[0].style.overflowY = "auto"
+    } else {
+      let mydiv = document.getElementsByClassName("table-responsive-lg")
+      mydiv[0].style.maxHeight = ""
+      mydiv[0].style.overflowY = ""
     }
-    else{
-      let mydiv=document.getElementsByClassName('table-responsive-lg')
-      mydiv[0].style.maxHeight=''
-      mydiv[0].style.overflowY=''
-    }
-    
   }, [teamData])
 
   const arrayData = [
@@ -95,6 +96,23 @@ function Teams(props) {
     { image: require("assets/img/mike.jpg"), name: "furqan", id: 6 },
     { image: require("assets/img/mike.jpg"), name: "etc", id: 7 }
   ]
+
+  const filterTeam = memberId => {
+    return (
+      teamData &&
+      teamData.map(
+        item =>
+          item.team_members &&
+          item.team_members.map(member => {
+            if (member.id == memberId) {
+              return true
+            } else {
+              return false
+            }
+          })
+      )
+    )
+  }
 
   const filterData = () => {
     let filterData =
@@ -146,10 +164,16 @@ function Teams(props) {
     let teamId = ev.dataTransfer.getData("teamId")
 
     const data = {
-      member_id: parseInt(memberId),
+      member_ids: [parseInt(memberId)],
       team_id: parseInt(teamId)
     }
-    props.removeTeamMember(data)
+    const valueExists = [].concat
+      .apply([], filterTeam(memberId))
+      .filter(v => v !== false)
+
+    if (valueExists.includes(true)) {
+      props.removeTeamMember(data)
+    }
   }
 
   const addTeamDrageStart = (ev, memberId) => {
@@ -164,350 +188,403 @@ function Teams(props) {
     let memberId = ev.dataTransfer.getData("memberId")
 
     const data = {
-      member_id: parseInt(memberId),
+      member_ids: [parseInt(memberId)],
       team_id: parseInt(id)
     }
-    props.addTeamMember(data)
-  }
 
+    const valueExists = [].concat
+      .apply([], filterTeam(memberId))
+      .filter(v => v !== false)
+
+    if (!valueExists.includes(true)) {
+      props.addTeamMember(data)
+    }
+  }
+  const[currentpage,setCurrentPage]=useState(1)
+  const [postPerPage,  setPostPerPage]=useState(10)
+
+const indexOfLastPage = currentpage * postPerPage
+const indexOfFirstPage=indexOfLastPage - postPerPage
   return (
     <>
-     <Toaster position="top-center" />
-   
-    <div
-      className="content"
-      style={{
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundImage: `url(${require("assets/images/bg_content.png")})`,
-        flex: 1
-      }}
-    >
-      <Row>
-        <Col md="12">
-          <Card style={styles.cardStyle}>
-            <CardBody>
-              <div>
-                <Table responsive="lg">
-                  <thead>
-                    <tr style={styles.tableHeading}>
-                      <th></th>
-                      <th>Team Name</th>
-                      <th>Team Members</th>
-                      <th></th>
-                      <th>Unassigned</th>
-                    </tr>
-                  </thead>
-                  <tbody className="container-drag">
-                    {teamData.length ? (
-                      teamData.map((item, index) => (
-                        <tr style={styles.borderBottom}>
-                          <td className="text-center " style={styles.textFont}>
-                            {index + 1}
-                          </td>
-                          <td className="" style={styles.textFont}>
-                            {item.title}
-                          </td>
-                          <td
-                            style={{ width: "52%", borderLeft: "" }}
-                            className="task-header"
-                            onDragOver={e => addTeamDrageOver(e)}
-                            onDrop={e => addTeamOnDrop(e, item.id, "items")}
-                          >
-                            {item.team_members?.length &&
-                              item.team_members.map((items, index) => (
-                                <>
-                                  {items.name !== null && (
-                                    // <Draggable
-                                    // onDrag={handleEvent}
-                                    // // bounds="table"
-                                    // onStart={handleStart}
-                                    // onStop={handleStop}
-                                    // position={!activeDrags? { x: 0, y: 0 } : undefined}
-                                    //   draggableId={items.id.toString()}
-                                    //   index={index}
-                                    //   key={items.id}
-                                    //   // onStop={e =>
-                                    //   //   removeMember(items.id, item.id)
-                                    //   // }
-                                    // >
-                                    // <div
-                                    //   key={items.id}
-                                    //   style={{ flexDirection: "row" }}
+      <Toaster position="top-center" />
 
-                                    // >
-                                    <Button
-                                      className
-                                      onDragStart={e =>
-                                        removeTeamDrageStart(
-                                          e,
-                                          items.id,
-                                          item.id
-                                        )
-                                      }
-                                      draggable
-                                      style={styles.addBtn}
-                                      color="white"
-                                      title=""
-                                      type="button"
-                                      size="sm"
-                                    >
-                                      {items.name}
-                                    </Button>
-                                    // </div>
-                                    // </Draggable>
-                                  )}
-                                </>
-                              ))}
-                          </td>
-                          <td
-                            style={styles.borderBottom}
-                            className="text-center "
-                          >
-                            <img
-                              className="mr-3"
-                              style={styles.imgStyle}
-                              alt="..."
-                              src={require("assets/icons/pencil_btn.png")}
-                            />
-                            {deleteRequesting && deleteId === item.id ? (
-                              <Spinner
-                                as="span"
-                                animation="border"
-                                size="sm"
-                                role="status"
-                                aria-hidden="true"
-                              />
-                            ) : (
-                              <img
-                                style={styles.imgStyle}
-                                onClick={() => deleteTeam(item.id)}
-                                // style={{marginLeft:50}}
-                                alt="..."
-                                src={require("assets/icons/delete_btn.png")}
-                              />
-                            )}
-                          </td>
-                          {!index && (
+      <div
+        className="content"
+        style={{
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundImage: `url(${require("assets/images/bg_content.png")})`,
+          flex: 1
+        }}
+      >
+        <Row>
+          <Col md="12">
+            <Card style={styles.cardStyle}>
+              <CardBody>
+                <div>
+                  <Table responsive="lg">
+                    <thead>
+                      <tr style={styles.tableHeading}>
+                        <th></th>
+                        <th>Team Name</th>
+                        <th>Team Members</th>
+                        <th></th>
+                        <th>Unassigned</th>
+                      </tr>
+                    </thead>
+                    <tbody className="container-drag">
+                      {teamData.length ? (
+                        teamData.map((item, index) => (
+                          <tr style={styles.borderBottom}>
                             <td
-                              ref={UnAssignedTeamRef}
-                              rowSpan="7"
-                              style={{
-                                borderLeft: "1px solid rgb(212, 212, 212)"
-                              }}
-                              onDragOver={e => removeTeamDrageOver(e)}
-                              onDrop={e => removeTeamOnDrop(e, "unAssign")}
-                              // className="draggable"
+                              className="text-center "
+                              style={styles.textFont}
                             >
-                              {unAssignedEmployees &&
-                                unAssignedEmployees.map(items => (
-                                  <div>
-                                    <Button
-                                      style={styles.addBtn}
-                                      color="white"
-                                      title=""
-                                      type="button"
-                                      size="sm"
-                                      onDragStart={e =>
-                                        addTeamDrageStart(e, items.id)
-                                      }
-                                      draggable
-                                    >
-                                      {items.name}
-                                    </Button>
-                                  </div>
+                              {index + 1}
+                            </td>
+                            <td className="" style={styles.textFont}>
+                              {item.title}
+                            </td>
+                            <td
+                              style={{ width: "52%", borderLeft: "" }}
+                              className="task-header"
+                              onDragOver={e => addTeamDrageOver(e)}
+                              onDrop={e => addTeamOnDrop(e, item.id, "items")}
+                            >
+                              {item.team_members?.length &&
+                                item.team_members.map((items, index) => (
+                                  <>
+                                    {items.name !== null && (
+                                      <Button
+                                        className
+                                        onDragStart={e =>
+                                          removeTeamDrageStart(
+                                            e,
+                                            items.id,
+                                            item.id
+                                          )
+                                        }
+                                        draggable
+                                        style={styles.addBtn}
+                                        color="white"
+                                        title=""
+                                        type="button"
+                                        size="sm"
+                                      >
+                                        {items.name}
+                                      </Button>
+                                      // </div>
+                                      // </Draggable>
+                                    )}
+                                  </>
                                 ))}
                             </td>
-                          )}
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td className="justify-content-center d-flex pt-7">
-                          <div style={{ marginTop: 100 }}>
-                            {requesting ? (
-                              <Spinner
-                                as="span"
-                                animation="border"
-                                size="lg"
-                                role="status"
-                                aria-hidden="true"
+                            <td
+                              style={styles.borderBottom}
+                              className="text-center "
+                            >
+                              <img
+                                className="mr-3"
+                                style={styles.imgStyle}
+                                alt="..."
+                                src={require("assets/icons/pencil_btn.png")}
                               />
-                            ) : (
-                              <h6>No Record Found</h6>
+                              {deleteRequesting && deleteId === item.id ? (
+                                <Spinner
+                                  as="span"
+                                  animation="border"
+                                  size="sm"
+                                  role="status"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <img
+                                  style={styles.imgStyle}
+                                  onClick={() => deleteTeam(item.id)}
+                                  // style={{marginLeft:50}}
+                                  alt="..."
+                                  src={require("assets/icons/delete_btn.png")}
+                                />
+                              )}
+                            </td>
+                            {!index && (
+                              <td
+                                ref={UnAssignedTeamRef}
+                                rowSpan="7"
+                                style={{
+                                  borderLeft: "1px solid rgb(212, 212, 212)"
+                                }}
+                                onDragOver={e => removeTeamDrageOver(e)}
+                                onDrop={e => removeTeamOnDrop(e, "unAssign")}
+                                // className="draggable"
+                              >
+                                {unAssignedEmployees &&
+                                  unAssignedEmployees.map(items => (
+                                    <div>
+                                      <Button
+                                        style={styles.addBtn}
+                                        color="white"
+                                        title=""
+                                        type="button"
+                                        size="sm"
+                                        onDragStart={e =>
+                                          addTeamDrageStart(e, items.id)
+                                        }
+                                        draggable
+                                      >
+                                        {items.name}
+                                      </Button>
+                                    </div>
+                                  ))}
+                              </td>
                             )}
-                          </div>
-                        </td>
-                        <td></td>
-                      </tr>
-                    )}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td className="justify-content-center d-flex pt-7">
+                            <div style={{ marginTop: 100 }}>
+                              {requesting ? (
+                                <Spinner
+                                  as="span"
+                                  animation="border"
+                                  size="lg"
+                                  role="status"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <h6>No Record Found</h6>
+                              )}
+                            </div>
+                          </td>
+                          <td></td>
+                        </tr>
+                      )}
 
-                    {/* for bottom border */}
-                  </tbody>
-                </Table>
-              </div>
-            </CardBody>
-            <CardFooter className="text-lg-right text-center">
-              <Button
-                style={styles.btnStyle}
-                color="white"
-                title=""
-                type="button"
-                size="md"
-                onClick={() => [setmodal(!modal)]}
-              >
-                Add Team{" "}
-              </Button>
-              <Modal isOpen={modal} toggle={toggle}>
-                <div className="modal-header border-bottom-0">
-                  <label style={{ fontSize: 24, fontWeight: "600" }}>
-                    Add Teams
-                  </label>
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="modal"
-                    type="button"
-                    size="sm"
-                    onClick={toggle}
-                  >
-                    <i
-                      className="nc-icon nc-simple-remove"
-                      style={{ color: " #438B44" }}
-                    />
-                  </button>
+                      {/* for bottom border */}
+                    </tbody>
+                  </Table>
+                  {/* <nav aria-label="Page navigation example">
+                    <Pagination>
+                      <PaginationItem>
+                        <PaginationLink
+                          aria-label="Previous"
+                          href="#pablo"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          <span aria-hidden={true}>
+                            <i
+                              aria-hidden={true}
+                              className="fa fa-angle-double-left"
+                            />
+                          </span>
+                        </PaginationLink>
+                      </PaginationItem>
+
+                      <PaginationItem>
+                        <PaginationLink
+                          href="#pablo"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          1
+                        </PaginationLink>
+                      </PaginationItem>
+                      <PaginationItem className="active">
+                        <PaginationLink
+                          href="#pablo"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          2
+                        </PaginationLink>
+                      </PaginationItem>
+                      <PaginationItem>
+                        <PaginationLink
+                          href="#pablo"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          3
+                        </PaginationLink>
+                      </PaginationItem>
+                      <PaginationItem>
+                        <PaginationLink
+                          aria-label="Next"
+                          href="#pablo"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          <span aria-hidden={true}>
+                            <i
+                              aria-hidden={true}
+                              className="fa fa-angle-double-right"
+                            />
+                          </span>
+                        </PaginationLink>
+                      </PaginationItem>
+                    </Pagination>
+                  </nav> */}
                 </div>
-                <div className="modal-body ">
-                  <label>Team Name</label>
-                  <Input
-                    style={styles.inputTextStyle}
-                    className="border-0 pl-0"
-                    onChange={e => setTeamName(e.target.value)}
-                  />
-                  <div style={styles.inputLineStyle} />
-                  {nameError && (
-                    <p style={{ color: "red" }}>Please enter valid Name</p>
-                  )}
-                  <label className="mt-4 mb-4 ">Team Members</label>
-                  <div className="d-flex align-items-center">
-                    {/* <img
+              </CardBody>
+              <CardFooter className="text-lg-right text-center">
+                <Button
+                  style={styles.btnStyle}
+                  color="white"
+                  title=""
+                  type="button"
+                  size="md"
+                  onClick={() => [setmodal(!modal)]}
+                >
+                  Add Team{" "}
+                </Button>
+                <Modal isOpen={modal} toggle={toggle}>
+                  <div className="modal-header border-bottom-0">
+                    <label style={{ fontSize: 24, fontWeight: "600" }}>
+                      Add Teams
+                    </label>
+                    <button
+                      aria-hidden={true}
+                      className="close"
+                      data-dismiss="modal"
+                      type="button"
+                      size="sm"
+                      onClick={toggle}
+                    >
+                      <i
+                        className="nc-icon nc-simple-remove"
+                        style={{ color: " #438B44" }}
+                      />
+                    </button>
+                  </div>
+                  <div className="modal-body ">
+                    <label>Team Name</label>
+                    <Input
+                      style={styles.inputTextStyle}
+                      className="border-0 pl-0"
+                      onChange={e => setTeamName(e.target.value)}
+                    />
+                    <div style={styles.inputLineStyle} />
+                    {nameError && (
+                      <p style={{ color: "red" }}>Please enter valid Name</p>
+                    )}
+                    <label className="mt-4 mb-4 ">Team Members</label>
+                    <div className="d-flex align-items-center">
+                      {/* <img
                   style={styles.searchImg}
                   src={require("assets/icons/search_icon.png")}
                 /> */}
-                    <Input
-                      placeholder="Search"
-                      type="search"
-                      name="search"
-                      style={styles.searchStyle}
-                      value={searchData}
-                      onChange={e => [
-                        setSearchData(e.target.value),
-                        filterData()
-                      ]}
-                    />
-                  </div>
-                  {filterData().length === 0 ? (
-                    <div style={{ textAlign: "center", marginTop: 24 }}>
-                      <label>No record Found</label>
+                      <Input
+                        placeholder="Search"
+                        type="search"
+                        name="search"
+                        style={styles.searchStyle}
+                        value={searchData}
+                        onChange={e => [
+                          setSearchData(e.target.value),
+                          filterData()
+                        ]}
+                      />
                     </div>
-                  ) : filterData().length ? (
-                    filterData().map(item => (
-                      <div style={styles.mainDiv}>
-                        {/* <Draggable> */}
-                        <div>
-                          <img
-                            width={44}
-                            height={44}
-                            style={{ borderRadius: 30 }}
-                            alt="..."
-                            className="img"
-                            src={item.image}
-                          />
-                          <label
-                            className="pl-3"
-                            style={{
-                              fontSize: 18,
-                              fontWeight: "500"
-                            }}
-                          >
-                            {item.name}
-                          </label>
+                    {filterData().length === 0 ? (
+                      <div style={{ textAlign: "center", marginTop: 24 }}>
+                        <label>No record Found</label>
+                      </div>
+                    ) : filterData().length ? (
+                      filterData().map(item => (
+                        <div style={styles.mainDiv}>
+                          {/* <Draggable> */}
+                          <div>
+                            <img
+                              width={44}
+                              height={44}
+                              style={{ borderRadius: 30 }}
+                              alt="..."
+                              className="img"
+                              src={item.image}
+                            />
+                            <label
+                              className="pl-3"
+                              style={{
+                                fontSize: 18,
+                                fontWeight: "500"
+                              }}
+                            >
+                              {item.name}
+                            </label>
+                          </div>
+                          <div>
+                            <input
+                              style={styles.checkBoxStyle}
+                              type="checkbox"
+                              onChange={() => employeeData(item)}
+                            />
+                            <span
+                              className={`checkbox ${
+                                selectedMembers.includes(item.id)
+                                  ? "checkbox--active"
+                                  : ""
+                              }`}
+                              // This element is purely decorative so
+                              // we hide it for screen readers
+                              aria-hidden="true"
+                            />
+                          </div>
                         </div>
-                        <div>
-                          <input
-                            style={styles.checkBoxStyle}
-                            type="checkbox"
-                            onChange={() => employeeData(item)}
-                          />
-                          <span
-                            className={`checkbox ${
-                              selectedMembers.includes(item.id)
-                                ? "checkbox--active"
-                                : ""
-                            }`}
-                            // This element is purely decorative so
-                            // we hide it for screen readers
+                      ))
+                    ) : (
+                      <div className="mt-5" style={{ textAlign: "center" }}>
+                        {" "}
+                        {requesting ? (
+                          <Spinner
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
                             aria-hidden="true"
                           />
-                        </div>
+                        ) : (
+                          "No Member found"
+                        )}
                       </div>
-                    ))
-                  ) : (
-                    <div className="mt-5" style={{ textAlign: "center" }}>
-                      {" "}
-                      {requesting ? (
-                        <Spinner
-                          as="span"
-                          animation="border"
-                          size="sm"
-                          role="status"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        "No Member found"
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div
-                  style={{ justifyContent: "center" }}
-                  className="modal-footer border-top-0 "
-                >
-                  <div>
-                    <Button
-                      style={{
-                        background: "linear-gradient(#E6DE18, #438B44)",
-                        borderRadius: 15
-                      }}
-                      color="white"
-                      title=""
-                      type="button"
-                      size="lg"
-                      disabled={!teamName || !selectedMembers.length}
-                      onClick={createTeam}
-                    >
-                      {createRequesting ? (
-                        <Spinner
-                          as="span"
-                          animation="border"
-                          size="sm"
-                          role="status"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        "Save Team"
-                      )}
-                    </Button>
+                    )}
                   </div>
-                </div>
-              </Modal>
-            </CardFooter>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+                  <div
+                    style={{ justifyContent: "center" }}
+                    className="modal-footer border-top-0 "
+                  >
+                    <div>
+                      <Button
+                        style={{
+                          background: "linear-gradient(#E6DE18, #438B44)",
+                          borderRadius: 15
+                        }}
+                        color="white"
+                        title=""
+                        type="button"
+                        size="lg"
+                        disabled={!teamName || !selectedMembers.length}
+                        onClick={createTeam}
+                      >
+                        {createRequesting ? (
+                          <Spinner
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          "Save Team"
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </Modal>
+              </CardFooter>
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </>
   )
 }
@@ -585,7 +662,7 @@ const styles = {
     fontWeight: "500",
     fontSize: 18,
     color: "#000000"
-  },
+  }
 }
 
 const mapStateToProps = state => ({

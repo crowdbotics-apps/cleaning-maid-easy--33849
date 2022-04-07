@@ -22,15 +22,17 @@ import { connect } from "react-redux"
 import { Link } from "react-router-dom"
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
+import { Toaster } from "react-hot-toast"
 
 // Actions
-import { editUserInfo } from "../Profile/redux/actions"
+import { editUserInfo, uploadImage } from "../Profile/redux/actions"
 import { renderHtmlText } from "../Services/redux/actions"
 
 const EditProfile = props => {
   const { history, requesting } = props
   const [userInfo, setUserInfo] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
+  const [profileImage, setProfileImage]=useState(false)
   useEffect(() => {
     props.renderHtmlText("Edit Profile")
     const userData = sessionStorage.getItem("userInfo")
@@ -105,89 +107,107 @@ const EditProfile = props => {
     props.editUserInfo(data, userInfo.id)
   }
 
+  useEffect(() => {
+    if (selectedImage?.name) {
+      const data = new FormData()
+      data.append("profile_picture", selectedImage)
+      props.uploadImage(data, userInfo.id)
+    }
+  }, [selectedImage])
+
   return (
-    <div
-      className="content "
-      style={{
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundImage: `url(${require("assets/images/bg_content.png")})`,
-        flex: 1
-      }}
-    >
-      <Row>
-        <Col md="12">
-          <Card style={styles.cardStyle}>
-            <CardBody>
-              <div className="mx-auto pb-2" style={{ maxWidth: 436 }}>
-                <div className="pt-4 pb-3">
+    <>
+      <Toaster position="top-center" />
+
+      <div
+        className="content "
+        style={{
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundImage: `url(${require("assets/images/bg_content.png")})`,
+          flex: 1
+        }}
+      >
+        <Row>
+          <Col md="12">
+            <Card style={styles.cardStyle}>
+              <CardBody>
+                <div className="mx-auto pb-2" style={{ maxWidth: 436 }}>
+                  <div className="pt-4 pb-3">
+                    <div>
+                      <ImageUpload
+                        height={109}
+                        width={109}
+                        profileImage={selectedImage && selectedImage}
+                        mainImg={true}
+                        mainImage={(data)=> {
+                          setSelectedImage(data)  
+                          setProfileImage(data)}}
+                      />
+                    </div>
+                  </div>
                   <div>
-                    <ImageUpload
-                      height={109}
-                      width={109}
-                      profileImage={selectedImage && selectedImage}
-                      mainImg={true}
-                      mainImage={setSelectedImage}
+                    <label style={styles.labelTextStyle}>Full Name</label>
+                    <Input
+                      style={styles.inputTextStyle}
+                      className="border-0 pl-0"
+                      value={state.fullName.value}
+                      onChange={e => handleOnChange("fullName", e.target.value)}
                     />
-                  </div>
-                </div>
-                <div>
-                  <label style={styles.labelTextStyle}>Full Name</label>
-                  <Input
-                    style={styles.inputTextStyle}
-                    className="border-0 pl-0"
-                    value={state.fullName.value}
-                    onChange={e => handleOnChange("fullName", e.target.value)}
-                  />
-                  <div style={styles.inputLineStyle} />
+                    <div style={styles.inputLineStyle} />
 
-                  <div className="mt-4">
-                    <label style={styles.labelTextStyle}>Company Name</label>
-                    <Input
-                      style={styles.inputTextStyle}
-                      className="border-0 pl-0"
-                      value={state.company_name.value}
-                      onChange={e =>
-                        handleOnChange("company_name", e.target.value)
-                      }
-                    />
-                    <div style={styles.inputLineStyle} />
-                  </div>
+                    <div className="mt-4">
+                      <label style={styles.labelTextStyle}>Company Name</label>
+                      <Input
+                        style={styles.inputTextStyle}
+                        className="border-0 pl-0"
+                        value={state.company_name.value}
+                        onChange={e =>
+                          handleOnChange("company_name", e.target.value)
+                        }
+                      />
+                      <div style={styles.inputLineStyle} />
+                    </div>
 
-                  <div className="mt-4">
-                    <label style={styles.labelTextStyle}>Address</label>
-                    <Input
-                      style={styles.inputTextStyle}
-                      className="border-0 pl-0"
-                      value={state.address.value}
-                      onChange={e => handleOnChange("address", e.target.value)}
-                    />
-                    <div style={styles.inputLineStyle} />
+                    <div className="mt-4">
+                      <label style={styles.labelTextStyle}>Address</label>
+                      <Input
+                        style={styles.inputTextStyle}
+                        className="border-0 pl-0"
+                        value={state.address.value}
+                        onChange={e =>
+                          handleOnChange("address", e.target.value)
+                        }
+                      />
+                      <div style={styles.inputLineStyle} />
+                    </div>
+                    <div className="mt-4">
+                      <label style={styles.labelTextStyle}>
+                        Contact Number
+                      </label>
+                      <Input
+                        style={styles.inputTextStyle}
+                        className="border-0 pl-0"
+                        value={state.phone_number.value}
+                        onChange={e =>
+                          handleOnChange("phone_number", e.target.value)
+                        }
+                      />
+                      <div style={styles.inputLineStyle} />
+                    </div>
                   </div>
-                  <div className="mt-4">
-                    <label style={styles.labelTextStyle}>Contact Number</label>
-                    <Input
-                      style={styles.inputTextStyle}
-                      className="border-0 pl-0"
-                      value={state.phone_number.value}
-                      onChange={e =>
-                        handleOnChange("phone_number", e.target.value)
-                      }
-                    />
-                    <div style={styles.inputLineStyle} />
+                  <div className="pt-4 text-center">
+                    <Button onClick={updateProfile} style={styles.editBtn}>
+                      {requesting ? <Spinner size="sm" /> : "Save"}
+                    </Button>
                   </div>
                 </div>
-                <div className="pt-4 text-center">
-                  <Button onClick={updateProfile} style={styles.editBtn}>
-                    {requesting ? <Spinner size="sm" /> : "Save"}
-                  </Button>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    </>
   )
 }
 
@@ -197,7 +217,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  editUserInfo: (data, id) => dispatch(editUserInfo(data, id))
+  editUserInfo: (data, id) => dispatch(editUserInfo(data, id)),
+  uploadImage: (data, id) => dispatch(uploadImage(data, id))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfile)
 

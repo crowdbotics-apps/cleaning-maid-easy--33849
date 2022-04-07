@@ -348,7 +348,7 @@ function Employees(props) {
                           </td>
                           <td>{item.phone_number}</td>
                           <td>
-                            {requesting && item.id === itemId ? (
+                            {(requesting && item.id === itemId )? (
                               <Spinner size="sm" />
                             ) : (
                               item?.assigned_team?.title
@@ -402,7 +402,7 @@ function Employees(props) {
                                 </Button>
                               </div>
                               <div>
-                                {requesting && item.id === deleteId ? (
+                                {(requesting && item.id === deleteId) ? (
                                   <Spinner style={{ marginTop: 8 }} size="sm" />
                                 ) : (
                                   <Button

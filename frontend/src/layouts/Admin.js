@@ -23,6 +23,7 @@ import AdminNavbar from 'components/Navbars/AdminNavbar.js'
 import Footer from 'components/Footer/Footer.js'
 import Sidebar from 'components/Sidebar/Sidebar.js'
 import FixedPlugin from 'components/FixedPlugin/FixedPlugin.js'
+import { connect } from "react-redux"
 
 import routes from 'routes.js'
 
@@ -34,10 +35,12 @@ class Admin extends React.Component {
     this.state = {
       backgroundColor: 'black',
       activeColor: 'info',
-      sidebarMini: false
+      sidebarMini: false,
+      userInfo:this.props.userInfoData
     }
   }
   componentDidMount() {
+    // this.props.userInfoData
     if (navigator.platform.indexOf('Win') > -1) {
       document.documentElement.className += ' perfect-scrollbar-on'
       document.documentElement.classList.remove('perfect-scrollbar-off')
@@ -98,6 +101,7 @@ class Admin extends React.Component {
           routes={routes}
           bgColor={this.state.backgroundColor}
           activeColor={this.state.activeColor}
+          userInfoData={this.props.userInfoData}
         />
         <div className='main-panel' ref='mainPanel'>
           <AdminNavbar {...this.props} handleMiniClick={this.handleMiniClick} />
@@ -124,4 +128,9 @@ class Admin extends React.Component {
   }
 }
 
-export default Admin
+const mapStateToProps = state => ({
+  userInfoData: state.profile.userInfo,
+})
+
+export default connect(mapStateToProps, null)(Admin)
+// export default Admin

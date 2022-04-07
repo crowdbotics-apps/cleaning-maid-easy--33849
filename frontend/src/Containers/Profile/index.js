@@ -25,103 +25,119 @@ import { Toaster } from "react-hot-toast"
 
 //Actions
 import { getUserInfo } from "./redux/actions"
-import {renderHtmlText} from '../Services/redux/actions'
+import { renderHtmlText } from "../Services/redux/actions"
 
 const Profile = props => {
+  const { profileData } = props
+  const [userInfo, setUserInfo] = useState(false)
+
   useEffect(() => {
     props.renderHtmlText("Profile")
     props.getUserInfo()
     const userData = sessionStorage.getItem("userInfo")
     setUserInfo(JSON.parse(userData))
-    
   }, [])
 
-  const [userInfo, setUserInfo] = useState(false)
   // const [profileImage, setProfileIMage] = useState(require("assets/img/default-avatar.png"))
 
-  const profileImage={image:require("assets/img/placeholder.jpg")}
+  const profileImage = { image: require("assets/img/placeholder.jpg") }
   const { history } = props
 
   return (
     <>
-    <Toaster position="top-center" />
-    <div
-      className="content "
-      style={{
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundImage: `url(${require("assets/images/bg_content.png")})`,
-        flex: 1
-      }}
-    >
-      <Row>
-        <Col md="12">
-          <Card style={styles.cardStyle}>
-            <CardBody>
-              <div className="text-center" style={{ paddingBottom: 75 }}>
-                <div className="pt-5 pb-3">
-                  <img
-                    style={styles.imagWrapper}
-                    alt="..."
-                    src={
-                      userInfo && userInfo?.profile_picture
-                        ? userInfo?.profile_picture
-                        : profileImage.image
-                    }
-                  />
+      <Toaster position="top-center" />
+      <div
+        className="content "
+        style={{
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundImage: `url(${require("assets/images/bg_content.png")})`,
+          flex: 1
+        }}
+      >
+        <Row>
+          <Col md="12">
+            <Card style={styles.cardStyle}>
+              <CardBody>
+                <div className="text-center" style={{ paddingBottom: 75 }}>
+                  <div className="pt-5 pb-3">
+                    <img
+                      style={styles.imagWrapper}
+                      alt="..."
+                      src={
+                        profileData
+                          ? profileData.profile_picture
+                          : userInfo && userInfo?.profile_picture
+                          ? userInfo?.profile_picture
+                          : profileImage.image
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label style={styles.userNameText}>
+                      {userInfo.name ? userInfo.name : "Test User"}
+                    </label>
+                  </div>
+                  <div>
+                    <label style={styles.companyText}>
+                      {userInfo.company_name
+                        ? userInfo.company_name
+                        : "Cleaning Maid Easy  "}
+                    </label>
+                  </div>
+                  <div className="pt-2">
+                    <img
+                      className="pr-2"
+                      alt="..."
+                      src={require("assets/icons/mapPin.png")}
+                      phone_img
+                    />
+                    <label style={styles.addressText}>
+                      {" "}
+                      {userInfo.address
+                        ? userInfo.address
+                        : "New jersey, New York"}
+                    </label>
+                  </div>
+                  <div className="pt-2">
+                    <img
+                      className="pr-2"
+                      alt="..."
+                      src={require("assets/icons/phone_img.png")}
+                    />
+                    <label style={styles.addressText}>
+                      {userInfo.phone_number
+                        ? userInfo.phone_number
+                        : "+92 302 1154779"}
+                    </label>
+                  </div>
+                  <div style={{ paddingTop: 80 }}>
+                    <Button
+                      onClick={() => props.history.push("/admin/editProfile")}
+                      style={styles.editBtn}
+                    >
+                      Edit
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <label style={styles.userNameText}>{userInfo.name? userInfo.name : 'Test User'}</label>
-                </div>
-                <div>
-                  <label style={styles.companyText}>
-                    {userInfo.company_name ? userInfo.company_name : 'Cleaning Maid Easy  '}
-                  </label>
-                </div>
-                <div className="pt-2">
-                  <img
-                    className="pr-2"
-                    alt="..."
-                    src={require("assets/icons/mapPin.png")}
-                    phone_img
-                  />
-                  <label style={styles.addressText}> {userInfo.address ? userInfo.address : 'New jersey, New York'}</label>
-                </div>
-                <div className="pt-2">
-                  <img
-                    className="pr-2"
-                    alt="..."
-                    src={require("assets/icons/phone_img.png")}
-                  />
-                  <label style={styles.addressText}>
-                    {userInfo.phone_number ? userInfo.phone_number : '+92 302 1154779'}
-                  </label>
-                </div>
-                <div style={{ paddingTop: 80 }}>
-                  <Button
-                    onClick={() => props.history.push("/admin/editProfile")}
-                    style={styles.editBtn}
-                  >
-                    Edit
-                  </Button>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </>
   )
 }
 
-// const mapStateToProps = state => ({})
+const mapStateToProps = state => ({
+  profileData: state.profile.userInfo
+})
 
 const mapDispatchToProps = dispatch => ({
-    getUserInfo: () => dispatch(getUserInfo()),
-    renderHtmlText: data => dispatch(renderHtmlText(data)),
+  getUserInfo: () => dispatch(getUserInfo()),
+  renderHtmlText: data => dispatch(renderHtmlText(data))
 })
-export default connect(null, mapDispatchToProps)(Profile)
+export default connect(mapStateToProps, mapDispatchToProps)(Profile)
 
 const styles = {
   cardStyle: {

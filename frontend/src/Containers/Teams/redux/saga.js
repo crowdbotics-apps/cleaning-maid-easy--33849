@@ -178,7 +178,7 @@ function* removeTeamMember({data}) {
     const response = yield call(removeTeamMemberApi,data);
     yield put((getTeam()))
     yield put (getUnAssignedEmployeesData())
-    // toast.success("Successfully removed!")
+    toast.success("Successfully removed!")
   } catch (e) {
     const { response } = e
     toast.error('Someting wrong!');
@@ -207,7 +207,8 @@ function* addTeamMember({data}) {
   try {
     const response = yield call(addTeamMemberApi,data);
     yield put((getTeam()))
-    // toast.success("Successfully added!")
+    yield put (getUnAssignedEmployeesData())
+    toast.success("Successfully added!")
 
   } catch (e) {
     const { response } = e
