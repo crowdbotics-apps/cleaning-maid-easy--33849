@@ -1230,7 +1230,7 @@ const Calendar = props => {
                       style={{ marginRight: 15, color: "grey" }}
                     ></i>
                     <label style={styles.inputStyle}>
-                      {eventDetail?.client_address}
+                      {eventDetail?.eventDetail.client_address}
                     </label>
                   </div>
                 </Col>
