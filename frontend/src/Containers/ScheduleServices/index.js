@@ -49,9 +49,9 @@ import clockImage from "../../assets/icons/Clock.png"
 
 function ScheduleService(props) {
   useEffect(() => {
+    props.renderHtmlText("Schedule Service")
     props.getTeam()
     props.getServices()
-    props.renderHtmlText("Schedule Service")
     props.getFrequencies()
     props.getAllCustomers()
     let mydiv = document.getElementsByClassName("react-date-picker__wrapper")
@@ -76,7 +76,6 @@ function ScheduleService(props) {
   const [appointmentData, setAppoinmentData] = useState({
     appointment_date: new Date()
   })
-
 
   // const [otherData, setOtherData] = useState({
   //   assigned_team_id: [],
@@ -146,7 +145,9 @@ function ScheduleService(props) {
     setFromTime("2:00")
     setToTime("5:00")
     setState(stateSchema)
-
+    setAppoinmentData({
+      appointment_date: '', 
+    })
     // data.appointment_date=''
     // data.assigned_team_id=[]
     // data.service_id=[]
@@ -388,7 +389,7 @@ function ScheduleService(props) {
                       className="react-select "
                       classNamePrefix="react-select"
                       name="singleSelect"
-                      // value={appointmentData?.assigned_team_id?.value}
+                    //  value={appointmentData?.assigned_team_id?.value}
                       options={
                         teamData &&
                         teamData.map(item => ({
@@ -411,7 +412,7 @@ function ScheduleService(props) {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="singleSelect"
-                        // value={appointmentData?.service_id?.value}
+                        value={appointmentData?.service_id?.value}
                         options={
                           servicesData &&
                           servicesData.map(item => ({

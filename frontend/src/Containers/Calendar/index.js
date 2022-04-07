@@ -29,7 +29,6 @@ import {
 import Select from "react-select"
 import AddServices from "components/addServices"
 
-
 //Actions
 import {
   getDayAcceptedAppointments,
@@ -39,7 +38,10 @@ import {
 } from "./redux/actions"
 
 import { renderHtmlText } from "../Services/redux/actions"
-import { getPendingRequests,requestAction } from "../PendingServices/redux/actions"
+import {
+  getPendingRequests,
+  requestAction
+} from "../PendingServices/redux/actions"
 import { getUnAssignedEmployees } from "../Teams/redux/actions"
 
 import useForm from "../../utils/useForm"
@@ -69,16 +71,17 @@ const Calendar = props => {
   const [requestError, setRequestError] = useState(false)
   const [eventDetail, setEventDetail] = useState(false)
   const [pendingDetails, setPendingDetails] = useState(false)
-  const [pendingRequestModal,setPendingRequestModal]=useState(false)
-  const [actionRequest, setActionRequest]=useState(0)
+  const [pendingRequestModal, setPendingRequestModal] = useState(false)
+  const [actionRequest, setActionRequest] = useState(0)
 
   const calendarRef = useRef()
-  const resourceDummyData = [{
-    resourceId: -1,
-    resourceTitle: "No appointment"
-  }]
+  const resourceDummyData = [
+    {
+      resourceId: -1,
+      resourceTitle: "No appointment"
+    }
+  ]
 
-  console.log("eventDetail",eventDetail);
   const {
     addBtnText,
     btnStyle,
@@ -114,7 +117,9 @@ const Calendar = props => {
       let myDivs = document.getElementsByClassName("rbc-allday-cell")
       let rbcEvent = document.getElementsByClassName("rbc-event")
       let rbcEventContent = document.getElementsByClassName("rbc-event-content")
-      let rbcEventRbcEventContinuesLater = document.getElementsByClassName("rbc-event rbc-event-continues-later")
+      let rbcEventRbcEventContinuesLater = document.getElementsByClassName(
+        "rbc-event rbc-event-continues-later"
+      )
 
       // rbcEventContent[0].style.width = "30px"
       myDivs[0].style.display = "none"
@@ -124,7 +129,7 @@ const Calendar = props => {
       //   rbcEvent[0].style.width = "30px"
 
       //   rbcEventContent[0].style.width = "30px"
-        
+
       // }
     }
   }, [viewState])
@@ -156,7 +161,7 @@ const Calendar = props => {
     }
   }
 
-  const { state, handleOnChange , disable } = useForm(
+  const { state, handleOnChange, disable } = useForm(
     stateSchema,
     validationStateSchema
   )
@@ -170,8 +175,8 @@ const Calendar = props => {
   }
 
   const resetValues = () => {
-    state.title.value=""
-    state.description.value=''
+    state.title.value = ""
+    state.description.value = ""
   }
   const toggle = () => {
     setNoteModal(!noteModal)
@@ -194,7 +199,7 @@ const Calendar = props => {
 
   const modalToggle = () => {
     setPendingRequestModal(false)
-    setPendingDetails('')
+    setPendingDetails("")
     setActionRequest(0)
   }
   const appointmentToggle = () => {
@@ -209,9 +214,9 @@ const Calendar = props => {
     }
 
     props.requestAction(data, modalToggle)
-    if(requestAction==='Accept'){
+    if (requestAction === "Accept") {
       setActionRequest(1)
-    }else {
+    } else {
       setActionRequest(2)
     }
   }
@@ -325,11 +330,12 @@ const Calendar = props => {
     // totalTeams = totalTeams.reduce((a, b) => a + b, 0) - 1
 
     const appoinments =
-    appointmentsDays &&
-    appointmentsDays
+      appointmentsDays &&
+      appointmentsDays
         .map((item, index) => {
           return (
-            item && (viewState===1 || viewState===2) &&
+            item &&
+            (viewState === 1 || viewState === 2) &&
             item?.assigned_team?.team_members?.map(member => {
               return {
                 allDay: true,
@@ -337,7 +343,7 @@ const Calendar = props => {
                 start: new Date(item?.appointment_date),
                 title: member?.name,
                 resourceId: item?.id,
-                color:item.frequency.color_code,
+                color: item.frequency.color_code,
                 desc: "",
                 memberId: member?.id,
                 teamId: item?.assigned_team.id
@@ -395,11 +401,12 @@ const Calendar = props => {
     // resourceList.push({ resourceId: -1, resourceTitle: "Unassigned/Notes" })
 
     const resourceList = resourceData.length ? resourceData : resourceDummyData
-    const items = appoinments.includes(false) ? appoinments.filter(v => v !== false) :  appoinments.filter(v => v !== undefined)
+    const items = appoinments.includes(false)
+      ? appoinments.filter(v => v !== false)
+      : appoinments.filter(v => v !== undefined)
 
     return { items, resourceList }
   }
-
 
   const allNotes = [
     {
@@ -489,13 +496,34 @@ const Calendar = props => {
     e.preventDefault()
   }
 
+  const filterTeam = memberId => {
+    return (
+      unAssignedEmployees &&
+      unAssignedEmployees.map(item => {
+        if (item.id == memberId) {
+          return true
+        } else {
+          return false
+        }
+      })
+    )
+  }
+
   const addTeamOnDrop = (ev, id, cat) => {
     let memberId = ev.dataTransfer.getData("memberId")
-    // const data = {
-    //   member_id: parseInt(memberId),
-    //   team_id: parseInt(id)
-    // }
-    // props.addTeamMember(data)
+
+    const data = {
+      member_id: [parseInt(memberId)],
+      team_id: parseInt(id)
+    }
+
+    const valueExists = [].concat
+      .apply([], filterTeam(memberId))
+      .filter(v => v !== false)
+
+    if (!valueExists.includes(true)) {
+      props.addTeamMember(data)
+    }
   }
 
   const removeTeamDrageStart = (ev, memberId, teamId) => {
@@ -509,12 +537,17 @@ const Calendar = props => {
   const removeTeamOnDrop = (ev, cat) => {
     let memberId = ev.dataTransfer.getData("memberId")
     let teamId = ev.dataTransfer.getData("teamId")
-    // console.log("memberId",memberId,teamId)
-    // const data = {
-    //   member_id: parseInt(memberId),
-    //   team_id: parseInt(teamId)
-    // }
-    // props.removeTeamMember(data)
+    const data = {
+      member_id: [parseInt(memberId)],
+      team_id: parseInt(teamId)
+    }
+    const valueExists = [].concat
+      .apply([], filterTeam(memberId))
+      .filter(v => v !== false)
+
+    if (valueExists.includes(true)) {
+      props.removeTeamMember(data)
+    }
   }
 
   function CustomEvent({ event }) {
@@ -523,10 +556,11 @@ const Calendar = props => {
         className={viewState === 3 ? "" : "pt-1"}
         onDragStart={e => removeTeamDrageStart(e, event.memberId, event.teamId)}
         draggable
+        onDragOver={e => addTeamDrageOver(e)}
+        onDrop={e => addTeamOnDrop(e, event.teamId, "items")}
       >
         <span
-          onDragOver={e => addTeamDrageOver(e)}
-          onDrop={e => addTeamOnDrop(e, event.teamId, "items")}
+         
           style={{
             fontWeight: event.allDay || viewState === 3 ? "500" : "600",
             fontFamily: "Montserrat",
@@ -663,9 +697,8 @@ const Calendar = props => {
 
   return (
     <>
-    
       <div className="content">
-      <Toaster position="top-center" />
+        <Toaster position="top-center" />
         {alertMsg}
         <Row>
           <Col className="" md="12" sm="12">
@@ -728,14 +761,15 @@ const Calendar = props => {
                             const eventData =
                               getTeamMembers().items &&
                               getTeamMembers().items.find(
-                               ot => ot?.eventDetail?.id === event?.eventDetail?.id
+                                ot =>
+                                  ot?.eventDetail?.id === event?.eventDetail?.id
                               )
                             const backgroundColor = eventData && eventData.color
 
                             let styles = {
                               backgroundColor: backgroundColor,
-                              borderRadius: viewState===3 ? 10:5,
-                          };
+                              borderRadius: viewState === 3 ? 10 : 5
+                            }
 
                             return {
                               style: styles
@@ -791,10 +825,10 @@ const Calendar = props => {
                               style={{
                                 overflowY: "scroll",
                                 height: 200,
-                                whiteSpace: "nowrap",
+                                whiteSpace: "nowrap"
                               }}
                             >
-                              {unAssignedEmployees.length ?
+                              {unAssignedEmployees.length ? (
                                 unAssignedEmployees.map((item, index) => (
                                   <div
                                     onDragStart={e =>
@@ -808,16 +842,14 @@ const Calendar = props => {
                                       {item.name}
                                     </label>
                                   </div>
-                                )):(
-                                  <div
-                                  className="text-center"
-                                >
+                                ))
+                              ) : (
+                                <div className="text-center">
                                   <label style={notFoundStyle}>
                                     No record found
                                   </label>
                                 </div>
-                                )
-                              }
+                              )}
                             </div>
                             <div
                               className="text-center"
@@ -844,7 +876,7 @@ const Calendar = props => {
                               </Row>
                             </div>
                             <div style={{ overflowY: "scroll", height: 300 }}>
-                              {notes.length ?
+                              {notes.length ? (
                                 notes.map((item, index) => (
                                   <div
                                     onClick={() => updateValue(item)}
@@ -862,17 +894,14 @@ const Calendar = props => {
                                       </label>
                                     </div>
                                   </div>
-                                )):
-                                (
-                                  <div
-                                  className="text-center"
-                                >
+                                ))
+                              ) : (
+                                <div className="text-center">
                                   <label style={notFoundStyle}>
                                     No record found
                                   </label>
                                 </div>
-                                )
-                              }
+                              )}
                             </div>
                             <div
                               className="text-center"
@@ -881,13 +910,13 @@ const Calendar = props => {
                               <span>Pending Requests</span>
                             </div>
                             <div style={{ overflowY: "scroll", height: 300 }}>
-                              {pendingRequests.length ?
+                              {pendingRequests.length ? (
                                 pendingRequests.map((item, index) => (
                                   <div
-                                  onClick={()=> {
-                                    setPendingDetails(item)
-                                    setPendingRequestModal(true)
-                                  }}
+                                    onClick={() => {
+                                      setPendingDetails(item)
+                                      setPendingRequestModal(true)
+                                    }}
                                     className="text-center"
                                     style={teamListStyle}
                                   >
@@ -895,16 +924,14 @@ const Calendar = props => {
                                       {item.title}
                                     </label>
                                   </div>
-                                )):(
-                                  <div
-                                  className="text-center"
-                                >
+                                ))
+                              ) : (
+                                <div className="text-center">
                                   <label style={notFoundStyle}>
                                     No record found
                                   </label>
                                 </div>
-                                )
-                              }
+                              )}
                             </div>
                           </div>
                         </th>
@@ -1107,7 +1134,6 @@ const Calendar = props => {
             className="modal-footer border-top-0 pt-5 pb-3"
           >
             <div>
-
               <Button
                 onClick={updateValues ? updateNotes : addNewNotes}
                 style={saveBtnStyle}
@@ -1116,18 +1142,19 @@ const Calendar = props => {
                 title=""
                 type="button"
               >
-                     { notesRequesting ? (
-            <Spinner
-              as="span"
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden="true"
-            />
-          ) : (
-            updateValues ? "Update" : "Save"
-          )}
-               
+                {notesRequesting ? (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                ) : updateValues ? (
+                  "Update"
+                ) : (
+                  "Save"
+                )}
               </Button>
             </div>
           </div>
@@ -1366,246 +1393,251 @@ const Calendar = props => {
           </Modal>
         )}
 
-         <Modal isOpen={pendingRequestModal} toggle={modalToggle}>
-        <ModalHeader style={{ borderBottom: 0 }}>
-          <span>
-            <b style={{ paddingTop: 10 }}>{pendingDetails?.title}</b>
-          </span>
-          <button
-            aria-hidden={true}
-            className="close"
-            data-dismiss="modal"
-            type="button"
-            style={{ outline: "none" }}
-            onClick={modalToggle}
-          >
-            <i
-              className="nc-icon nc-simple-remove"
-              style={{ color: " #438B44" }}
-            />
-          </button>
-        </ModalHeader>
-        <ModalBody>
-          <Row>
-            <Col>
-              {requestError ? (
-                <Alert color="danger">Request Failed</Alert>
-              ) : null}
-            </Col>
-          </Row>
-          <Row style={{ justifyContent: "center" }}>
-            <Col md="12">
-              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                <i
-                  class="nc-icon nc-calendar-60"
-                  style={{ marginRight: 10, color: "grey" }}
-                ></i>
-                <label style={styles.inputStyle}>
-                  {moment(pendingDetails?.appointment_date).format(
-                    "d MMMM yyy"
-                  )}
-                </label>
-              </div>
-            </Col>
-          </Row>
-          <Row style={{ justifyContent: "center", marginTop: 20 }}>
-            <Col md="12">
-              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                <i
-                  class="fa fa-clock-o"
-                  style={{ marginRight: 10, color: "grey" }}
-                ></i>
-                <label style={styles.inputStyle}>
-                  {moment(pendingDetails?.start_time, "hh:mm").format("hh:mmA")}{" "}
-                  - {moment(pendingDetails?.end_time, "hh:mm").format("hh:mmA")}
-                </label>
-              </div>
-            </Col>
-          </Row>
-          <Row style={{ justifyContent: "center", marginTop: 20 }}>
-            <Col md="12">
-              <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                <i
-                  class="fa fa-map-marker"
-                  style={{ marginRight: 15, color: "grey" }}
-                ></i>
-                <label style={styles.inputStyle}>{pendingDetails?.client_address}</label>
-              </div>
-            </Col>
-          </Row>
-
-          <Row className="mt-4" style={{ justifyContent: "space-between" }}>
-            <Col md="8">
-              <label style={styles.labelfontStyles}>Client Name</label>
-              <Input
-                style={{
-                  width: 300,
-                  backgroundColor: "white",
-                  fontSize: 14,
-                  fontWeight: "500",
-                  color: "#000000"
-                }}
-                readOnly={true}
-                value={pendingDetails?.client?.name}
-                className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+        <Modal isOpen={pendingRequestModal} toggle={modalToggle}>
+          <ModalHeader style={{ borderBottom: 0 }}>
+            <span>
+              <b style={{ paddingTop: 10 }}>{pendingDetails?.title}</b>
+            </span>
+            <button
+              aria-hidden={true}
+              className="close"
+              data-dismiss="modal"
+              type="button"
+              style={{ outline: "none" }}
+              onClick={modalToggle}
+            >
+              <i
+                className="nc-icon nc-simple-remove"
+                style={{ color: " #438B44" }}
               />
-            </Col>
-            <Col md="4">
-              <label style={styles.labelfontStyles}>Number</label>
-              <Input
-                readOnly={true}
-                value={pendingDetails?.client_number}
-                style={{
-                  backgroundColor: "white",
-                  fontSize: 14,
-                  fontWeight: "500",
-                  color: "#000000"
-                }}
-                className="border-top-0 border-right-0 border-left-0 p-0"
-              />
-            </Col>
-          </Row>
+            </button>
+          </ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col>
+                {requestError ? (
+                  <Alert color="danger">Request Failed</Alert>
+                ) : null}
+              </Col>
+            </Row>
+            <Row style={{ justifyContent: "center" }}>
+              <Col md="12">
+                <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                  <i
+                    class="nc-icon nc-calendar-60"
+                    style={{ marginRight: 10, color: "grey" }}
+                  ></i>
+                  <label style={styles.inputStyle}>
+                    {moment(pendingDetails?.appointment_date).format(
+                      "d MMMM yyy"
+                    )}
+                  </label>
+                </div>
+              </Col>
+            </Row>
+            <Row style={{ justifyContent: "center", marginTop: 20 }}>
+              <Col md="12">
+                <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                  <i
+                    class="fa fa-clock-o"
+                    style={{ marginRight: 10, color: "grey" }}
+                  ></i>
+                  <label style={styles.inputStyle}>
+                    {moment(pendingDetails?.start_time, "hh:mm").format(
+                      "hh:mmA"
+                    )}{" "}
+                    -{" "}
+                    {moment(pendingDetails?.end_time, "hh:mm").format("hh:mmA")}
+                  </label>
+                </div>
+              </Col>
+            </Row>
+            <Row style={{ justifyContent: "center", marginTop: 20 }}>
+              <Col md="12">
+                <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
+                  <i
+                    class="fa fa-map-marker"
+                    style={{ marginRight: 15, color: "grey" }}
+                  ></i>
+                  <label style={styles.inputStyle}>
+                    {pendingDetails?.client_address}
+                  </label>
+                </div>
+              </Col>
+            </Row>
 
-          <Row>
-            <Col md="12">
-              <div className="">
-                <label style={styles.labelfontStyles}>
-                  Assigned Employee/ Team
-                </label>
+            <Row className="mt-4" style={{ justifyContent: "space-between" }}>
+              <Col md="8">
+                <label style={styles.labelfontStyles}>Client Name</label>
                 <Input
+                  style={{
+                    width: 300,
+                    backgroundColor: "white",
+                    fontSize: 14,
+                    fontWeight: "500",
+                    color: "#000000"
+                  }}
                   readOnly={true}
-                  value={pendingDetails?.assigned_team?.title}
-                  style={styles.inputWraper}
-                  className="border-top-0 border-right-0 border-left-0 p-0"
-                />
-              </div>
-            </Col>
-          </Row>
-
-          <Row className="mt-4 " style={{ justifyContent: "space-between" }}>
-            <Col lg="6" md="6" sm="3">
-              <label style={styles.labelfontStyles}>Services</label>
-              <Select
-                className="react-select "
-                classNamePrefix="react-select"
-                name="singleSelect"
-                isDisabled={true}
-                style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
-                value={{
-                  value: pendingDetails?.service?.id,
-                  label: pendingDetails?.service?.name
-                }}
-                placeholder="Single Select"
-              />
-            </Col>
-            <Col lg="6" md="6" sm="3">
-              <label style={styles.labelfontStyles}>Frequency</label>
-              <Select
-                className="react-select  "
-                classNamePrefix="react-select"
-                name="singleSelect"
-                style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
-                isDisabled={true}
-                value={{
-                  value: pendingDetails?.frequency?.id,
-                  label: pendingDetails?.frequency?.title
-                }}
-                placeholder="Single Select"
-              />
-            </Col>
-          </Row>
-
-          <Row style={{ justifyContent: "center", marginTop: 20 }}>
-            <Col md="12">
-              <div className="">
-                <label style={styles.labelfontStyles}>Price</label>
-                <Input
-                  readOnly={true}
-                  style={styles.inputWraper}
-                  value={pendingDetails.price}
+                  value={pendingDetails?.client?.name}
                   className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
                 />
-              </div>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col>
-              <FormGroup>
-                <label style={styles.labelfontStyles}> Description </label>
+              </Col>
+              <Col md="4">
+                <label style={styles.labelfontStyles}>Number</label>
                 <Input
                   readOnly={true}
-                  className="textarea"
-                  type="textarea"
-                  value={pendingDetails.description}
-                  rows="3"
-                  style={styles.textArea}
-                  Modal
-                  defaultValue="Oh so, your weak rhyme You doubt I'll bother,
+                  value={pendingDetails?.client_number}
+                  style={{
+                    backgroundColor: "white",
+                    fontSize: 14,
+                    fontWeight: "500",
+                    color: "#000000"
+                  }}
+                  className="border-top-0 border-right-0 border-left-0 p-0"
+                />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md="12">
+                <div className="">
+                  <label style={styles.labelfontStyles}>
+                    Assigned Employee/ Team
+                  </label>
+                  <Input
+                    readOnly={true}
+                    value={pendingDetails?.assigned_team?.title}
+                    style={styles.inputWraper}
+                    className="border-top-0 border-right-0 border-left-0 p-0"
+                  />
+                </div>
+              </Col>
+            </Row>
+
+            <Row className="mt-4 " style={{ justifyContent: "space-between" }}>
+              <Col lg="6" md="6" sm="3">
+                <label style={styles.labelfontStyles}>Services</label>
+                <Select
+                  className="react-select "
+                  classNamePrefix="react-select"
+                  name="singleSelect"
+                  isDisabled={true}
+                  style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
+                  value={{
+                    value: pendingDetails?.service?.id,
+                    label: pendingDetails?.service?.name
+                  }}
+                  placeholder="Single Select"
+                />
+              </Col>
+              <Col lg="6" md="6" sm="3">
+                <label style={styles.labelfontStyles}>Frequency</label>
+                <Select
+                  className="react-select  "
+                  classNamePrefix="react-select"
+                  name="singleSelect"
+                  style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
+                  isDisabled={true}
+                  value={{
+                    value: pendingDetails?.frequency?.id,
+                    label: pendingDetails?.frequency?.title
+                  }}
+                  placeholder="Single Select"
+                />
+              </Col>
+            </Row>
+
+            <Row style={{ justifyContent: "center", marginTop: 20 }}>
+              <Col md="12">
+                <div className="">
+                  <label style={styles.labelfontStyles}>Price</label>
+                  <Input
+                    readOnly={true}
+                    style={styles.inputWraper}
+                    value={pendingDetails.price}
+                    className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+                  />
+                </div>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col>
+                <FormGroup>
+                  <label style={styles.labelfontStyles}> Description </label>
+                  <Input
+                    readOnly={true}
+                    className="textarea"
+                    type="textarea"
+                    value={pendingDetails.description}
+                    rows="3"
+                    style={styles.textArea}
+                    Modal
+                    defaultValue="Oh so, your weak rhyme You doubt I'll bother,
                         "
-                />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <label style={styles.labelfontStyles}> Notes </label>
-                <Input
-                  readOnly={true}
-                  className="textarea"
-                  type="textarea"
-                  value={pendingDetails.notes}
-                  rows="3"
-                  style={styles.textArea}
-                  defaultValue=""
-                />
-              </FormGroup>
-            </Col>
-          </Row>
+                  />
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <label style={styles.labelfontStyles}> Notes </label>
+                  <Input
+                    readOnly={true}
+                    className="textarea"
+                    type="textarea"
+                    value={pendingDetails.notes}
+                    rows="3"
+                    style={styles.textArea}
+                    defaultValue=""
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
 
-          <Row style={{ justifyContent: "center" }}>
-            <Col md="6">
-              <Button
-                className="btnTest"
-                style={styles.addBtnText}
-                onClick={() => acceptRequest("Accept")}
-              >
-               { (actionRequest ===1) && actionRequesting ? (
-            <Spinner
-              as="span"
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden="true"
-            />
-          ) : (
-            "Accept"
-          )}
-              </Button>
-            </Col>
-            <Col md="6">
-              <Button
-                className="btnTest2"
-                style={styles.addBtnText2}
-                outline
-                color="success"
-                onClick={() => acceptRequest("Reject")}
-              >
-               { actionRequest ===2 && actionRequesting ? (
-            <Spinner
-              as="span"
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden="true"
-            />
-          ) : (
-            "Reject"
-          )}
-              </Button>
-            </Col>
-          </Row>
-        </ModalBody>
-      </Modal>
+            <Row style={{ justifyContent: "center" }}>
+              <Col md="6">
+                <Button
+                  className="btnTest"
+                  style={styles.addBtnText}
+                  onClick={() => acceptRequest("Accept")}
+                >
+                  {actionRequest === 1 && actionRequesting ? (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    "Accept"
+                  )}
+                </Button>
+              </Col>
+              <Col md="6">
+                <Button
+                  className="btnTest2"
+                  style={styles.addBtnText2}
+                  outline
+                  color="success"
+                  onClick={() => acceptRequest("Reject")}
+                >
+                  {actionRequest === 2 && actionRequesting ? (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    "Reject"
+                  )}
+                </Button>
+              </Col>
+            </Row>
+          </ModalBody>
+        </Modal>
       </div>
     </>
   )
@@ -1614,7 +1646,7 @@ const styles = {
   addBtnText: {
     background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%)",
     fontWeight: "bold",
-    fontSize: 17,
+    fontSize: 17
   },
   addBtnText2: {
     fontWeight: "bold",
@@ -1731,7 +1763,7 @@ const styles = {
     fontSize: 12,
     textAlign: "center",
     color: "black",
-    fontFamily: "Montserrat",
+    fontFamily: "Montserrat"
   },
   headerTextStyle: {
     fontWeight: "500",
@@ -1832,8 +1864,8 @@ const mapStateToProps = state => ({
   notes: state.calendar.notes,
   pendingRequests: state.pendingRequests.pendingRequests,
   unAssignedEmployees: state.teams.unAssignedEmployees,
-  actionRequesting:state.pendingRequests.requesting,
-  notesRequesting:state.calendar.notesRequesting
+  actionRequesting: state.pendingRequests.requesting,
+  notesRequesting: state.calendar.notesRequesting
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -1846,6 +1878,6 @@ const mapDispatchToProps = dispatch => ({
   updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   requestAction: (data, modalToggle) =>
-    dispatch(requestAction(data, modalToggle)),
+    dispatch(requestAction(data, modalToggle))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

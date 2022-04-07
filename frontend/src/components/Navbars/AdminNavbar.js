@@ -219,8 +219,8 @@ class AdminNavbar extends React.Component {
     }
     const label = () => {
       const date = moment(toolbar?.date)
-      const todayDate = moment(new Date()).format("DD/MM/YYYY")
-      const nowDay = date.format("DD/MM/YYYY")
+      const todayDate = moment(new Date()).format("MM/DD/YYYY")
+      const nowDay = date.format("MM/DD/YYYY")
 
       // props.getDayAcceptedAppointments(newDate)
       return (

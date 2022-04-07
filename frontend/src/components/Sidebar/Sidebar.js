@@ -1,11 +1,12 @@
-import React, { useRef } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import { NavLink, Link } from "react-router-dom"
 import { Nav, Collapse, Button } from "reactstrap"
 // import { connect } from "react-redux"
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar"
-import {uploadImage} from '../../Containers/Profile/redux/actions'
-import { connect } from "react-redux"
+import { uploadImage } from "../../Containers/Profile/redux/actions"
+import { connect, useDispatch } from "react-redux"
+import UserProfile from "./UserProfile"
 
 import avatar from "assets/img/placeholder.jpg"
 var ps
@@ -17,8 +18,8 @@ class Sidebar extends React.Component {
     this.imageRef = React.createRef(null)
     this.state = this.getCollapseStates(props.routes)
     this.state = {
-      userInfo: "",
-      showImage:false
+      userNewInfo: "",
+      showImage: false
       // imageRef:this.useRef()
     }
   }
@@ -123,12 +124,12 @@ class Sidebar extends React.Component {
   activeRoute = routeName => {
     return this.props.location.pathname.indexOf(routeName) > -1 ? "active" : ""
   }
-  componentDidMount() {
-    const userData = sessionStorage.getItem("userInfo")
-    const userInfo = JSON.parse(userData)
-    this.setState({
-      userInfo: userInfo,
-    })
+ async componentDidMount() {
+    // const userData =await sessionStorage.getItem("userInfo")
+    // const userInfo = JSON.parse(userData)
+    // this.setState({
+    //   userNewInfo: userInfo
+    // })
     // if you are using a Windows Machine, the scrollbars will have a Mac look
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.refs.sidebar, {
@@ -149,17 +150,16 @@ class Sidebar extends React.Component {
     let reader = new FileReader()
     let file = e.target.files[0]
 
-      const data=new FormData()
-      data.append("profile_picture",file)
+    const data = new FormData()
+    data.append("profile_picture", file)
 
-      // this.props.uploadImage(data,this.state.userInfo.id)
+    this.props.uploadImage(data, this.state.userInfo.id)
 
     // console.log("this.userInfo.id",this.state.userInfo.id);
 
     // this.setState({
     //   showImage:file
     // })
-    
 
     // mainImage(file)
     // reader.onloadend = () => {
@@ -172,7 +172,21 @@ class Sidebar extends React.Component {
     this.imageRef.current.click()
   }
 
+  // getData = async () =>{
+  //   const userData = await sessionStorage.getItem("userInfo")
+  //   const userInfo = JSON.parse(userData)
+  //   return userInfo
+  // }
+
   render() {
+   
+    const userData = sessionStorage.getItem("userInfo")
+      const userInfo = JSON.parse(userData)
+
+      // const dataaa=this.getData().then((item) => this.setState({
+      //   userNewInfo:item
+      // }))
+   
     return (
       <div
         className="sidebar"
@@ -180,7 +194,44 @@ class Sidebar extends React.Component {
         data-active-color={this.props.activeColor}
       >
         <div className="logo user">
-          <NavLink
+            <NavLink
+              to="/admin/profile"
+              activeClassName=""
+              style={{ display: "contents" }}
+            >
+              <div>
+                <img
+                  className="photo"
+                  src={
+                    this.props?.userInfoData?.profile_picture ? this.props.userInfoData.profile_picture: userInfo? userInfo.profile_picture: avatar
+                  }
+                />
+              </div>
+              <div className="info">
+              <a
+                data-toggle="collapse"
+                aria-expanded={this.state.openAvatar}
+                onClick={() =>
+                  this.setState({ openAvatar: !this.state.openAvatar })
+                }
+              >
+                <span style={styles.textStyle}>
+                  {!document.body.classList.contains("sidebar-mini")
+                    ? this.props.userInfoData.name ? this.props.userInfoData.name: userInfo
+                      ? `${userInfo.name}`
+                      : "User Name"
+                    : ""}
+                </span>
+              </a>
+            </div>
+            </NavLink>
+            {
+              !document.body.classList.contains("sidebar-mini")? (
+                <UserProfile />
+              ):''
+            }
+            
+          {/* <NavLink
             to="/admin/profile"
             activeClassName=""
             style={{ display: "contents" }}
@@ -215,9 +266,6 @@ class Sidebar extends React.Component {
             </div>
           </NavLink>
           <span style={styles.uploadText}>
-            {/* <input type="file" placeholder="upload" name="myImage" 
-          // onChange={this.onImageChange} 
-          /> */}
 
             {!document.body.classList.contains("sidebar-mini") ? (
               <div className="fileinput text-center">
@@ -231,7 +279,7 @@ class Sidebar extends React.Component {
                 </form>
                 <div>
                   <button 
-                  // onClick={this.handleClick} 
+                  onClick={this.handleClick} 
                   style={styles.uploadText}>
                     Upload Photo
                   </button>
@@ -241,6 +289,20 @@ class Sidebar extends React.Component {
               ""
             )}
           </span>
+
+          <div
+            style={{
+              borderBottom: !document.body.classList.contains("sidebar-mini")
+                ? "groove"
+                : "",
+              borderWidth:
+                !document.body.classList.contains("sidebar-mini") && 1,
+              borderColor: "gray",
+              opacity: 0.3,
+              paddingTop: 17,
+              width: "100%"
+            }}
+          ></div> */}
 
           <div
             style={{
@@ -331,10 +393,10 @@ export const styles = {
   }
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     uploadImage: (data,id) => dispatch(uploadImage(data,id))
-//   }
-// };
+const mapStateToProps = state => ({
+})
 
-export default (Sidebar)
+const mapDispatchToProps = dispatch => ({
+})
+// export default connect(mapStateToProps, mapDispatchToProps)(Sidebar)
+export default Sidebar
