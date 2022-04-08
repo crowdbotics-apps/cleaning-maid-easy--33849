@@ -20,8 +20,8 @@ import {
   addCustomerFailure,
 } from "./actions"
 
-async function getAllCustomersAPI() {
-  const URL = `${BASE_URL}/api/v1/users/customers_list/`
+async function getAllCustomersAPI(index) {
+  const URL = `${BASE_URL}/api/v1/users/customers_list/?page=${index}`
   const token = await sessionStorage.getItem("authToken")
   const options = {
     headers: {
@@ -34,10 +34,10 @@ async function getAllCustomersAPI() {
   return XHR(URL, options)
 }
 
-function* getAllCustomers() {
+function* getAllCustomers({index}) {
   try {
-    const response = yield call(getAllCustomersAPI)
-    yield put(getAllCustomersSuccess(response?.data?.results))
+    const response = yield call(getAllCustomersAPI, index)
+    yield put(getAllCustomersSuccess(response?.data))
   } catch (e) {
     const { response } = e
   }
@@ -64,7 +64,7 @@ async function addCustomerApi(data) {
 function* addCustomer({ data,toggle }) {
   try {
     const response = yield call(addCustomerApi, data)
-    yield put(getAllCustomersData())
+    yield put(getAllCustomersData(1))
     toast.success("Successfully saved!")
     toggle()
   } catch (e) {
@@ -93,7 +93,7 @@ async function changeNotificationApi(data,id) {
 function* changeNotification({ data,id }) {
   try {
     const response = yield call(changeNotificationApi, data,id)
-    yield put(getAllCustomersData())
+    yield put(getAllCustomersData(1))
     toast.success("Successfully notification changed!")
   } catch (e) {
     const { response } = e
@@ -118,7 +118,7 @@ async function searchCustomersApi(data) {
 function* searchCustomers({data}) {
   try {
     const response = yield call(searchCustomersApi,data)
-    yield put(getAllCustomersSuccess(response?.data?.results))
+    yield put(getAllCustomersSuccess(response?.data))
   } catch (e) {
     const { response } = e
   }

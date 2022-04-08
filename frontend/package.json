@@ -58,6 +58,7 @@
     "react-draggable": "^4.4.4",
     "react-google-maps": "9.4.5",
     "react-hot-toast": "^2.2.0",
+    "react-js-pagination": "^3.0.3",
     "react-jvectormap": "0.0.16",
     "react-notification-alert": "0.0.12",
     "react-redux": "^7.2.4",

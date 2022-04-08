@@ -9,6 +9,7 @@ import validator from "../../utils/validation"
 import { Toaster } from "react-hot-toast"
 
 import moment from "moment"
+import Pagination from "react-js-pagination"
 
 // reactstrap components
 import {
@@ -29,6 +30,9 @@ import {
   ModalBody,
   Col,
   UncontrolledTooltip,
+  // Pagination
+  PaginationItem,
+  PaginationLink,
   Spinner,
   UncontrolledAlert,
   Alert
@@ -57,17 +61,20 @@ const PendingServices = props => {
   const [requestError, setRequestError] = useState(false)
   const [pendingDetails, setPendingDetails] = useState(false)
   const [actionRequest, setActionRequest] = useState(0)
+  const [totalCount, setTotalCount] = useState(false)
+  const [currentpage, setCurrentPage] = useState(1)
 
   useEffect(() => {
-    props.getPendingRequests()
+    props.getPendingRequests(currentpage)
     props.renderHtmlText("Pending Services")
   }, [])
 
   useEffect(() => {
-    if (pendingRequests.length) {
+    if (pendingRequests?.results?.length) {
+      setTotalCount(pendingRequests?.count)
       let mydiv = document.getElementsByClassName("table-responsive")
       mydiv[0].style.maxHeight = "600px"
-      mydiv[0].style.overflowY='auto'
+      mydiv[0].style.overflowY = "auto"
     } else {
       let mydiv = document.getElementsByClassName("table-responsive")
       mydiv[0].style.maxHeight = ""
@@ -125,13 +132,19 @@ const PendingServices = props => {
       appointment_id: pendingDetails.id,
       action: requestAction
     }
-    props.requestAction(data, modalToggle)
+    props.requestAction(data, modalToggle,currentpage)
     setRequestError(false)
     if (requestAction === "Accept") {
       setActionRequest(1)
     } else {
       setActionRequest(2)
     }
+   
+  }
+
+  const handlePageChange = page => {
+    setCurrentPage(page)
+    props.getPendingRequests(page)
   }
 
   return (
@@ -422,7 +435,7 @@ const PendingServices = props => {
                           <Spinner size="lg" />
                         </td>
                       </tr>
-                    ) : pendingRequests.length === 0 ? (
+                    ) : pendingRequests?.results?.length === 0 ? (
                       <tr>
                         <td></td>
                         <td></td>
@@ -432,8 +445,8 @@ const PendingServices = props => {
                         <td></td>
                       </tr>
                     ) : (
-                      pendingRequests &&
-                      pendingRequests.map((item, i) => (
+                      pendingRequests?.results &&
+                      pendingRequests?.results?.map((item, i) => (
                         <tr
                           style={{ cursor: "pointer" }}
                           onClick={() => {
@@ -452,6 +465,24 @@ const PendingServices = props => {
                     )}
                   </tbody>
                 </Table>
+                <div className="pt-3 d-flex justify-content-center">
+                  {totalCount && (
+                    <Pagination
+                      aria-label="Page navigation example"
+                      itemClass="page-item"
+                      linkClass="page-link"
+                      prevPageText="Prev"
+                      nextPageText="Next"
+                      firstPageText="First"
+                      lastPageText="Last"
+                      activePage={currentpage}
+                      itemsCountPerPage={24}
+                      pageRangeDisplayed={10}
+                      totalItemsCount={totalCount && totalCount}
+                      onChange={handlePageChange}
+                    />
+                  )}
+                </div>
               </CardBody>
             </Card>
           </Col>
@@ -469,10 +500,10 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  getPendingRequests: () => dispatch(getPendingRequests()),
+  getPendingRequests: index => dispatch(getPendingRequests(index)),
   getAppointmentDetails: data => dispatch(getAppointmentDetails(data)),
-  requestAction: (data, modalToggle) =>
-    dispatch(requestAction(data, modalToggle)),
+  requestAction: (data, modalToggle,index) =>
+    dispatch(requestAction(data, modalToggle,index)),
   renderHtmlText: data => dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(PendingServices)

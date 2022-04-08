@@ -23,8 +23,8 @@ import {
   getPendingRequests as getPendingRequestsData
 } from "./actions"
 
-async function getPendingRequestsAPI() {
-  const URL = `${BASE_URL}/api/v1/operations/pending_requests/`
+async function getPendingRequestsAPI(index) {
+  const URL = `${BASE_URL}/api/v1/operations/pending_requests/?page=${index}`
   const token = await sessionStorage.getItem("authToken")
   const options = {
     headers: {
@@ -66,10 +66,10 @@ async function requestActionAPI(data) {
   return XHR(URL, options)
 }
 
-function* requestAction({ data, modalToggle }) {
+function* requestAction({ data, modalToggle,index }) {
   try {
     const response = yield call(requestActionAPI, data)
-    yield put (getPendingRequestsData())
+    yield put (getPendingRequestsData(index))
     modalToggle()
     toast.success(`Successfully ${data?.action}ed!`)
   } catch (e) {
@@ -78,10 +78,10 @@ function* requestAction({ data, modalToggle }) {
   }
 }
 
-function* getPendingRequests() {
+function* getPendingRequests({index}) {
   try {
-    const response = yield call(getPendingRequestsAPI)
-    yield put(getPendingRequestsSuccess(response.data.results))
+    const response = yield call(getPendingRequestsAPI,index)
+    yield put(getPendingRequestsSuccess(response.data))
   } catch (e) {
     const { response } = e
   } finally {
