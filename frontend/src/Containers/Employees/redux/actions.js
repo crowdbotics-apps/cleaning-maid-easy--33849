@@ -15,8 +15,9 @@ export const addEmployee = (data,toggle) => ({
   toggle
 })
 
-export const getEmployeeList = () => ({
+export const getEmployeeList = (index) => ({
   type: GET_EMPLOYEE_LIST,
+  index
 })
 
 export const updateEmployee = (data,id,toggle) => ({

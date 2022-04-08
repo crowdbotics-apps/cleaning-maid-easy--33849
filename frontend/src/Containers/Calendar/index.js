@@ -42,7 +42,11 @@ import {
   getPendingRequests,
   requestAction
 } from "../PendingServices/redux/actions"
-import { getUnAssignedEmployees } from "../Teams/redux/actions"
+import {
+  getUnAssignedEmployees,
+  removeTeamMember,
+  addTeamMember
+} from "../Teams/redux/actions"
 
 import useForm from "../../utils/useForm"
 
@@ -73,15 +77,19 @@ const Calendar = props => {
   const [pendingDetails, setPendingDetails] = useState(false)
   const [pendingRequestModal, setPendingRequestModal] = useState(false)
   const [actionRequest, setActionRequest] = useState(0)
+  const [calanderDate, setcalanderDate] = useState(false)
 
   const calendarRef = useRef()
+
+  let newDate = ""
   const resourceDummyData = [
     {
       resourceId: -1,
       resourceTitle: "No appointment"
     }
   ]
-
+  const myNewData = ""
+  // console.log("calanderDate",myNewData);
   const {
     addBtnText,
     btnStyle,
@@ -106,7 +114,7 @@ const Calendar = props => {
   } = styles
 
   useEffect(() => {
-    props.getPendingRequests()
+    props.getPendingRequests(1)
     props.getNotes()
     props.getUnAssignedEmployees()
     props.getDayAcceptedAppointments(moment(new Date()).format("YYYY-MM-DD"))
@@ -213,7 +221,7 @@ const Calendar = props => {
       action: requestAction
     }
 
-    props.requestAction(data, modalToggle)
+    props.requestAction(data, modalToggle,1)
     if (requestAction === "Accept") {
       setActionRequest(1)
     } else {
@@ -234,92 +242,6 @@ const Calendar = props => {
   //   }
   // }, [teamData])
 
-  const eventData = [
-    {
-      id: 4,
-      title: "Appointment 1  1 new data",
-      appointment_date: "2022-03-31",
-      start_time: "14:00:00",
-      end_time: "17:00:00",
-      client: {
-        id: 3,
-        name: "Omar Delice",
-        profile_picture: null
-      },
-      assigned_team: {
-        id: 2,
-        team_members: [
-          {
-            id: 2,
-            name: "ali",
-            profile_picture: null
-          },
-          {
-            id: 3,
-            name: "Omar Delice",
-            profile_picture: null
-          }
-        ],
-        title: "Team 1"
-      },
-      service: {
-        id: 1,
-        name: "Service 1",
-        description: "Big Description Here",
-        price: "14.99"
-      },
-      frequency: {
-        id: 1,
-        title: "Initial cleaning",
-        color_code: "adad"
-      },
-      status: "Accepted",
-      created_at: "2022-03-23T04:03:00.000Z",
-      updated_at: "2022-03-15T20:43:12.087570Z"
-    },
-    {
-      id: 6,
-      title: "Appointment 7",
-      appointment_date: "2022-03-31",
-      start_time: "15:00:00",
-      end_time: "20:00:00",
-      client: {
-        id: 3,
-        name: "Omar Delice",
-        profile_picture: null
-      },
-      assigned_team: {
-        id: 2,
-        team_members: [
-          {
-            id: 2,
-            name: "saman",
-            profile_picture: null
-          },
-          {
-            id: 3,
-            name: "babur",
-            profile_picture: null
-          }
-        ],
-        title: "Team 2"
-      },
-      service: {
-        id: 1,
-        name: "Service 1",
-        description: "Big Description Here",
-        price: "14.99"
-      },
-      frequency: {
-        id: 1,
-        title: "Initial cleaning",
-        color_code: "adad"
-      },
-      status: "Accepted",
-      created_at: "2022-03-15T21:08:41.695529Z",
-      updated_at: "2022-03-15T21:10:15.393307Z"
-    }
-  ]
   const closeModal = () => {
     setModal(!modal)
   }
@@ -343,7 +265,7 @@ const Calendar = props => {
                 start: new Date(item?.appointment_date),
                 title: member?.name,
                 resourceId: item?.id,
-                color: item.frequency.color_code,
+                color: "#88AE31",
                 desc: "",
                 memberId: member?.id,
                 teamId: item?.assigned_team.id
@@ -416,64 +338,15 @@ const Calendar = props => {
     }
   ]
 
-  const pendingRequestsList = {
-    count: 1,
-    next: null,
-    previous: null,
-    results: [
-      {
-        id: 4,
-        title: "Appointment",
-        appointment_date: "2022-31-31",
-        start_time: "14:00:00",
-        end_time: "18:00:00",
-        client: "JHONE",
-        assigned_team: {
-          id: 2,
-          team_members: [
-            {
-              id: 2,
-              name: null,
-              profile_picture: null
-            },
-            {
-              id: 3,
-              name: "Omar Delice",
-              profile_picture: null
-            }
-          ],
-          title: "Team 1"
-        },
-        service: {
-          id: 1,
-          name: "Service 1",
-          description: "Big Description Here",
-          price: "14.99"
-        },
-        frequency: {
-          id: 1,
-          title: "Initial cleaning",
-          color_code: "adad"
-        },
-        price: "59.99",
-        description: "Full Description of the job here.",
-        notes: "Appointment notes here",
-        status: "Pending",
-        created_at: "2022-03-15T20:42:59.558771Z",
-        updated_at: "2022-03-15T20:42:59.558851Z"
-      }
-    ]
-  }
-
   const formats = {
     eventTimeRangeFormat: (date, culture, localizer) =>
       localizer.format(date, "dd", culture)
   }
 
   const CustomToolbar = toolbar => {
-    // if(toolbar.date){
-    //   props.getDayAcceptedAppointments(moment(toolbar?.date).format('YYYY-MM-DD'))
-    // }
+
+    // setcalanderDate((calanderDate) => toolbar.date)
+    // newDate = toolbar.date
 
     props.renderHtmlText({
       toolbar: toolbar,
@@ -509,11 +382,12 @@ const Calendar = props => {
     )
   }
 
-  const addTeamOnDrop = (ev, id, cat) => {
+  const addTeamOnDrop = (ev, id) => {
     let memberId = ev.dataTransfer.getData("memberId")
+    // let date = ev.dataTransfer.getData("date")
 
     const data = {
-      member_id: [parseInt(memberId)],
+      member_ids: [parseInt(memberId)],
       team_id: parseInt(id)
     }
 
@@ -521,7 +395,7 @@ const Calendar = props => {
       .apply([], filterTeam(memberId))
       .filter(v => v !== false)
 
-    if (!valueExists.includes(true)) {
+    if (valueExists.includes(true)) {
       props.addTeamMember(data)
     }
   }
@@ -537,15 +411,16 @@ const Calendar = props => {
   const removeTeamOnDrop = (ev, cat) => {
     let memberId = ev.dataTransfer.getData("memberId")
     let teamId = ev.dataTransfer.getData("teamId")
+
     const data = {
-      member_id: [parseInt(memberId)],
+      member_ids: [parseInt(memberId)],
       team_id: parseInt(teamId)
     }
     const valueExists = [].concat
       .apply([], filterTeam(memberId))
       .filter(v => v !== false)
 
-    if (valueExists.includes(true)) {
+    if (!valueExists.includes(true)) {
       props.removeTeamMember(data)
     }
   }
@@ -556,11 +431,12 @@ const Calendar = props => {
         className={viewState === 3 ? "" : "pt-1"}
         onDragStart={e => removeTeamDrageStart(e, event.memberId, event.teamId)}
         draggable
-        onDragOver={e => addTeamDrageOver(e)}
-        onDrop={e => addTeamOnDrop(e, event.teamId, "items")}
+        onDragOver={e =>  event.allDay && addTeamDrageOver(e)}
+        onDrop={e => {
+          addTeamOnDrop(e, event.teamId)
+        }}
       >
         <span
-         
           style={{
             fontWeight: event.allDay || viewState === 3 ? "500" : "600",
             fontFamily: "Montserrat",
@@ -681,8 +557,11 @@ const Calendar = props => {
   }
 
   const selectEvent = event => {
-    setAppointmentModal(true)
-    setEventDetail(event)
+    if(!event.allDay){
+      setAppointmentModal(true)
+      setEventDetail(event)
+    }
+    
   }
 
   // const CustomTimeSlotWrapper=({value, resource, children})=>{
@@ -910,8 +789,8 @@ const Calendar = props => {
                               <span>Pending Requests</span>
                             </div>
                             <div style={{ overflowY: "scroll", height: 300 }}>
-                              {pendingRequests.length ? (
-                                pendingRequests.map((item, index) => (
+                              {pendingRequests?.length ? (
+                                pendingRequests?.map((item, index) => (
                                   <div
                                     onClick={() => {
                                       setPendingDetails(item)
@@ -1230,7 +1109,7 @@ const Calendar = props => {
                       style={{ marginRight: 15, color: "grey" }}
                     ></i>
                     <label style={styles.inputStyle}>
-                      {eventDetail?.client_address}
+                      {eventDetail?.eventDetail?.client_address}
                     </label>
                   </div>
                 </Col>
@@ -1862,22 +1741,25 @@ const mapStateToProps = state => ({
   requesting: state.calendar.requesting,
   appointmentsDays: state.calendar.appointmentsDays,
   notes: state.calendar.notes,
-  pendingRequests: state.pendingRequests.pendingRequests,
+  pendingRequests: state.pendingRequests.pendingRequests.results,
   unAssignedEmployees: state.teams.unAssignedEmployees,
   actionRequesting: state.pendingRequests.requesting,
   notesRequesting: state.calendar.notesRequesting
+  // htmlText: state.services.htmlText
 })
 
 const mapDispatchToProps = dispatch => ({
   getDayAcceptedAppointments: date =>
     dispatch(getDayAcceptedAppointments(date)),
   getNotes: () => dispatch(getNotes()),
-  getPendingRequests: () => dispatch(getPendingRequests()),
+  getPendingRequests: (index) => dispatch(getPendingRequests(index)),
   getUnAssignedEmployees: () => dispatch(getUnAssignedEmployees()),
   addNotes: (data, toggle) => dispatch(addNotes(data, toggle)),
   updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  requestAction: (data, modalToggle) =>
-    dispatch(requestAction(data, modalToggle))
+  requestAction: (data, modalToggle,index) =>
+    dispatch(requestAction(data, modalToggle,index)),
+  removeTeamMember: data => dispatch(removeTeamMember(data)),
+  addTeamMember: data => dispatch(addTeamMember(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

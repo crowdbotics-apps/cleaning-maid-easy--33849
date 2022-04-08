@@ -15,9 +15,6 @@ import {
   Col,
   Modal,
   UncontrolledTooltip,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
   Spinner
 } from "reactstrap"
 import CardFooter from "reactstrap/lib/CardFooter"
@@ -200,11 +197,6 @@ function Teams(props) {
       props.addTeamMember(data)
     }
   }
-  const[currentpage,setCurrentPage]=useState(1)
-  const [postPerPage,  setPostPerPage]=useState(10)
-
-const indexOfLastPage = currentpage * postPerPage
-const indexOfFirstPage=indexOfLastPage - postPerPage
   return (
     <>
       <Toaster position="top-center" />
@@ -367,63 +359,6 @@ const indexOfFirstPage=indexOfLastPage - postPerPage
                       {/* for bottom border */}
                     </tbody>
                   </Table>
-                  {/* <nav aria-label="Page navigation example">
-                    <Pagination>
-                      <PaginationItem>
-                        <PaginationLink
-                          aria-label="Previous"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <span aria-hidden={true}>
-                            <i
-                              aria-hidden={true}
-                              className="fa fa-angle-double-left"
-                            />
-                          </span>
-                        </PaginationLink>
-                      </PaginationItem>
-
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          1
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem className="active">
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          2
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          3
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          aria-label="Next"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <span aria-hidden={true}>
-                            <i
-                              aria-hidden={true}
-                              className="fa fa-angle-double-right"
-                            />
-                          </span>
-                        </PaginationLink>
-                      </PaginationItem>
-                    </Pagination>
-                  </nav> */}
                 </div>
               </CardBody>
               <CardFooter className="text-lg-right text-center">

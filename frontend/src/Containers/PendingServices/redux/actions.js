@@ -7,8 +7,9 @@ import {
   REQUEST_ACTION
 } from "./types"
 
-export const getPendingRequests = () => ({
-  type: GET_PENDING_REQUESTS
+export const getPendingRequests = (index) => ({
+  type: GET_PENDING_REQUESTS,
+  index
 })
 
 export const getPendingRequestsSuccess = data => ({
@@ -29,8 +30,9 @@ export const getAppointmentDetailsSuccess = data => ({
   data
 })
 
-export const requestAction = (data, modalToggle) => ({
+export const requestAction = (data, modalToggle,index) => ({
   type: REQUEST_ACTION,
   data,
-  modalToggle
+  modalToggle,
+  index
 })

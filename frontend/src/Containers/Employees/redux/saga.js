@@ -26,8 +26,8 @@ import {
   reset
 } from "./actions"
 
-async function getEmployeeListApi() {
-  const URL = `${BASE_URL}/api/v1/users/employees_list/`
+async function getEmployeeListApi(index) {
+  const URL = `${BASE_URL}/api/v1/users/employees_list/?page=${index}`
   const token = await sessionStorage.getItem("authToken")
   const options = {
     headers: {
@@ -40,9 +40,9 @@ async function getEmployeeListApi() {
   return XHR(URL, options)
 }
 
-function* getEmployeeList() {
+function* getEmployeeList({index}) {
   try {
-    const response = yield call(getEmployeeListApi)
+    const response = yield call(getEmployeeListApi,index)
     yield put(getEmployeeSuccess(response.data))
   } catch (e) {
     const { response } = e
@@ -69,7 +69,7 @@ async function addEmployeeAPi(data) {
 function* addEmployee({ data, toggle }) {
   try {
     const response = yield call(addEmployeeAPi, data)
-    yield put(getEmployeeListData())
+    yield put(getEmployeeListData(1))
     toggle()
     toast.success("Successfully saved!")
   } catch (e) {
@@ -98,7 +98,7 @@ async function deleteEmployeeApi(id) {
 function* deleteEmployee({ id }) {
   try {
     const response = yield call(deleteEmployeeApi, id)
-    yield put(getEmployeeListData())
+    yield put(getEmployeeListData(1))
     toast.success("Successfully deleted!")
   } catch (e) {
     const { response } = e
@@ -128,12 +128,11 @@ function* updateEmployee({ data, id, toggle }) {
   try {
     const response = yield call(updateEmployeeApi, data, id)
     toggle()
-    yield put(getEmployeeListData())
+    yield put(getEmployeeListData(1))
     toast.success("Successfully updated!")
   } catch (e) {
     const { response } = e
     yield put(addEmployeeFailure(response?.data))
-    console.log('error', response?.data);
   }
   finally {
     yield put(reset())
@@ -158,7 +157,7 @@ async function changeEmployeeTeamApi(data) {
 function* changeEmployeeTeam({ data }) {
   try {
     const response = yield call(changeEmployeeTeamApi, data)
-    yield put(getEmployeeListData())
+    yield put(getEmployeeListData(1))
     toast.success("Successfully employee changed!")
   } catch (e) {
     const { response } = e

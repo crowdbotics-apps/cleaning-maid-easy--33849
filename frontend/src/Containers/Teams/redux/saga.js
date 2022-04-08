@@ -13,6 +13,7 @@ import { GET_TEAM, GET_EMPLOYEES, CREATE_TEAM, DELETE_TEAM,GET_UN_ASSIGNED_EMPLO
 
 // actions
 import {getTeamSuccess, resetTeam, getEmployeesSuccess, getTeam,getUnAssignedEmployeesSuccess,getUnAssignedEmployees as getUnAssignedEmployeesData} from './actions'
+import {getDayAcceptedAppointments} from '../../Calendar/redux/actions'
 
 
 async function getTeamAPI() {
@@ -178,6 +179,7 @@ function* removeTeamMember({data}) {
     const response = yield call(removeTeamMemberApi,data);
     yield put((getTeam()))
     yield put (getUnAssignedEmployeesData())
+    // yield put (getDayAcceptedAppointments(date))
     toast.success("Successfully removed!")
   } catch (e) {
     const { response } = e

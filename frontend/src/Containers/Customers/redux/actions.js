@@ -1,7 +1,8 @@
 import { GET_ALL_CUSTOMERS, GET_ALL_CUSTOMERS_SUCCESS,ADD_CUSTOMER,ADD_CUSTOMER_FAILURE,CHANGE_NOTIFICATION,SEARCH_CUSTOMERS,RESET } from "./types"
 
-export const getAllCustomers = () => ({
-  type: GET_ALL_CUSTOMERS
+export const getAllCustomers = (index) => ({
+  type: GET_ALL_CUSTOMERS,
+  index
 })
 
 export const addCustomer = (data,toggle) => ({
@@ -21,13 +22,13 @@ export const searchCustomers = (data) => ({
   data,
 })
 
-export const getService = () => ({
-  type: GET_ALL_CUSTOMERS
-})
+// export const getService = () => ({
+//   type: GET_ALL_CUSTOMERS
+// })
 
-export const getFrequency = () => ({
-  type: GET_ALL_CUSTOMERS
-})
+// export const getFrequency = () => ({
+//   type: GET_ALL_CUSTOMERS
+// })
 
 export const getAllCustomersSuccess = data => ({
   type: GET_ALL_CUSTOMERS_SUCCESS,
