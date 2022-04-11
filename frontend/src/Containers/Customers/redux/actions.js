@@ -5,16 +5,18 @@ export const getAllCustomers = (index) => ({
   index
 })
 
-export const addCustomer = (data,toggle) => ({
+export const addCustomer = (data,toggle,currentpage) => ({
   type: ADD_CUSTOMER,
   data,
-  toggle
+  toggle,
+  currentpage
 })
 
-export const changeNotification = (data,id) => ({
+export const changeNotification = (data,id,currentpage) => ({
   type: CHANGE_NOTIFICATION,
   data,
-  id
+  id,
+  currentpage
 })
 
 export const searchCustomers = (data) => ({

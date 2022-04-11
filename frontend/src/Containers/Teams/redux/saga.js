@@ -2,6 +2,8 @@ import { all, call, put, takeLatest } from 'redux-saga/effects';
 import { push } from "connected-react-router";
 import toast from "react-hot-toast"
 
+import moment from 'moment';
+
 // config
 import { BASE_URL } from '../../../config/app';
 
@@ -181,6 +183,10 @@ function* removeTeamMember({data}) {
     yield put (getUnAssignedEmployeesData())
     // yield put (getDayAcceptedAppointments(date))
     toast.success("Successfully removed!")
+    const newDate = sessionStorage.getItem('date');
+    const userDate = JSON.parse(newDate)
+    const dateFormate=moment(userDate).format("YYYY-MM-DD")
+    yield put (getDayAcceptedAppointments(dateFormate))
   } catch (e) {
     const { response } = e
     toast.error('Someting wrong!');
@@ -211,6 +217,10 @@ function* addTeamMember({data}) {
     yield put((getTeam()))
     yield put (getUnAssignedEmployeesData())
     toast.success("Successfully added!")
+    const newDate = sessionStorage.getItem('date');
+    const userDate = JSON.parse(newDate)
+    const dateFormate=moment(userDate).format("YYYY-MM-DD")
+    yield put (getDayAcceptedAppointments(dateFormate))
 
   } catch (e) {
     const { response } = e

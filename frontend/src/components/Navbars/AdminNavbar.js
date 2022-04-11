@@ -103,7 +103,7 @@ class AdminNavbar extends React.Component {
   CustomToolbar = () => {
     const toolbar = this.props?.htmlText.toolbar
     const setViewState = this.props?.htmlText.setViewState
-
+    sessionStorage.setItem("date", JSON.stringify(toolbar.date))
     const goToDayView = () => {
       toolbar.onView("day")
       setViewState(1)

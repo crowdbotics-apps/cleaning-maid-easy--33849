@@ -66,10 +66,10 @@ async function addEmployeeAPi(data) {
   return XHR(URL, options)
 }
 
-function* addEmployee({ data, toggle }) {
+function* addEmployee({ data, toggle,currentpage }) {
   try {
     const response = yield call(addEmployeeAPi, data)
-    yield put(getEmployeeListData(1))
+    yield put(getEmployeeListData(currentpage))
     toggle()
     toast.success("Successfully saved!")
   } catch (e) {
@@ -95,10 +95,10 @@ async function deleteEmployeeApi(id) {
   return XHR(URL, options)
 }
 
-function* deleteEmployee({ id }) {
+function* deleteEmployee({ id,currentpage }) {
   try {
     const response = yield call(deleteEmployeeApi, id)
-    yield put(getEmployeeListData(1))
+    yield put(getEmployeeListData(currentpage))
     toast.success("Successfully deleted!")
   } catch (e) {
     const { response } = e
@@ -124,11 +124,11 @@ async function updateEmployeeApi(data, id) {
   return XHR(URL, options)
 }
 
-function* updateEmployee({ data, id, toggle }) {
+function* updateEmployee({ data, id, toggle,currentpage }) {
   try {
     const response = yield call(updateEmployeeApi, data, id)
     toggle()
-    yield put(getEmployeeListData(1))
+    yield put(getEmployeeListData(currentpage))
     toast.success("Successfully updated!")
   } catch (e) {
     const { response } = e

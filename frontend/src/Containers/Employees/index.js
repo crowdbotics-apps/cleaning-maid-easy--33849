@@ -173,7 +173,7 @@ function Employees(props) {
       address: state.address.value,
       team_id: parseInt(state.team_id.value)
     }
-    props.addEmployee(data, toggle)
+    props.addEmployee(data, toggle,currentpage)
   }
 
   const editData = item => {
@@ -210,7 +210,7 @@ function Employees(props) {
     formBody.append("address", state.address.value)
     formBody.append("team_id", parseInt(state.team_id.value))
 
-    props.updateEmployee(formBody, editValues.id, toggle)
+    props.updateEmployee(formBody, editValues.id, toggle,currentpage)
   }
 
   const [modal, setmodal] = useState(false)
@@ -420,7 +420,7 @@ function Employees(props) {
                                     size="sm"
                                     onClick={() => {
                                       setDeleteId(item.id)
-                                      props.deleteEmployee(item.id)
+                                      props.deleteEmployee(item.id, currentpage)
                                     }}
                                     type="button"
                                   >
@@ -812,12 +812,12 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  addEmployee: (data, toggle) => dispatch(addEmployee(data, toggle)),
+  addEmployee: (data, toggle,currentpage) => dispatch(addEmployee(data, toggle,currentpage)),
   getTeam: () => dispatch(getTeam()),
   getEmployeeList: (index) => dispatch(getEmployeeList(index)),
-  deleteEmployee: id => dispatch(deleteEmployee(id)),
-  updateEmployee: (data, id, toggle) =>
-    dispatch(updateEmployee(data, id, toggle)),
+  deleteEmployee: (id,currentpage) => dispatch(deleteEmployee(id,currentpage)),
+  updateEmployee: (data, id, toggle,currentpage) =>
+    dispatch(updateEmployee(data, id, toggle,currentpage)),
   changeEmployeeTeam: data => dispatch(changeEmployeeTeam(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Employees)
