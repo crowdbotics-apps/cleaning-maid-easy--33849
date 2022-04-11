@@ -1,10 +1,16 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef,Children } from "react"
 import "react-big-calendar/lib/css/react-big-calendar.css"
-import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar"
+import HTML5Backend from "react-dnd-html5-backend";
+import { DragDropContext } from "react-dnd";
+import {Calendar as MyCalendar , momentLocalizer} from "react-big-calendar";
+
 import moment from "moment"
 import { connect } from "react-redux"
 import styless from "./styles.css"
 import { Toaster } from "react-hot-toast"
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+
+
 
 // import SweetAlert from "react-bootstrap-sweetalert"
 // import "react-big-calendar/lib/css/react-big-calendar.css"
@@ -51,10 +57,12 @@ import {
 import useForm from "../../utils/useForm"
 
 import { events } from "variables/general.js"
-
+const BigCalendar = withDragAndDrop(MyCalendar);
 const localizer = momentLocalizer(moment)
 
+
 const Calendar = props => {
+
   const {
     pendingRequests,
     teamData,
@@ -129,7 +137,7 @@ const Calendar = props => {
         "rbc-event rbc-event-continues-later"
       )
 
-      // rbcEventContent[0].style.width = "30px"
+      // rbcEvent.style.width = "30px"
       myDivs[0].style.display = "none"
       // if (rbcEvent.length || rbcEventContent.length) {
       //   const lastIndex = rbcEvent.length -1
@@ -268,7 +276,8 @@ const Calendar = props => {
                 color: "#88AE31",
                 desc: "",
                 memberId: member?.id,
-                teamId: item?.assigned_team.id
+                teamId: item?.assigned_team.id,
+                viewState:viewState
 
                 // eventDetail:item
               }
@@ -288,7 +297,8 @@ const Calendar = props => {
           resourceId: item?.id,
           color: item.frequency.color_code,
           desc: item?.service?.description,
-          eventDetail: item
+          eventDetail: item,
+          viewState:viewState
         }
         return data
       })
@@ -382,7 +392,9 @@ const Calendar = props => {
     )
   }
 
+
   const addTeamOnDrop = (ev, id) => {
+   
     let memberId = ev.dataTransfer.getData("memberId")
     // let date = ev.dataTransfer.getData("date")
 
@@ -391,13 +403,13 @@ const Calendar = props => {
       team_id: parseInt(id)
     }
 
-    const valueExists = [].concat
-      .apply([], filterTeam(memberId))
-      .filter(v => v !== false)
+    // const valueExists = [].concat
+    //   .apply([], filterTeam(memberId))
+    //   .filter(v => v !== false)
 
-    if (valueExists.includes(true)) {
+    // if (valueExists.includes(true)) {
       props.addTeamMember(data)
-    }
+    // }
   }
 
   const removeTeamDrageStart = (ev, memberId, teamId) => {
@@ -427,6 +439,14 @@ const Calendar = props => {
 
   function CustomEvent({ event }) {
     return (
+      <>
+      <div 
+      onDrop={e => {
+        addTeamOnDrop(e, event.teamId)
+      }}
+      style={{height:100,width:100, backgroundColor:'red'}} hidden>
+
+      </div>
       <div
         className={viewState === 3 ? "" : "pt-1"}
         onDragStart={e => removeTeamDrageStart(e, event.memberId, event.teamId)}
@@ -446,61 +466,14 @@ const Calendar = props => {
         >
           {event.title}
         </span>
-        {viewState === 1 && (
+        {event.viewState === 1 && (
           <>
             <div className="pt-1" style={desStyle}>
               <span>{event.desc}</span>
             </div>
-            {/* <Row>
-            <Col md="4" sm="4">
-              <div
-                style={downloadStyle}
-              >
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <img
-                    style={{ alignSelf: "center" }}
-                    alt="..."
-                    src={require("assets/icons/download.png")}
-                  />
-                </div>
-                <span
-                  style={{
-                    fontFamily: "Montserrat",
-                    fontSize: 9,
-                    fontWeight: "500",
-                    textAligin: "center",
-                    color:'black'
-                  }}
-                >
-                  CHECK IN
-                </span>
-              </div>
-            </Col>
-            <Col md="4" sm="4">
-              <div>
-                <div>
-                  <img
-                    style={{ alignSelf: "center" }}
-                    alt="..."
-                    src={require("assets/icons/uploadSimple.png")}
-                  />
-                </div>
-                <span>CHECK OUT</span>
-              </div>
-            </Col>
-            <Col md="4" sm="4">
-              <div>
-                <img
-                  style={{ alignSelf: "center" }}
-                  alt="..."
-                  src={require("assets/icons/checkCircle.png")}
-                />
-              </div>
-            </Col>
-          </Row> */}
 
             {!event.allDay && (
-              <div style={{ position: "absolute", bottom: 3 }}>
+              <div style={{bottom: 3 }}>
                 <span
                   // className="rbc-day-slot rbc-event-labe"
                   style={desStyle}
@@ -512,6 +485,7 @@ const Calendar = props => {
           </>
         )}
       </div>
+      </>
     )
   }
 
@@ -564,6 +538,7 @@ const Calendar = props => {
     
   }
 
+
   // const CustomTimeSlotWrapper=({value, resource, children})=>{
   //   // convert your `value` (a Date object) to something displayable
   //   console.log("value",value);
@@ -573,6 +548,20 @@ const Calendar = props => {
   //     </div>
   //   );
   // }
+  const moveEvent=({ event, start, end }) =>{
+    // const { events } = this.state;
+
+    // const idx = events.indexOf(event);
+    // const updatedEvent = { ...event, start, end };
+
+    // const nextEvents = [...events];
+    // nextEvents.splice(idx, 1, updatedEvent);
+
+    // this.setState({
+    //   events: nextEvents
+    // });
+  }
+  
 
   return (
     <>
@@ -588,6 +577,8 @@ const Calendar = props => {
                     <tr>
                       <th className="p-0">
                         <BigCalendar
+                         selectable
+                         onEventDrop={moveEvent}
                           components={{
                             toolbar: CustomToolbar,
                             event: CustomEvent,
@@ -612,7 +603,8 @@ const Calendar = props => {
                               //     <h1 style={highlightDate ? { color: "red" } : null}>{label}</h1>
                               //   );
                               // }
-                            }
+                            },
+                            // ateCellWrapper: ColoredDateCellWrapper,
                             // dateCellWrapper: DateCellWrapper
                           }}
                           ref={calendarRef}
@@ -1762,4 +1754,5 @@ const mapDispatchToProps = dispatch => ({
   removeTeamMember: data => dispatch(removeTeamMember(data)),
   addTeamMember: data => dispatch(addTeamMember(data))
 })
-export default connect(mapStateToProps, mapDispatchToProps)(Calendar)
+export default connect(mapStateToProps, mapDispatchToProps)(Calendar);
+

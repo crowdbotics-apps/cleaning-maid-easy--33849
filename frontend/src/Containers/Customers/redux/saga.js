@@ -61,10 +61,10 @@ async function addCustomerApi(data) {
   return XHR(URL, options)
 }
 
-function* addCustomer({ data,toggle }) {
+function* addCustomer({ data,toggle,currentpage}) {
   try {
     const response = yield call(addCustomerApi, data)
-    yield put(getAllCustomersData(1))
+    yield put(getAllCustomersData(currentpage))
     toast.success("Successfully saved!")
     toggle()
   } catch (e) {
@@ -90,10 +90,10 @@ async function changeNotificationApi(data,id) {
   return XHR(URL, options)
 }
 
-function* changeNotification({ data,id }) {
+function* changeNotification({ data,id,currentpage }) {
   try {
     const response = yield call(changeNotificationApi, data,id)
-    yield put(getAllCustomersData(1))
+    yield put(getAllCustomersData(currentpage))
     toast.success("Successfully notification changed!")
   } catch (e) {
     const { response } = e

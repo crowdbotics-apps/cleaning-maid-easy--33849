@@ -191,7 +191,7 @@ const Customers = props => {
     }
     let data = new FormData()
     data.append("notifications_enabled", state)
-    props.changeNotification(data, item.id)
+    props.changeNotification(data, item.id,currentpage)
   }
 
   // Toggle for Modal
@@ -218,7 +218,7 @@ const Customers = props => {
       freq_id: parseInt(state.freq_id.value),
       notifications: notificationsValue
     }
-    props.addCustomer(data, toggle)
+    props.addCustomer(data, toggle,currentpage)
   }
 
   return (
@@ -670,9 +670,9 @@ const mapDispatchToProps = dispatch => ({
   getAllCustomers: index => dispatch(getAllCustomers(index)),
   getServices: () => dispatch(getServices()),
   getFrequencies: () => dispatch(getFrequencies()),
-  addCustomer: (data, toggle) => dispatch(addCustomer(data, toggle)),
+  addCustomer: (data, toggle,currentpage) => dispatch(addCustomer(data, toggle,currentpage)),
   addCustomerFailure: error => dispatch(addCustomerFailure(error)),
-  changeNotification: (data, id) => dispatch(changeNotification(data, id)),
+  changeNotification: (data, id,currentpage) => dispatch(changeNotification(data, id,currentpage)),
   searchCustomers: data => dispatch(searchCustomers(data))
 })
 
