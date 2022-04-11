@@ -15,6 +15,7 @@ import {
 } from "reactstrap"
 import Switch from "react-bootstrap-switch"
 import "./style.css"
+import Pagination from "react-js-pagination"
 
 import { connect } from "react-redux"
 
@@ -42,27 +43,28 @@ const Customers = props => {
   const [modal, setModal] = React.useState(false)
   const [notificationsValue, setNotificationsValue] = useState(false)
   const [notificationsId, setNotificationsId] = useState([])
+  const [currentpage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(false)
 
   useEffect(() => {
     props.renderHtmlText("Customers")
-    props.getAllCustomers()
+    props.getAllCustomers(currentpage)
     props.getServices()
     props.getFrequencies()
   }, [])
 
   useEffect(() => {
-    customers && filterNotifications()
-    if(customers.length){
-      let mydiv=document.getElementsByClassName('table-responsive-xl')
-      mydiv[0].style.maxHeight='600px'
-      mydiv[0].style.overflowY='auto'
+    customers?.results && filterNotifications()
+    if (customers?.results?.length) {
+      setTotalCount(customers.count)
+      let mydiv = document.getElementsByClassName("table-responsive-xl")
+      mydiv[0].style.maxHeight = "600px"
+      mydiv[0].style.overflowY = "auto"
+    } else {
+      let mydiv = document.getElementsByClassName("table-responsive-xl")
+      mydiv[0].style.height = ""
+      mydiv[0].style.overflowY = ""
     }
-    else{
-      let mydiv=document.getElementsByClassName('table-responsive-xl')
-      mydiv[0].style.height=''
-      mydiv[0].style.overflowY=''
-    }
-    
   }, [customers])
 
   useEffect(() => {
@@ -75,6 +77,11 @@ const Customers = props => {
   const [selectedClient, setSelectedClient] = useState("none")
   function handleSelectChange(event) {
     setSelectedClient(event.target.value)
+  }
+
+  const handlePageChange = page => {
+    setCurrentPage(page)
+    props.getAllCustomers(page)
   }
 
   const stateSchema = {
@@ -163,8 +170,8 @@ const Customers = props => {
 
   const filterNotifications = () => {
     const filteredItems =
-      customers &&
-      customers
+      customers?.results &&
+      customers?.results
         .map(item => {
           if (item.notifications_enabled) {
             return item.id
@@ -184,7 +191,7 @@ const Customers = props => {
     }
     let data = new FormData()
     data.append("notifications_enabled", state)
-    props.changeNotification(data, item.id)
+    props.changeNotification(data, item.id,currentpage)
   }
 
   // Toggle for Modal
@@ -211,413 +218,442 @@ const Customers = props => {
       freq_id: parseInt(state.freq_id.value),
       notifications: notificationsValue
     }
-    props.addCustomer(data, toggle)
+    props.addCustomer(data, toggle,currentpage)
   }
 
   return (
     <>
-    <Toaster position="top-center" />
-    <div
-      className="content "
-      style={{
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundImage: `url(${require("assets/images/bg_content.png")})`,
-        flex: 1
-      }}
-    >
-      <Modal isOpen={modal} toggle={toggle}>
-        <div>
-          <div className="modal-header border-bottom-0">
-            <button
-              aria-hidden={true}
-              className="close"
-              data-dismiss="modal"
-              type="button"
-              onClick={toggle}
-            >
-              <i
-                className="nc-icon nc-simple-remove"
-                style={{ color: " #438B44" }}
-              />
-            </button>
-            <div>
-              <label className="mt-5" style={styles.titleTextStyle}>
-                Add Customer
-              </label>
-            </div>
-          </div>
-          <div style={{ paddingRight: 40, paddingLeft: 40 }}>
-            {backendError ? (
-              <UncontrolledAlert color="danger" fade={false}>
-                <span>{backendError}</span>
-              </UncontrolledAlert>
-            ) : (
-              ""
-            )}
-          </div>
-
-          <div className="modal-body ">
-            <label style={styles.labelTextStyle}>Full Name*</label>
-            <Input
-              style={styles.inputTextStyle}
-              className="border-0 pl-0"
-              onChange={e => handleOnChange("fullName", e.target.value)}
-            />
-            <div style={styles.inputLineStyle} />
-            {state.fullName.error && (
-              <label style={{ color: "red" }}>{state.fullName.error}</label>
-            )}
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Email*</label>
-              <Input
-                style={styles.inputTextStyle}
-                className="border-0 pl-0"
-                onChange={e => handleOnChange("email", e.target.value)}
-              />
-              <div style={styles.inputLineStyle} />
-              {state.email.error && (
-                <label style={{ color: "red" }}>{state.email.error}</label>
-              )}
-            </div>
-
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Company Name*</label>
-              <Input
-                style={styles.inputTextStyle}
-                className="border-0 pl-0"
-                onChange={e => handleOnChange("company_name", e.target.value)}
-              />
-              <div style={styles.inputLineStyle} />
-              {state.company_name.error && (
-                <label style={{ color: "red" }}>
-                  {state.company_name.error}
+      <Toaster position="top-center" />
+      <div
+        className="content "
+        style={{
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundImage: `url(${require("assets/images/bg_content.png")})`,
+          flex: 1
+        }}
+      >
+        <Modal isOpen={modal} toggle={toggle}>
+          <div>
+            <div className="modal-header border-bottom-0">
+              <button
+                aria-hidden={true}
+                className="close"
+                data-dismiss="modal"
+                type="button"
+                onClick={toggle}
+              >
+                <i
+                  className="nc-icon nc-simple-remove"
+                  style={{ color: " #438B44" }}
+                />
+              </button>
+              <div>
+                <label className="mt-5" style={styles.titleTextStyle}>
+                  Add Customer
                 </label>
-              )}
-            </div>
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Phone Number*</label>
-              <Input
-                style={styles.inputTextStyle}
-                className="border-0 pl-0"
-                onChange={e => handleOnChange("phone_number", e.target.value)}
-              />
-              <div style={styles.inputLineStyle} />
-              {state.phone_number.error && (
-                <label style={{ color: "red" }}>
-                  {state.phone_number.error}
-                </label>
-              )}
-            </div>
-            <Row>
-              <Col lg={4}>
-                <div className="mt-4">
-                  <label style={styles.labelTextStyle}>Zip Code*</label>
-                  <Input
-                    style={styles.inputTextStyle}
-                    className="border-0 pl-0"
-                    onChange={e => handleOnChange("zip_code", e.target.value)}
-                  />
-                  <div style={styles.inputLineStyle} />
-                  {state.zip_code.error && (
-                    <label style={{ color: "red" }}>
-                      {state.zip_code.error}
-                    </label>
-                  )}
-                </div>
-              </Col>
-              <Col lg={8}>
-                <div className="mt-4">
-                  <label style={styles.labelTextStyle}>Address*</label>
-                  <Input
-                    style={styles.inputTextStyle}
-                    className="border-0 pl-0"
-                    onChange={e => handleOnChange("address", e.target.value)}
-                  />
-                  <div style={styles.inputLineStyle} />
-                  {state.address.error && (
-                    <label style={{ color: "red" }}>
-                      {state.address.error}
-                    </label>
-                  )}
-                </div>
-              </Col>
-            </Row>
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Services*</label>
-              <div style={styles.mainstyle} className="mt-4">
-                <select
-                  style={styles.selectStyle}
-                  value={state.service_id.value}
-                  onChange={e => handleOnChange("service_id", e.target.value)}
-                >
-                  <option value="" selected disabled>
-                    Select
-                  </option>
-                  {servicesData &&
-                    servicesData.map(itemdata => (
-                      <option value={itemdata.id}>{itemdata.name}</option>
-                    ))}
-                </select>
               </div>
-              {state.service_id.error && (
-                <label style={{ color: "red" }}>{state.service_id.error}</label>
+            </div>
+            <div style={{ paddingRight: 40, paddingLeft: 40 }}>
+              {backendError ? (
+                <UncontrolledAlert color="danger" fade={false}>
+                  <span>{backendError}</span>
+                </UncontrolledAlert>
+              ) : (
+                ""
               )}
             </div>
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Others</label>
+
+            <div className="modal-body ">
+              <label style={styles.labelTextStyle}>Full Name*</label>
               <Input
                 style={styles.inputTextStyle}
                 className="border-0 pl-0"
-                onChange={e => handleOnChange("other", e.target.value)}
+                onChange={e => handleOnChange("fullName", e.target.value)}
               />
               <div style={styles.inputLineStyle} />
-              {state.other.error && (
-                <label style={{ color: "red" }}>{state.other.error}</label>
+              {state.fullName.error && (
+                <label style={{ color: "red" }}>{state.fullName.error}</label>
               )}
-            </div>
-
-            <div className="mt-4">
-              <label style={styles.labelTextStyle}>Frequency*</label>
-              <div style={styles.mainstyle} className="mt-4">
-                <select
-                  style={styles.selectStyle}
-                  value={state.freq_id.value}
-                  onChange={e => handleOnChange("freq_id", e.target.value)}
-                >
-                  <option value="" selected disabled>
-                    Select
-                  </option>
-
-                  {frequencies &&
-                    frequencies.map(frequenciesList => (
-                      <option value={frequenciesList.id}>
-                        {frequenciesList.title}
-                      </option>
-                    ))}
-                </select>
-                {state.freq_id.error && (
-                  <label style={{ color: "red" }}>{state.freq_id.error}</label>
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Email*</label>
+                <Input
+                  style={styles.inputTextStyle}
+                  className="border-0 pl-0"
+                  onChange={e => handleOnChange("email", e.target.value)}
+                />
+                <div style={styles.inputLineStyle} />
+                {state.email.error && (
+                  <label style={{ color: "red" }}>{state.email.error}</label>
                 )}
               </div>
-            </div>
-            <div className="mt-4 d-flex justify-content-between">
-              <label style={styles.labelTextStyle}>Notifications</label>
-              <Switch
-                offColor="black"
-                offText=""
-                onColor="success"
-                fontSize={"small"}
-                onChange={(el, state) => setNotificationsValue(state)}
-              />{" "}
+
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Company Name*</label>
+                <Input
+                  style={styles.inputTextStyle}
+                  className="border-0 pl-0"
+                  onChange={e => handleOnChange("company_name", e.target.value)}
+                />
+                <div style={styles.inputLineStyle} />
+                {state.company_name.error && (
+                  <label style={{ color: "red" }}>
+                    {state.company_name.error}
+                  </label>
+                )}
+              </div>
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Phone Number*</label>
+                <Input
+                  style={styles.inputTextStyle}
+                  className="border-0 pl-0"
+                  onChange={e => handleOnChange("phone_number", e.target.value)}
+                />
+                <div style={styles.inputLineStyle} />
+                {state.phone_number.error && (
+                  <label style={{ color: "red" }}>
+                    {state.phone_number.error}
+                  </label>
+                )}
+              </div>
+              <Row>
+                <Col lg={4}>
+                  <div className="mt-4">
+                    <label style={styles.labelTextStyle}>Zip Code*</label>
+                    <Input
+                      style={styles.inputTextStyle}
+                      className="border-0 pl-0"
+                      onChange={e => handleOnChange("zip_code", e.target.value)}
+                    />
+                    <div style={styles.inputLineStyle} />
+                    {state.zip_code.error && (
+                      <label style={{ color: "red" }}>
+                        {state.zip_code.error}
+                      </label>
+                    )}
+                  </div>
+                </Col>
+                <Col lg={8}>
+                  <div className="mt-4">
+                    <label style={styles.labelTextStyle}>Address*</label>
+                    <Input
+                      style={styles.inputTextStyle}
+                      className="border-0 pl-0"
+                      onChange={e => handleOnChange("address", e.target.value)}
+                    />
+                    <div style={styles.inputLineStyle} />
+                    {state.address.error && (
+                      <label style={{ color: "red" }}>
+                        {state.address.error}
+                      </label>
+                    )}
+                  </div>
+                </Col>
+              </Row>
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Services*</label>
+                <div style={styles.mainstyle} className="mt-4">
+                  <select
+                    style={styles.selectStyle}
+                    value={state.service_id.value}
+                    onChange={e => handleOnChange("service_id", e.target.value)}
+                  >
+                    <option value="" selected disabled>
+                      Select
+                    </option>
+                    {servicesData &&
+                      servicesData.map(itemdata => (
+                        <option value={itemdata.id}>{itemdata.name}</option>
+                      ))}
+                  </select>
+                </div>
+                {state.service_id.error && (
+                  <label style={{ color: "red" }}>
+                    {state.service_id.error}
+                  </label>
+                )}
+              </div>
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Others</label>
+                <Input
+                  style={styles.inputTextStyle}
+                  className="border-0 pl-0"
+                  onChange={e => handleOnChange("other", e.target.value)}
+                />
+                <div style={styles.inputLineStyle} />
+                {state.other.error && (
+                  <label style={{ color: "red" }}>{state.other.error}</label>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <label style={styles.labelTextStyle}>Frequency*</label>
+                <div style={styles.mainstyle} className="mt-4">
+                  <select
+                    style={styles.selectStyle}
+                    value={state.freq_id.value}
+                    onChange={e => handleOnChange("freq_id", e.target.value)}
+                  >
+                    <option value="" selected disabled>
+                      Select
+                    </option>
+
+                    {frequencies &&
+                      frequencies.map(frequenciesList => (
+                        <option value={frequenciesList.id}>
+                          {frequenciesList.title}
+                        </option>
+                      ))}
+                  </select>
+                  {state.freq_id.error && (
+                    <label style={{ color: "red" }}>
+                      {state.freq_id.error}
+                    </label>
+                  )}
+                </div>
+              </div>
+              <div className="mt-4 d-flex justify-content-between">
+                <label style={styles.labelTextStyle}>Notifications</label>
+                <Switch
+                  offColor="black"
+                  offText=""
+                  onColor="success"
+                  fontSize={"small"}
+                  onChange={(el, state) => setNotificationsValue(state)}
+                />{" "}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="modal-footer border-top-0  justify-content-center">
-          <Button
-            disabled={disable}
-            className="mb-3"
-            style={styles.btnTextStyle}
-            onClick={addNewCustomer}
-          >
-            {requesting ? (
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
-              />
-            ) : (
-              "Save Service"
-            )}
-          </Button>
-        </div>
-      </Modal>
-      <Row>
-        <Col md="12">
-          <Card style={styles.cardStyle}>
-            <CardBody>
-              <div className="d-flex align-items-center pb-3">
-                <img
-                  style={styles.searchImg}
-                  src={require("assets/icons/search_icon.png")}
+          <div className="modal-footer border-top-0  justify-content-center">
+            <Button
+              disabled={disable}
+              className="mb-3"
+              style={styles.btnTextStyle}
+              onClick={addNewCustomer}
+            >
+              {requesting ? (
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
                 />
-                <Input
-                  placeholder="Search"
-                  type="search"
-                  name="search"
-                  style={styles.searchStyle}
-                  onChange={e => props.searchCustomers(e.target.value)}
-                />
+              ) : (
+                "Save Service"
+              )}
+            </Button>
+          </div>
+        </Modal>
+        <Row>
+          <Col md="12">
+            <Card style={styles.cardStyle}>
+              <CardBody>
+                <div className="d-flex align-items-center pb-3">
+                  <img
+                    style={styles.searchImg}
+                    src={require("assets/icons/search_icon.png")}
+                  />
+                  <Input
+                    placeholder="Search"
+                    type="search"
+                    name="search"
+                    style={styles.searchStyle}
+                    onChange={e => props.searchCustomers(e.target.value)}
+                  />
 
-                <img
-                  className="ml-3"
-                  style={styles.filterImg}
-                  src={require("assets/icons/filter_btn.png")}
-                />
-                <h7 className="pl-2">Filter</h7>
-                <Button style={styles.addBtnText} onClick={toggle}>
-                  Add Customer
-                </Button>
-              </div>
-              <Table responsive="xl" bordered >
-                <thead style={{ opacity: 0.5 }}>
-                  <tr>
-                    <th style={styles.theadText}>Client Information</th>
-                    <th style={styles.theadText}>Service History</th>
-                    <th style={styles.theadText}>Preferred Services</th>
-                    <th style={styles.theadText}>Other</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {customers.length ? (
-                    customers.map((item, index) => (
-                      <tr>
-                        <td className="align-top">
-                          <div
-                            className="d-flex"
-                            style={{ paddingLeft: 13, paddingRight: 11 }}
-                          >
-                            <h5 style={{ paddingRight: 10 }}>{index + 1}.</h5>
-                            <div style={{ width: "100%", paddingTop: 5 }}>
-                              <label style={styles.clientStyle}>
-                                Full Name
-                              </label>
-                              <br></br>
-                              <label style={styles.clientDataTextStyle}>
-                                {item.name}
-                              </label>
-                              <br></br>
-                              <label style={styles.clientStyle}>Email</label>
-                              <br></br>
-                              <label style={styles.clientDataTextStyle}>
-                                {item.email}
-                              </label>
-                              <br></br>
-                              <label style={styles.clientStyle}>
-                                Company Name
-                              </label>
-                              <br></br>
-                              <label style={styles.clientDataTextStyle}>
-                                {item.company}
-                              </label>
-                              <br></br>
-                              <div className="text-right">
-                                <img
-                                  src={require("assets/icons/dot_icon.png")}
-                                />
+                  <img
+                    className="ml-3"
+                    style={styles.filterImg}
+                    src={require("assets/icons/filter_btn.png")}
+                  />
+                  <h7 className="pl-2">Filter</h7>
+                  <Button style={styles.addBtnText} onClick={toggle}>
+                    Add Customer
+                  </Button>
+                </div>
+                <Table responsive="xl" bordered>
+                  <thead style={{ opacity: 0.5 }}>
+                    <tr>
+                      <th style={styles.theadText}>Client Information</th>
+                      <th style={styles.theadText}>Service History</th>
+                      <th style={styles.theadText}>Preferred Services</th>
+                      <th style={styles.theadText}>Other</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {customers?.results?.length ? (
+                      customers?.results?.map((item, index) => (
+                        <tr>
+                          <td className="align-top">
+                            <div
+                              className="d-flex"
+                              style={{ paddingLeft: 13, paddingRight: 11 }}
+                            >
+                              <h5 style={{ paddingRight: 10 }}>{index + 1}.</h5>
+                              <div style={{ width: "100%", paddingTop: 5 }}>
+                                <label style={styles.clientStyle}>
+                                  Full Name
+                                </label>
+                                <br></br>
+                                <label style={styles.clientDataTextStyle}>
+                                  {item.name}
+                                </label>
+                                <br></br>
+                                <label style={styles.clientStyle}>Email</label>
+                                <br></br>
+                                <label style={styles.clientDataTextStyle}>
+                                  {item.email}
+                                </label>
+                                <br></br>
+                                <label style={styles.clientStyle}>
+                                  Company Name
+                                </label>
+                                <br></br>
+                                <label style={styles.clientDataTextStyle}>
+                                  {item.company}
+                                </label>
+                                <br></br>
+                                <div className="text-right">
+                                  <img
+                                    src={require("assets/icons/dot_icon.png")}
+                                  />
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </td>
-                        <td
-                          className="align-top"
-                          style={{
-                            maxHeight: 390,
-                            overflowY: "scroll",
-                            maxHeight: 395
-                          }}
-                        >
-                          {item.service_history.map(serviceItem => (
+                          </td>
+                          <td
+                            className="align-top"
+                          >
                             <div
                               style={{
                                 paddingLeft: 18,
-                                paddingRight: 20
-                                // overflowY: "scroll",
+                                paddingRight: 20,
+                                maxHeight: 390,
+                                overflowY: "scroll"
                               }}
                             >
-                              <div className="d-flex justify-content-between">
-                                <h7>
-                                  {serviceItem.appointment_date} -{" "}
-                                  {serviceItem.service.name} ($
-                                  {serviceItem.price})
-                                </h7>
-                                <i
-                                  className="fa fa-circle"
-                                  style={{
-                                    color: `${serviceItem.frequency.color_code}`,
-                                    fontSize: "large"
-                                  }}
-                                />
+                              {item.service_history.map(serviceItem => (
+                                <div className="d-flex justify-content-between">
+                                  <h7>
+                                    {serviceItem.appointment_date} -{" "}
+                                    {serviceItem.service.name} ($
+                                    {serviceItem.price})
+                                  </h7>
+                                  <i
+                                    className="fa fa-circle"
+                                    style={{
+                                      color: `${serviceItem.frequency.color_code}`,
+                                      fontSize: "large"
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+
+                          <td className="align-top">
+                            <div
+                              style={{
+                                paddingLeft: 18,
+                                paddingRight: 20,
+                                maxHeight: 390,
+                                overflowY: "scroll"
+                              }}
+                            >
+                              {item.service_history.map(
+                                preferredServicesItem => (
+                                  <div className="d-flex justify-content-between">
+                                    <h7>
+                                      -{preferredServicesItem.service.name}
+                                    </h7>
+                                    <i
+                                      className="fa fa-circle"
+                                      style={{
+                                        color: `${preferredServicesItem.frequency.color_code}`,
+                                        fontSize: "large"
+                                      }}
+                                    />
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          </td>
+                          <td className="align-top">
+                            <div className="pl-3 pr-3">
+                              <div className=" d-flex justify-content-between">
+                                <h7>Notifications</h7>
+                                <Switch
+                                  offColor="black"
+                                  offText=""
+                                  onChange={(el, state) =>
+                                    handleChange(item, state)
+                                  }
+                                  value={
+                                    notificationsId.includes(item.id)
+                                      ? true
+                                      : false
+                                  }
+                                />{" "}
+                              </div>
+                              <div>
+                                <label>Notes</label>
+                                <p>{item.other}</p>
                               </div>
                             </div>
-                          ))}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr style={{ textAlign: "end" }}>
+                        <td style={{ border: 0 }}></td>
+                        <td style={{ border: 0 }}>
+                          {requesting ? (
+                            <div style={{ paddingTop: 40, paddingBottom: 40 }}>
+                              <Spinner
+                                as="span"
+                                animation="border"
+                                size="lg"
+                                role="status"
+                                aria-hidden="true"
+                              />
+                            </div>
+                          ) : (
+                            <label style={styles.notFoundStyle}>
+                              No Record Found
+                            </label>
+                          )}
                         </td>
 
-                        <td className="align-top">
-                          {item.service_history.map(preferredServicesItem => (
-                            <div style={{ paddingLeft: 18, paddingRight: 20 }}>
-                              <div className="d-flex justify-content-between">
-                                <h7>-{preferredServicesItem.service.name}</h7>
-                                <i
-                                  className="fa fa-circle"
-                                  style={{
-                                    color: `${preferredServicesItem.frequency.color_code}`,
-                                    fontSize: "large"
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </td>
-                        <td className="align-top">
-                          <div className="pl-3 pr-3">
-                            <div className=" d-flex justify-content-between">
-                              <h7>Notifications</h7>
-                              <Switch
-                                offColor="black"
-                                offText=""
-                                onChange={(el, state) =>
-                                  handleChange(item, state)
-                                }
-                                value={
-                                  notificationsId.includes(item.id)
-                                    ? true
-                                    : false
-                                }
-                              />{" "}
-                            </div>
-                            <div>
-                              <label>Notes</label>
-                              <p>{item.other}</p>
-                            </div>
-                          </div>
-                        </td>
+                        <td style={{ border: 0 }}></td>
+                        <td style={{ border: 0 }}></td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr style={{ textAlign: "end" }}>
-                      <td style={{ border: 0 }}></td>
-                      <td style={{ border: 0 }}>
-                        {requesting ? (
-                          <div style={{ paddingTop: 40, paddingBottom: 40 }}>
-                            <Spinner
-                              as="span"
-                              animation="border"
-                              size="lg"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          </div>
-                        ) : (
-                          <label style={styles.notFoundStyle}>
-                            No Record Found
-                          </label>
-                        )}
-                      </td>
-
-                      <td style={{ border: 0 }}></td>
-                      <td style={{ border: 0 }}></td>
-                    </tr>
+                    )}
+                  </tbody>
+                </Table>
+                <div className="pt-4 d-flex justify-content-center">
+                  {totalCount && (
+                    <Pagination
+                      aria-label="Page navigation example"
+                      itemClass="page-item"
+                      linkClass="page-link"
+                      prevPageText="Prev"
+                      nextPageText="Next"
+                      firstPageText="First"
+                      lastPageText="Last"
+                      activePage={currentpage}
+                      itemsCountPerPage={24}
+                      pageRangeDisplayed={10}
+                      totalItemsCount={totalCount && totalCount}
+                      onChange={handlePageChange}
+                    />
                   )}
-                </tbody>
-              </Table>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </>
   )
 }
@@ -631,12 +667,12 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  getAllCustomers: () => dispatch(getAllCustomers()),
+  getAllCustomers: index => dispatch(getAllCustomers(index)),
   getServices: () => dispatch(getServices()),
   getFrequencies: () => dispatch(getFrequencies()),
-  addCustomer: (data, toggle) => dispatch(addCustomer(data, toggle)),
+  addCustomer: (data, toggle,currentpage) => dispatch(addCustomer(data, toggle,currentpage)),
   addCustomerFailure: error => dispatch(addCustomerFailure(error)),
-  changeNotification: (data, id) => dispatch(changeNotification(data, id)),
+  changeNotification: (data, id,currentpage) => dispatch(changeNotification(data, id,currentpage)),
   searchCustomers: data => dispatch(searchCustomers(data))
 })
 

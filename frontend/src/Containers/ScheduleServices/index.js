@@ -49,11 +49,11 @@ import clockImage from "../../assets/icons/Clock.png"
 
 function ScheduleService(props) {
   useEffect(() => {
+    props.renderHtmlText("Schedule Service")
     props.getTeam()
     props.getServices()
-    props.renderHtmlText("Schedule Service")
     props.getFrequencies()
-    props.getAllCustomers()
+    props.getAllCustomers(1)
     let mydiv = document.getElementsByClassName("react-date-picker__wrapper")
     mydiv[0].style.border = "none"
   }, [])
@@ -70,13 +70,12 @@ function ScheduleService(props) {
   const [calendarValue, setCalenderValue] = useState("")
 
   //StatesForTimePicker
-  const [fromTime, setFromTime] = useState("2:00")
-  const [toTime, setToTime] = useState("5:00")
+  const [fromTime, setFromTime] = useState('-1:00')
+  const [toTime, setToTime] = useState('-1:00')
 
   const [appointmentData, setAppoinmentData] = useState({
     appointment_date: new Date()
   })
-
 
   // const [otherData, setOtherData] = useState({
   //   assigned_team_id: [],
@@ -102,7 +101,16 @@ function ScheduleService(props) {
     title: {
       value: "",
       error: ""
+    },
+    client_number: {
+      value: "",
+      error: ""
+    },
+    client_address:{
+      value: "",
+      error: ""
     }
+
   }
 
   const validationStateSchema = {
@@ -118,6 +126,13 @@ function ScheduleService(props) {
     },
     title: {
       required: true
+    },
+    client_number: {
+      required: true,
+      validator: validator.numeric
+    },
+    client_address:{
+      required: true,
     }
   }
 
@@ -125,17 +140,7 @@ function ScheduleService(props) {
     stateSchema,
     validationStateSchema
   )
-  const resetValues = () => {
-    setCalenderValue("")
-    setFromTime("2:00")
-    setToTime("5:00")
-    setState(stateSchema)
 
-    // data.appointment_date=''
-    // data.assigned_team_id=[]
-    // data.service_id=[]
-    // data.frequency_id=[]
-  }
   const onSave = (title, value) => {
     let data = { ...appointmentData }
     data[title] = value
@@ -166,7 +171,7 @@ function ScheduleService(props) {
       data.frequency_id
       // data.client_id
     ) {
-      props.getScheduleServices(data, resetValues)
+      props.getScheduleServices(data)
     }
   }
 
@@ -243,6 +248,7 @@ function ScheduleService(props) {
                       className={"timeStyle"}
                       clockIcon
                       disableClock={true}
+                      secondPlaceholder="ss"
                       onChange={e => {
                         onSave("start_time", e)
                         setFromTime(e)
@@ -282,7 +288,7 @@ function ScheduleService(props) {
                     ) : null}
                   </div>
                   <div
-                    className="mt-4"
+                    className="mt-4 d-flex"
                     style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}
                   >
                     <img
@@ -290,10 +296,16 @@ function ScheduleService(props) {
                       src={locationImage}
                       style={{ marginRight: 10 }}
                     />
-                    <label style={styles.inputStyle}>
-                      9400 Ninove Street, SA
-                    </label>
+                   <Input
+                        style={styles.inputStyle}
+                        className="border-top-0 border-right-0 border-left-0 p-0"
+                        onChange={e => handleOnChange("client_address", e.target.value)}
+                        value={state.client_address.value}
+                      />
                   </div>
+                  <label style={{ color: "red" }}>
+                        {state.client_address.error ? state.client_address.error : null}
+                      </label>
                   {/* <div
                     className="mt-4 d-flex"
                     style={{
@@ -326,8 +338,8 @@ function ScheduleService(props) {
                         classNamePrefix="react-select"
                         name="singleSelect"
                         options={
-                          customers &&
-                          customers.map(item => ({
+                          customers?.length &&
+                          customers?.map(item => ({
                             label: item.name,
                             value: item.id
                           }))
@@ -345,7 +357,12 @@ function ScheduleService(props) {
                       <Input
                         style={styles.inputStyle}
                         className="border-top-0 border-right-0 border-left-0 p-0"
+                        onChange={e => handleOnChange("client_number", e.target.value)}
+                        value={state.client_number.value}
                       />
+                       <label style={{ color: "red" }}>
+                        {state.client_number.error ? state.client_number.error : null}
+                      </label>
                     </Col>
                   </Row>
                   {/* </div> */}
@@ -361,7 +378,7 @@ function ScheduleService(props) {
                       className="react-select "
                       classNamePrefix="react-select"
                       name="singleSelect"
-                      // value={appointmentData?.assigned_team_id?.value}
+                    //  value={appointmentData?.assigned_team_id?.value}
                       options={
                         teamData &&
                         teamData.map(item => ({
@@ -384,7 +401,7 @@ function ScheduleService(props) {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="singleSelect"
-                        // value={appointmentData?.service_id?.value}
+                        value={appointmentData?.service_id?.value}
                         options={
                           servicesData &&
                           servicesData.map(item => ({
@@ -543,16 +560,16 @@ const mapStateToProps = state => ({
   servicesData: state.services.servicesData,
   frequencies: state.scheduleServices.frequencies,
   requesting: state.scheduleServices.requesting,
-  customers: state.customers.customers
+  customers: state.customers.customers.results
 })
 
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: (data, resetValues) =>
-    dispatch(scheduleServices(data, resetValues,)),
+  getScheduleServices: (data) =>
+    dispatch(scheduleServices(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getFrequencies: () => dispatch(getFrequencies()),
-  getAllCustomers: () => dispatch(getAllCustomers())
+  getAllCustomers: (index) => dispatch(getAllCustomers(index))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(ScheduleService)

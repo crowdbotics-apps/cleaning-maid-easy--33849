@@ -2,6 +2,8 @@ import { all, call, put, takeLatest } from 'redux-saga/effects';
 import { push } from "connected-react-router";
 import toast from "react-hot-toast"
 
+import moment from 'moment';
+
 // config
 import { BASE_URL } from '../../../config/app';
 
@@ -13,6 +15,7 @@ import { GET_TEAM, GET_EMPLOYEES, CREATE_TEAM, DELETE_TEAM,GET_UN_ASSIGNED_EMPLO
 
 // actions
 import {getTeamSuccess, resetTeam, getEmployeesSuccess, getTeam,getUnAssignedEmployeesSuccess,getUnAssignedEmployees as getUnAssignedEmployeesData} from './actions'
+import {getDayAcceptedAppointments} from '../../Calendar/redux/actions'
 
 
 async function getTeamAPI() {
@@ -178,7 +181,12 @@ function* removeTeamMember({data}) {
     const response = yield call(removeTeamMemberApi,data);
     yield put((getTeam()))
     yield put (getUnAssignedEmployeesData())
-    // toast.success("Successfully removed!")
+    // yield put (getDayAcceptedAppointments(date))
+    toast.success("Successfully removed!")
+    const newDate = sessionStorage.getItem('date');
+    const userDate = JSON.parse(newDate)
+    const dateFormate=moment(userDate).format("YYYY-MM-DD")
+    yield put (getDayAcceptedAppointments(dateFormate))
   } catch (e) {
     const { response } = e
     toast.error('Someting wrong!');
@@ -207,7 +215,12 @@ function* addTeamMember({data}) {
   try {
     const response = yield call(addTeamMemberApi,data);
     yield put((getTeam()))
-    // toast.success("Successfully added!")
+    yield put (getUnAssignedEmployeesData())
+    toast.success("Successfully added!")
+    const newDate = sessionStorage.getItem('date');
+    const userDate = JSON.parse(newDate)
+    const dateFormate=moment(userDate).format("YYYY-MM-DD")
+    yield put (getDayAcceptedAppointments(dateFormate))
 
   } catch (e) {
     const { response } = e

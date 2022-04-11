@@ -26,8 +26,8 @@ import {
   reset
 } from "./actions"
 
-async function getEmployeeListApi() {
-  const URL = `${BASE_URL}/api/v1/users/employees_list/`
+async function getEmployeeListApi(index) {
+  const URL = `${BASE_URL}/api/v1/users/employees_list/?page=${index}`
   const token = await sessionStorage.getItem("authToken")
   const options = {
     headers: {
@@ -40,9 +40,9 @@ async function getEmployeeListApi() {
   return XHR(URL, options)
 }
 
-function* getEmployeeList() {
+function* getEmployeeList({index}) {
   try {
-    const response = yield call(getEmployeeListApi)
+    const response = yield call(getEmployeeListApi,index)
     yield put(getEmployeeSuccess(response.data))
   } catch (e) {
     const { response } = e
@@ -66,10 +66,10 @@ async function addEmployeeAPi(data) {
   return XHR(URL, options)
 }
 
-function* addEmployee({ data, toggle }) {
+function* addEmployee({ data, toggle,currentpage }) {
   try {
     const response = yield call(addEmployeeAPi, data)
-    yield put(getEmployeeListData())
+    yield put(getEmployeeListData(currentpage))
     toggle()
     toast.success("Successfully saved!")
   } catch (e) {
@@ -95,10 +95,10 @@ async function deleteEmployeeApi(id) {
   return XHR(URL, options)
 }
 
-function* deleteEmployee({ id }) {
+function* deleteEmployee({ id,currentpage }) {
   try {
     const response = yield call(deleteEmployeeApi, id)
-    yield put(getEmployeeListData())
+    yield put(getEmployeeListData(currentpage))
     toast.success("Successfully deleted!")
   } catch (e) {
     const { response } = e
@@ -124,16 +124,15 @@ async function updateEmployeeApi(data, id) {
   return XHR(URL, options)
 }
 
-function* updateEmployee({ data, id, toggle }) {
+function* updateEmployee({ data, id, toggle,currentpage }) {
   try {
     const response = yield call(updateEmployeeApi, data, id)
     toggle()
-    yield put(getEmployeeListData())
+    yield put(getEmployeeListData(currentpage))
     toast.success("Successfully updated!")
   } catch (e) {
     const { response } = e
     yield put(addEmployeeFailure(response?.data))
-    console.log('error', response?.data);
   }
   finally {
     yield put(reset())
@@ -158,7 +157,7 @@ async function changeEmployeeTeamApi(data) {
 function* changeEmployeeTeam({ data }) {
   try {
     const response = yield call(changeEmployeeTeamApi, data)
-    yield put(getEmployeeListData())
+    yield put(getEmployeeListData(1))
     toast.success("Successfully employee changed!")
   } catch (e) {
     const { response } = e

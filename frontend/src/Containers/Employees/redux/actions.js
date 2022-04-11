@@ -9,26 +9,30 @@ import {
   RESET
 } from "./types"
 
-export const addEmployee = (data,toggle) => ({
+export const addEmployee = (data,toggle,currentpage) => ({
   type: ADD_EMPLOYEE,
   data,
-  toggle
+  toggle,
+  currentpage
 })
 
-export const getEmployeeList = () => ({
+export const getEmployeeList = (index) => ({
   type: GET_EMPLOYEE_LIST,
+  index
 })
 
-export const updateEmployee = (data,id,toggle) => ({
+export const updateEmployee = (data,id,toggle,currentpage) => ({
   type: UPDATE_EMPLOYEE,
   data,
   id,
-  toggle
+  toggle,
+  currentpage
 })
 
-export const deleteEmployee = id => ({
+export const deleteEmployee = (id,currentpage) => ({
   type: DELETE_EMPLOYEE,
-  id
+  id,
+  currentpage
 })
 
 export const changeEmployeeTeam=(data)=>({

@@ -31,6 +31,7 @@ import { connect } from "react-redux"
 import { renderHtmlText } from "../Services/redux/actions"
 
 import { Toaster } from "react-hot-toast"
+import Pagination from "react-js-pagination"
 
 import {
   addEmployee,
@@ -46,21 +47,24 @@ import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
 function Employees(props) {
-  const { teamData, requesting, employeesList, getRequesting, backendError } =
+  const { teamData, requesting, employeesList, getRequesting, backendError,changeEmployeeRequesting } =
     props
   const [selectedClient, setSelectedClient] = useState("none")
   const [editValues, setEditValues] = useState(false)
   const [itemId, setItemId] = useState(false)
   const [deleteId, setDeleteId] = useState(false)
+  const [currentpage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(false)
 
   useEffect(() => {
     props.renderHtmlText("Employees")
     props.getTeam()
-    props.getEmployeeList()
+    props.getEmployeeList(currentpage)
   }, [])
 
   useEffect(() => {
     if (employeesList?.results?.length) {
+      setTotalCount(employeesList.count)
       let mydiv = document.getElementsByClassName("table-responsive")
       mydiv[0].style.maxHeight = "600px"
     } else {
@@ -169,7 +173,7 @@ function Employees(props) {
       address: state.address.value,
       team_id: parseInt(state.team_id.value)
     }
-    props.addEmployee(data, toggle)
+    props.addEmployee(data, toggle,currentpage)
   }
 
   const editData = item => {
@@ -206,7 +210,7 @@ function Employees(props) {
     formBody.append("address", state.address.value)
     formBody.append("team_id", parseInt(state.team_id.value))
 
-    props.updateEmployee(formBody, editValues.id, toggle)
+    props.updateEmployee(formBody, editValues.id, toggle,currentpage)
   }
 
   const [modal, setmodal] = useState(false)
@@ -229,10 +233,16 @@ function Employees(props) {
     }
     props.changeEmployeeTeam(data)
   }
+  
 
   const [tooltipOpen, setTooltipOpen] = React.useState(false)
   function handleSelectChange(event) {
     setSelectedClient(event.target.value)
+  }
+
+  const handlePageChange = page => {
+    setCurrentPage(page)
+    props.getEmployeeList(page)
   }
 
   return (
@@ -348,7 +358,7 @@ function Employees(props) {
                           </td>
                           <td>{item.phone_number}</td>
                           <td>
-                            {requesting && item.id === itemId ? (
+                            {(changeEmployeeRequesting && item.id === itemId )? (
                               <Spinner size="sm" />
                             ) : (
                               item?.assigned_team?.title
@@ -402,7 +412,7 @@ function Employees(props) {
                                 </Button>
                               </div>
                               <div>
-                                {requesting && item.id === deleteId ? (
+                                {(requesting && item.id === deleteId) ? (
                                   <Spinner style={{ marginTop: 8 }} size="sm" />
                                 ) : (
                                   <Button
@@ -410,7 +420,7 @@ function Employees(props) {
                                     size="sm"
                                     onClick={() => {
                                       setDeleteId(item.id)
-                                      props.deleteEmployee(item.id)
+                                      props.deleteEmployee(item.id, currentpage)
                                     }}
                                     type="button"
                                   >
@@ -429,6 +439,24 @@ function Employees(props) {
                     )}
                   </tbody>
                 </Table>
+                <div className="pt-2 d-flex justify-content-center">
+                  {totalCount && (
+                    <Pagination
+                      aria-label="Page navigation example"
+                      itemClass="page-item"
+                      linkClass="page-link"
+                      prevPageText="Prev"
+                      nextPageText="Next"
+                      firstPageText="First"
+                      lastPageText="Last"
+                      activePage={currentpage}
+                      itemsCountPerPage={24}
+                      pageRangeDisplayed={10}
+                      totalItemsCount={totalCount && totalCount}
+                      onChange={handlePageChange}
+                    />
+                  )}
+                </div>
               </CardBody>
 
               <CardFooter style={styles.stylefootter}>
@@ -778,17 +806,18 @@ const mapStateToProps = state => ({
   teamData: state.teams.teamData,
   backendError: state.employees.backendError,
   employeesList: state.employees.employeesList,
-  getRequesting: state.employees.getRequesting
+  getRequesting: state.employees.getRequesting,
+  changeEmployeeRequesting:state.employees.changeEmployeeRequesting,
 })
 
 const mapDispatchToProps = dispatch => ({
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  addEmployee: (data, toggle) => dispatch(addEmployee(data, toggle)),
+  addEmployee: (data, toggle,currentpage) => dispatch(addEmployee(data, toggle,currentpage)),
   getTeam: () => dispatch(getTeam()),
-  getEmployeeList: () => dispatch(getEmployeeList()),
-  deleteEmployee: id => dispatch(deleteEmployee(id)),
-  updateEmployee: (data, id, toggle) =>
-    dispatch(updateEmployee(data, id, toggle)),
+  getEmployeeList: (index) => dispatch(getEmployeeList(index)),
+  deleteEmployee: (id,currentpage) => dispatch(deleteEmployee(id,currentpage)),
+  updateEmployee: (data, id, toggle,currentpage) =>
+    dispatch(updateEmployee(data, id, toggle,currentpage)),
   changeEmployeeTeam: data => dispatch(changeEmployeeTeam(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Employees)

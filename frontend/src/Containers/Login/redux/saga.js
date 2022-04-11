@@ -6,6 +6,7 @@ import { push } from "connected-react-router";
 
 // config
 import { BASE_URL } from '../../../config/app';
+import toast from "react-hot-toast"
 
 // utils
 import XHR from '../../../utils/XHR';
@@ -41,7 +42,7 @@ function* login({ data }) {
     sessionStorage.setItem('authToken', response.data.key)
     yield put(loginSuccess(response.data));
     yield put(getUserInfo())
-    
+    toast.success("Successfully login!")
     yield put(
       push({
         pathname: '/admin/services'
@@ -51,7 +52,7 @@ function* login({ data }) {
   } catch (e) {
     const { response } = e
     yield put(loginFaluire(response?.data?.non_field_errors[0]));
-    console.log("faild", response?.data?.non_field_errors[0])
+    // toast.error('Someting wrong!');
   }
 }
 

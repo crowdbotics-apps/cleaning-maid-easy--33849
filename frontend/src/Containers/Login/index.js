@@ -24,6 +24,7 @@ import validator from "../../utils/validation"
 
 //Actions
 import { loginRequest, resetMsg } from "./redux/actions"
+import { Toaster } from "react-hot-toast"
 
 const Login = props => {
   const { history } = props
@@ -72,6 +73,7 @@ const Login = props => {
   // [])
   return (
     <div className="login-page">
+      <Toaster/>
       <Container>
         <Row>
           <Col className="ml-auto mr-auto" lg="5" md="6">

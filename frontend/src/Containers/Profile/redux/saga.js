@@ -32,7 +32,7 @@ async function getUserInfoAPI() {
 function* getUserInfo() {
   try {
     const response = yield call(getUserInfoAPI)
-    // yield put(getUserInfoSuccess(response.data))
+    yield put(getUserInfoSuccess(response.data))
     sessionStorage.setItem("userInfo", JSON.stringify(response.data))
   } catch (e) {
     const { response } = e
