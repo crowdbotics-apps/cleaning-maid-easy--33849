@@ -127,6 +127,8 @@ class AddTeamMemberViewSet(ViewSet):
 
         team.team_members.add(*members)
         for member in members:
+            if member.assigned_team:
+                member.assigned_team.team_members.remove(member)
             member.assigned_team = team
             member.save()
 
