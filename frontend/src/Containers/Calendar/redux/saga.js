@@ -217,19 +217,20 @@ function* editAppointmentCal({ data, id, viewState }) {
     const userMonthDate = JSON.parse(monthDate)
 
     const dateFormate = moment(userDate).format("YYYY-MM-DD")
-    const startDateWeek = moment(userWeekDate.startDate).format("YYYY-MM-DD")
-    const endDateWeek = moment(userWeekDate.endDate).format("YYYY-MM-DD")
-
-    const startDateMonth = moment(userMonthDate.startDate).format("YYYY-MM-DD")
+      
+    if (viewState === 3) {
+      const startDateMonth = moment(userMonthDate.startDate).format("YYYY-MM-DD")
     const endDateMonth = moment(userMonthDate.endDate).format("YYYY-MM-DD")
-    viewState === 3
-      ? yield put(
-          getMonthAcceptedAppointmentsData(startDateMonth, endDateMonth)
-        )
-      : viewState === 2
-      ? yield put(getWeekAcceptedAppointmentsData(startDateWeek, endDateWeek))
-      : yield put(getDayAcceptedAppointmentsData(dateFormate))
-    
+
+    yield put(getMonthAcceptedAppointmentsData(startDateMonth, endDateMonth))
+    } else if (viewState === 2) {
+      const startDateWeek = moment(userWeekDate.startDate).format("YYYY-MM-DD")
+    const endDateWeek = moment(userWeekDate.endDate).format("YYYY-MM-DD")
+      yield put(getWeekAcceptedAppointmentsData(startDateWeek, endDateWeek))
+    } else {
+      
+      yield put(getDayAcceptedAppointmentsData(dateFormate))
+    }
 
     toast.success("Successfully updated!")
   } catch (e) {

@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast"
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop"
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css"
 import "react-big-calendar/lib/css/react-big-calendar.css"
+import timezone from "moment-timezone"
 // import Draggable from 'react-draggable';
 
 // import SweetAlert from "react-bootstrap-sweetalert"
@@ -65,9 +66,10 @@ import {
 import useForm from "../../utils/useForm"
 
 import { events } from "variables/general.js"
+timezone.tz.setDefault("en")
 
 const BigCalendar = withDragAndDrop(MyCalendar)
-const localizer = momentLocalizer(moment)
+const localizer = momentLocalizer(timezone)
 
 // const Calendars = DndProvider(HTML5Backend)(Calendar);
 
@@ -552,6 +554,7 @@ const Calendar = props => {
   const onEventDrop = props => {
     if (props?.isAllDay || props.event.allDay === true) {
       if (props.event.teamId !== undefined) {
+        // console.log("props.event.itemId", props.event.itemId)
         const data = new FormData()
         data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
         viewState === 1 && data.append("assigned_team_id", props?.resourceId)
@@ -566,17 +569,17 @@ const Calendar = props => {
       data.append("start_time", moment(props.start).format("HH:mm:ss"))
       data.append("end_time", moment(props.end).format("HH:mm:ss"))
       viewState === 1 && data.append("assigned_team_id", props?.resourceId)
-      
+      // console.log("props?.resourceId", data)
       editAppointmentCal(data, props?.event?.eventDetail?.id, viewState)
     }
   }
 
   const onDragStartTeam = event => {
-    
+    console.log("on drag start", event)
   }
 
   const onDropFromOutsidee = props => {
-    
+    console.log("propsss", props)
   }
   const [progress, setProgress] = useState(0)
 
