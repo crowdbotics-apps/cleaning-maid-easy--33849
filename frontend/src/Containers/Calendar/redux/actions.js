@@ -7,6 +7,7 @@ import {
   GET_MONTH_ACCEPTED_APPOINTEMENTS,
   ADD_NOTES,
   UPDATE_NOTES,
+  EDIT_APPOINTMENT_CAL,
   RESET,
 } from "./types"
 
@@ -48,6 +49,16 @@ export const getNotesSuccess = data => ({
   type: GET_NOTES_SUCCESS,
   data
 })
+
+
+export const editAppointmentCal = (data, id,viewState) => ({
+  type: EDIT_APPOINTMENT_CAL,
+  data,
+  id,
+  viewState
+})
+
+
 
 export const getDayAcceptedAppointmentsSuccess = data => ({
   type: GET_DAY_ACCEPTED_APPOINTEMENTS_SUCCESS,
