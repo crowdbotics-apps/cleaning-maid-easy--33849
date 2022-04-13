@@ -74,3 +74,26 @@ class Appointment(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Notification(models.Model):
+    from_user = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="from_user"
+    )
+    to_user = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="to_user"
+    )
+    content = models.TextField()
+    is_read = models.BooleanField(default=False)
+    notes = models.ManyToManyField(Note, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+

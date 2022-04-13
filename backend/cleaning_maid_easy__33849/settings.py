@@ -85,6 +85,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'drf_yasg',
     'storages',
+    'ckeditor'
 ]
 MODULES_APPS = get_modules()
 
@@ -229,6 +230,8 @@ AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", "")
 AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME", "")
 AWS_STORAGE_REGION = env.str("AWS_STORAGE_REGION", "")
+AWS_S3_REGION_NAME = env.str("AWS_STORAGE_REGION", "")
+AWS_S3_SIGNATURE_VERSION = 's3v4'
 
 USE_S3 = (
     AWS_ACCESS_KEY_ID and

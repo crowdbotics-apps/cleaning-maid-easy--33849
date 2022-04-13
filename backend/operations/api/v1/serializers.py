@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from operations.models import Note, Team, Frequency, Service, Appointment
+from operations.models import Note, Team, Frequency, Service, Appointment, Notification
 from users.api.v1.serializers import BriefUserSerializer
 from users.models import User
 
@@ -57,6 +57,8 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'end_time',
             'client',
             'client_id',
+            'client_address',
+            'client_number',
             'assigned_team',
             'assigned_team_id',
             'service',
@@ -155,3 +157,13 @@ class EmployeeSerializer(serializers.ModelSerializer):
             'phone_number',
             'assigned_team',
         )
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    from_user = BriefUserSerializer(read_only=True)
+    to_user = BriefUserSerializer(read_only=True)
+    notes = NoteSerializer(many=True)
+
+    class Meta:
+        model = Notification
+        fields = '__all__'

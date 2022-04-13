@@ -8,9 +8,59 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from rest_framework import serializers
 from rest_auth.serializers import PasswordResetSerializer
+from home.models import TermsAndConditions, PrivacyPolicy
 
+from django.contrib.sites.shortcuts import get_current_site
+#from allauth.account.forms import default_token_generator
+from django.contrib.auth.tokens import default_token_generator
+from django.urls import reverse
+from allauth.account.utils import user_pk_to_url_str, user_username
+from allauth.account import app_settings
+from allauth.account.app_settings import AuthenticationMethod
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 
 User = get_user_model()
+
+
+class ResetPasswordFormCustom(ResetPasswordForm):
+    def save(self, request, **kwargs):
+        current_site = get_current_site(request)
+        email = self.cleaned_data["email"]
+        token_generator = kwargs.get("token_generator", default_token_generator)
+
+        for user in self.users:
+
+            temp_key = token_generator.make_token(user)
+
+            #save it to the password reset model
+            #password_reset = PasswordReset(user=user, temp_key=temp_key)
+            #password_reset.save()
+
+            # send the password reset email
+            path = reverse(
+                "account_reset_password_from_key",
+                kwargs=dict(uidb36=user_pk_to_url_str(user), key=temp_key),
+            )
+            print(path)
+            print(user_pk_to_url_str(user))
+            print(temp_key)
+            print(default_token_generator.check_token(user, temp_key))
+            url = "https://" + current_site.domain + "/set-new-password/{0}/{1}".format(urlsafe_base64_encode(force_bytes(user.pk)), temp_key)
+
+            context = {
+                "current_site": current_site,
+                "user": user,
+                "password_reset_url": url,
+                "request": request,
+            }
+
+            if app_settings.AUTHENTICATION_METHOD != AuthenticationMethod.EMAIL:
+                context["username"] = user_username(user)
+            get_adapter(request).send_mail(
+                "account/email/password_reset_key", email, context
+            )
+        return self.cleaned_data["email"]
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -73,4 +123,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PasswordSerializer(PasswordResetSerializer):
     """Custom serializer for rest_auth to solve reset password error"""
-    password_reset_form_class = ResetPasswordForm
+    password_reset_form_class = ResetPasswordFormCustom
+
+
+class TermsAndConditionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TermsAndConditions
+        fields = '__all__'
+
+
+class PrivacyPolicySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PrivacyPolicy
+        fields = '__all__'
