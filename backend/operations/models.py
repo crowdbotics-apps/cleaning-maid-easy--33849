@@ -75,6 +75,19 @@ class Appointment(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            if self.assigned_team:
+                for member in self.assigned_team.team_members.all():
+                    Notification.objects.create(
+                        to_user=member,
+                        content="You have been assigned a new appointment named {0} on {1} from {2} to {3} .".format(
+                            self.title, self.appointment_date, self.start_time, self.end_time
+                        )
+                    )
+
+        super(Appointment, self).save(*args, **kwargs)
+
 
 class Notification(models.Model):
     from_user = models.ForeignKey(
