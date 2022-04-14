@@ -124,11 +124,6 @@ class AdminNavbar extends React.Component {
       const startDate = moment(startOfWeek).format("YYYY-MM-DD")
       const endDate = moment(endOfWeek).format("YYYY-MM-DD")
       this.props.getWeekAcceptedAppointments(startDate, endDate)
-      const weekDate={
-        startDate,
-        endDate
-      }
-      sessionStorage.setItem("weekDate", JSON.stringify(weekDate))
 
       setViewState(2)
       this.setState({
@@ -146,11 +141,6 @@ class AdminNavbar extends React.Component {
       const startDate = moment(startOfMonth).format("YYYY-MM-DD")
       const endDate = moment(endOfMonth).format("YYYY-MM-DD")
       this.props.getMonthAcceptedAppointments(startDate, endDate)
-      const weekDate={
-        startDate,
-        endDate
-      }
-      sessionStorage.setItem("monthDate", JSON.stringify(weekDate))
     }
     const goToBack = () => {
       let view = this.state.viewState
@@ -165,11 +155,6 @@ class AdminNavbar extends React.Component {
           .format("YYYY-MM-DD")
         const endDate = moment(endOfMonth).format("YYYY-MM-DD")
         this.props.getMonthAcceptedAppointments(startDate, endDate)
-        const weekDate={
-          startDate,
-          endDate
-        }
-        sessionStorage.setItem("monthDate", JSON.stringify(weekDate))
       } else if (view === 2) {
         newDate = new Date(
           mDate.getFullYear(),
@@ -184,11 +169,7 @@ class AdminNavbar extends React.Component {
           .format("YYYY-MM-DD")
         const endDate = moment(endOfWeek).subtract(1, "w").format("YYYY-MM-DD")
         this.props.getWeekAcceptedAppointments(startDate, endDate)
-        const weekDate={
-          startDate,
-          endDate
-        }
-        sessionStorage.setItem("weekDate", JSON.stringify(weekDate))
+        
       } else {
         newDate = new Date(
           mDate.getFullYear(),
@@ -199,7 +180,6 @@ class AdminNavbar extends React.Component {
       }
       const backTime = moment(newDate).format("YYYY-MM-DD")
       toolbar.onNavigate("prev", newDate)
-      sessionStorage.setItem("date", JSON.stringify(backTime))
       this.props.getDayAcceptedAppointments(backTime)
     }
     const goToNext = () => {
@@ -236,7 +216,6 @@ class AdminNavbar extends React.Component {
       }
       toolbar.onNavigate("next", newDate)
       const nextTime = moment(newDate).format("YYYY-MM-DD")
-      sessionStorage.setItem("date", JSON.stringify(nextTime))
       this.props.getDayAcceptedAppointments(nextTime)
     }
     const label = () => {

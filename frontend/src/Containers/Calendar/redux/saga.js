@@ -205,37 +205,42 @@ async function editAppointmentCalApi(data, id) {
   return XHR(URL, options)
 }
 
-function* editAppointmentCal({ data, id, viewState }) {
+function* editAppointmentCal({ data, details }) {
   try {
-    yield call(editAppointmentCalApi, data, id)
-    const newDate = sessionStorage.getItem("date")
-    const weekDate = sessionStorage.getItem("weekDate")
-    const monthDate = sessionStorage.getItem("monthDate")
+  const {id, swapIndex, appointmentsDays } = details
+  const response= yield call(editAppointmentCalApi, data, id)
+  let appointmentData = [...appointmentsDays]
+  appointmentData[swapIndex] = response.data
+  
+  yield put(getDayAcceptedAppointmentsSuccess(appointmentData))
 
-    const userDate = JSON.parse(newDate)
-    const userWeekDate = JSON.parse(weekDate)
-    const userMonthDate = JSON.parse(monthDate)
+    // const newDate = sessionStorage.getItem("date")
+    // const weekDate = sessionStorage.getItem("weekDate")
+    // const monthDate = sessionStorage.getItem("monthDate")
 
-    const dateFormate = moment(userDate).format("YYYY-MM-DD")
+    // const userDate = JSON.parse(newDate)
+    // const userWeekDate = JSON.parse(weekDate)
+    // const userMonthDate = JSON.parse(monthDate)
+
+    // const dateFormate = moment(userDate).format("YYYY-MM-DD")
       
-    if (viewState === 3) {
-      const startDateMonth = moment(userMonthDate.startDate).format("YYYY-MM-DD")
-    const endDateMonth = moment(userMonthDate.endDate).format("YYYY-MM-DD")
+    // if (viewState === 3) {
+    //   const startDateMonth = moment(userMonthDate.startDate).format("YYYY-MM-DD")
+    // const endDateMonth = moment(userMonthDate.endDate).format("YYYY-MM-DD")
 
-    yield put(getMonthAcceptedAppointmentsData(startDateMonth, endDateMonth))
-    } else if (viewState === 2) {
-      const startDateWeek = moment(userWeekDate.startDate).format("YYYY-MM-DD")
-    const endDateWeek = moment(userWeekDate.endDate).format("YYYY-MM-DD")
-      yield put(getWeekAcceptedAppointmentsData(startDateWeek, endDateWeek))
-    } else {
+    // yield put(getMonthAcceptedAppointmentsData(startDateMonth, endDateMonth))
+    // } else if (viewState === 2) {
+    //   const startDateWeek = moment(userWeekDate.startDate).format("YYYY-MM-DD")
+    // const endDateWeek = moment(userWeekDate.endDate).format("YYYY-MM-DD")
+    //   yield put(getWeekAcceptedAppointmentsData(startDateWeek, endDateWeek))
+    // } else {
       
-      yield put(getDayAcceptedAppointmentsData(dateFormate))
-    }
+    //   yield put(getDayAcceptedAppointmentsData(dateFormate))
+    // }
 
     toast.success("Successfully updated!")
   } catch (e) {
     const { response } = e
-    console.log("error", response)
     toast.error("Someting wrong!")
   } finally {
     yield put(reset())

@@ -82,7 +82,9 @@ const Calendar = props => {
     appointmentsDays,
     actionRequesting,
     notesRequesting,
-    editAppointmentCal
+    editAppointmentCal,
+    requesting,
+    addTeamMember
   } = props
   const [addEvents, setAddEvents] = useState(events)
   const [alertMsg, setAlertMsg] = useState(null)
@@ -145,11 +147,11 @@ const Calendar = props => {
   useEffect(() => {
     if (viewState === 2) {
       let myDivs = document.getElementsByClassName("rbc-allday-cell")
-      let rbcEvent = document.getElementsByClassName("rbc-event")
-      let rbcEventContent = document.getElementsByClassName("rbc-event-content")
-      let rbcEventRbcEventContinuesLater = document.getElementsByClassName(
-        "rbc-event rbc-event-continues-later"
-      )
+      // let rbcEvent = document.getElementsByClassName("rbc-event")
+      // let rbcEventContent = document.getElementsByClassName("rbc-event-content")
+      // let rbcEventRbcEventContinuesLater = document.getElementsByClassName(
+      //   "rbc-event rbc-event-continues-later"
+      // )
 
       // rbcEvent.style.width = "30px"
       myDivs[0].style.display = "none"
@@ -227,7 +229,6 @@ const Calendar = props => {
     props.updateNotes(data, updateValues.id, toggle)
   }
 
-
   const modalToggle = () => {
     setPendingRequestModal(false)
     setPendingDetails("")
@@ -269,6 +270,7 @@ const Calendar = props => {
     setModal(!modal)
   }
 
+
   const getTeamMembers = () => {
     const appoinments =
       appointmentsDays &&
@@ -289,7 +291,6 @@ const Calendar = props => {
                 memberId: member?.id,
                 teamId: item?.assigned_team.id,
                 viewState: viewState,
-                itemId: item.id
 
                 // eventDetail:item
               }
@@ -297,6 +298,11 @@ const Calendar = props => {
           )
         })
         .flat(1)
+        
+
+      const filteredAppoinments = appoinments.filter((value, index, self) => index === self.findIndex((t) => (
+        t?.memberId === value?.memberId
+      )))
 
     const service =
       appointmentsDays &&
@@ -315,7 +321,7 @@ const Calendar = props => {
         return data
       })
     if (service && service.length) {
-      appoinments.push(...service)
+      filteredAppoinments.push(...service)
     }
 
     // const teams =
@@ -347,14 +353,13 @@ const Calendar = props => {
       ...new Map(resourceData.map(obj => [JSON.stringify(obj), obj])).values()
     ]
 
-    // console.log(filterResource)
-
     const resourceList = resourceData.length
       ? filterResource
       : resourceDummyData
-    const items = appoinments.includes(false)
-      ? appoinments.filter(v => v !== false)
-      : appoinments.filter(v => v !== undefined)
+
+    const items = filteredAppoinments.includes(false)
+      ? filteredAppoinments.filter(v => v !== false)
+      : filteredAppoinments.filter(v => v !== undefined)
 
     return { items, resourceList }
   }
@@ -420,7 +425,7 @@ const Calendar = props => {
     //   .filter(v => v !== false)
 
     // if (valueExists.includes(true)) {
-    props.addTeamMember(data)
+    addTeamMember(data)
     // }
   }
 
@@ -462,12 +467,12 @@ const Calendar = props => {
         <div
           className={viewState === 3 ? "" : "pt-1"}
           onDragStart={e =>
-            removeTeamDrageStart(e, event.memberId, event.teamId)
+            event.allDay && removeTeamDrageStart(e, event.memberId, event.teamId)
           }
           draggable
           onDragOver={e => event.allDay && addTeamDrageOver(e)}
           onDrop={e => {
-            addTeamOnDrop(e, event.teamId)
+            event.allDay && addTeamOnDrop(e, event.teamId)
           }}
         >
           <span
@@ -554,23 +559,49 @@ const Calendar = props => {
   const onEventDrop = props => {
     if (props?.isAllDay || props.event.allDay === true) {
       if (props.event.teamId !== undefined) {
-        // console.log("props.event.itemId", props.event.itemId)
-        const data = new FormData()
-        data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
-        viewState === 1 && data.append("assigned_team_id", props?.resourceId)
-        editAppointmentCal(data, props.event.itemId, viewState)
+        const id = props.resourceId
+
+        const data = {
+          member_ids: [props.event.memberId],
+          team_id: id
+        }
+        if(props.event.resourceId!==id){
+          addTeamMember(data)
+        }
+        
+        // console.log(data);
+        // addTeamMember(data)
+
+        // const valueExists = [].concat
+        //   .apply([], filterTeam(memberId))
+        //   .filter(v => v !== false)
+    
+        // if (valueExists.includes(true)) {
+        
+
+      // const swapIndex = appointmentsDays.findIndex((e) => e.id == id)
+      // console.log("swapIndex",swapIndex);
+
+      //   const data = new FormData()
+      //   data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
+      //   viewState === 1 && data.append("assigned_team_id", props?.resourceId)
+
+      //   editAppointmentCal(data, {id: id, swapIndex: swapIndex, appointmentsDays: appointmentsDays})
+      // console.log("id",id, props);
       }
     } else {
       // const teamId = getTeamMembers().items.find(
       //   v => v.allDay === false && v.resourceId === props.resourceId
       // )
+      const id = props.event.eventDetail.id
+      const swapIndex = appointmentsDays.findIndex((e) => e.id == id)
       const data = new FormData()
       data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
       data.append("start_time", moment(props.start).format("HH:mm:ss"))
       data.append("end_time", moment(props.end).format("HH:mm:ss"))
       viewState === 1 && data.append("assigned_team_id", props?.resourceId)
-      // console.log("props?.resourceId", data)
-      editAppointmentCal(data, props?.event?.eventDetail?.id, viewState)
+      // // console.log("props?.resourceId", data)
+      editAppointmentCal(data, {id: id, swapIndex: swapIndex, appointmentsDays: appointmentsDays})
     }
   }
 
@@ -581,11 +612,15 @@ const Calendar = props => {
   const onDropFromOutsidee = props => {
     console.log("propsss", props)
   }
-  const [progress, setProgress] = useState(0)
+
 
   return (
     <>
-     
+    <LoadingBar
+        color='#4B8C01'
+        height={5}
+        progress={requesting ? 30 :100}
+      />
       <div className="content">
         <Toaster position="top-center" />
         {alertMsg}
@@ -1759,8 +1794,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestAction(data, modalToggle, index)),
   removeTeamMember: data => dispatch(removeTeamMember(data)),
   addTeamMember: data => dispatch(addTeamMember(data)),
-  editAppointmentCal: (data, id, viewState) =>
-    dispatch(editAppointmentCal(data, id, viewState))
+  editAppointmentCal: (data, details) =>
+    dispatch(editAppointmentCal(data, details))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)
 

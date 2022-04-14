@@ -51,11 +51,10 @@ export const getNotesSuccess = data => ({
 })
 
 
-export const editAppointmentCal = (data, id,viewState) => ({
+export const editAppointmentCal = (data, details) => ({
   type: EDIT_APPOINTMENT_CAL,
   data,
-  id,
-  viewState
+  details
 })
 
 
