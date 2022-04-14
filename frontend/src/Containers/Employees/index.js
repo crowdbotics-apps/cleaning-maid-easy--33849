@@ -231,7 +231,7 @@ function Employees(props) {
       employee_id: eomployId,
       team_id: teamId
     }
-    props.changeEmployeeTeam(data)
+    props.changeEmployeeTeam(data, currentpage)
   }
   
 
@@ -818,6 +818,6 @@ const mapDispatchToProps = dispatch => ({
   deleteEmployee: (id,currentpage) => dispatch(deleteEmployee(id,currentpage)),
   updateEmployee: (data, id, toggle,currentpage) =>
     dispatch(updateEmployee(data, id, toggle,currentpage)),
-  changeEmployeeTeam: data => dispatch(changeEmployeeTeam(data))
+  changeEmployeeTeam: (data,currentpage) => dispatch(changeEmployeeTeam(data,currentpage))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Employees)

@@ -5,7 +5,6 @@ import React, {
   Children,
   useCallback
 } from "react"
-import "react-big-calendar/lib/css/react-big-calendar.css"
 import LoadingBar from "react-top-loading-bar"
 
 import { Calendar as MyCalendar, momentLocalizer } from "react-big-calendar"
@@ -113,7 +112,6 @@ const Calendar = props => {
     }
   ]
   const myNewData = ""
-  // console.log("calanderDate",myNewData);
   const {
     addBtnText,
     btnStyle,
@@ -270,7 +268,6 @@ const Calendar = props => {
     setModal(!modal)
   }
 
-
   const getTeamMembers = () => {
     const appoinments =
       appointmentsDays &&
@@ -290,7 +287,7 @@ const Calendar = props => {
                 desc: "",
                 memberId: member?.id,
                 teamId: item?.assigned_team.id,
-                viewState: viewState,
+                viewState: viewState
 
                 // eventDetail:item
               }
@@ -298,11 +295,11 @@ const Calendar = props => {
           )
         })
         .flat(1)
-        
 
-      const filteredAppoinments = appoinments.filter((value, index, self) => index === self.findIndex((t) => (
-        t?.memberId === value?.memberId
-      )))
+    const filteredAppoinments = appoinments.filter(
+      (value, index, self) =>
+        index === self.findIndex(t => t?.memberId === value?.memberId)
+    )
 
     const service =
       appointmentsDays &&
@@ -457,53 +454,74 @@ const Calendar = props => {
   function CustomEvent({ event }) {
     return (
       <>
-        <div
+        {/* <div
           onDrop={e => {
             addTeamOnDrop(e, event.teamId)
           }}
           style={{ height: 100, width: 100, backgroundColor: "red" }}
           hidden
-        ></div>
-        <div
-          className={viewState === 3 ? "" : "pt-1"}
-          onDragStart={e =>
-            event.allDay && removeTeamDrageStart(e, event.memberId, event.teamId)
-          }
-          draggable
-          onDragOver={e => event.allDay && addTeamDrageOver(e)}
-          onDrop={e => {
-            event.allDay && addTeamOnDrop(e, event.teamId)
-          }}
-        >
-          <span
-            style={{
-              fontWeight: event.allDay || viewState === 3 ? "500" : "600",
-              fontFamily: "Montserrat",
-              fontSize: 12,
-              color: event.allDay ? "white" : "black"
+        ></div> */}
+        {event.allDay && (
+          <>
+           
+          <div
+            className={ viewState === 3 ? "" : "pt-1"}
+            onDragStart={e =>
+              event.allDay &&
+              removeTeamDrageStart(e, event.memberId, event.teamId)
+            }
+            draggable
+            onDragOver={e => event.allDay && addTeamDrageOver(e)}
+            onDrop={e => {
+              event.allDay && addTeamOnDrop(e, event.teamId)
             }}
           >
-            {event.title}
-          </span>
-          {event.viewState === 1 && (
-            <>
-              <div className="pt-1" style={desStyle}>
-                <span>{event.desc}</span>
-              </div>
+            <span
+              style={{
+                fontWeight: event.allDay ? "500" : "600",
+                fontFamily: "Montserrat",
+                fontSize: 12,
+                color: "white"
+              }}
+            >
+              {event.title}
+            </span>
+          </div>
+          </>
+        )}
 
-              {!event.allDay && (
-                <div>
-                  <span
-                    // className="rbc-day-slot rbc-event-labe"
-                    style={desStyle}
-                  >{`${moment(event.start).format("h:mm A")}-${moment(
-                    event.end
-                  ).format("h:mm A")}`}</span>
+        {!event.allDay && (
+          <div className={viewState === 3 ? "" : "pt-1"}>
+            <span
+              style={{
+                fontWeight: viewState === 3 ? "500" : "600",
+                fontFamily: "Montserrat",
+                fontSize: 12,
+                color: "black"
+              }}
+            >
+              {event.title}
+            </span>
+            {event.viewState === 1 && (
+              <>
+                <div className="pt-1" style={desStyle}>
+                  <span>{event.desc}</span>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+
+                {!event.allDay && (
+                  <div>
+                    <span
+                      // className="rbc-day-slot rbc-event-labe"
+                      style={desStyle}
+                    >{`${moment(event.start).format("h:mm A")}-${moment(
+                      event.end
+                    ).format("h:mm A")}`}</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </>
     )
   }
@@ -565,62 +583,85 @@ const Calendar = props => {
           member_ids: [props.event.memberId],
           team_id: id
         }
-        if(props.event.resourceId!==id){
+        if (props.event.resourceId !== id) {
           addTeamMember(data)
         }
-        
+
         // console.log(data);
         // addTeamMember(data)
 
         // const valueExists = [].concat
         //   .apply([], filterTeam(memberId))
         //   .filter(v => v !== false)
-    
+
         // if (valueExists.includes(true)) {
-        
 
-      // const swapIndex = appointmentsDays.findIndex((e) => e.id == id)
-      // console.log("swapIndex",swapIndex);
+        // const swapIndex = appointmentsDays.findIndex((e) => e.id == id)
+        // console.log("swapIndex",swapIndex);
 
-      //   const data = new FormData()
-      //   data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
-      //   viewState === 1 && data.append("assigned_team_id", props?.resourceId)
+        //   const data = new FormData()
+        //   data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
+        //   viewState === 1 && data.append("assigned_team_id", props?.resourceId)
 
-      //   editAppointmentCal(data, {id: id, swapIndex: swapIndex, appointmentsDays: appointmentsDays})
-      // console.log("id",id, props);
+        //   editAppointmentCal(data, {id: id, swapIndex: swapIndex, appointmentsDays: appointmentsDays})
+        // console.log("id",id, props);
       }
     } else {
       // const teamId = getTeamMembers().items.find(
       //   v => v.allDay === false && v.resourceId === props.resourceId
       // )
       const id = props.event.eventDetail.id
-      const swapIndex = appointmentsDays.findIndex((e) => e.id == id)
+      const swapIndex = appointmentsDays.findIndex(e => e.id == id)
       const data = new FormData()
       data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
       data.append("start_time", moment(props.start).format("HH:mm:ss"))
       data.append("end_time", moment(props.end).format("HH:mm:ss"))
       viewState === 1 && data.append("assigned_team_id", props?.resourceId)
       // // console.log("props?.resourceId", data)
-      editAppointmentCal(data, {id: id, swapIndex: swapIndex, appointmentsDays: appointmentsDays})
+      editAppointmentCal(data, {
+        id: id,
+        swapIndex: swapIndex,
+        appointmentsDays: appointmentsDays
+      })
     }
   }
 
-  const onDragStartTeam = event => {
-    console.log("on drag start", event)
-  }
-
   const onDropFromOutsidee = props => {
-    console.log("propsss", props)
+    // console.log("propsss", props)
   }
 
+  const [draggedEvent, setDraggedEvent] = useState()
+  const [displayDragItemInCell, setDisplayDragItemInCell] = useState(true)
 
+  const handleDragStart = useCallback((event, item) => setDraggedEvent(item), [])
+
+  const dragFromOutsideItem = useCallback(() => draggedEvent, [draggedEvent])
+
+  const customOnDragOver = useCallback(
+    
+    (dragEvent) => {
+      // check for undroppable is specific to this example
+      // and not part of API. This just demonstrates that
+      // onDragOver can optionally be passed to conditionally
+      // allow draggable items to be dropped on cal, based on
+      // whether event.preventDefault is called
+      if (draggedEvent !== 'undroppable') {
+        // console.log('preventDefault')
+        dragEvent.preventDefault()
+      }
+    },
+    [draggedEvent]
+  )
+
+
+  const onDropFromOutside = (props) => {
+    // console.log('props', props);
+  }
+
+  
   return (
     <>
-    <LoadingBar
-        color='#4B8C01'
-        height={5}
-        progress={requesting ? 30 :100}
-      />
+      <LoadingBar color="#4B8C01" height={5} progress={requesting ? 30 : 100} />
       <div className="content">
         <Toaster position="top-center" />
         {alertMsg}
@@ -631,12 +672,17 @@ const Calendar = props => {
                 <Table borderless responsive>
                   <thead>
                     <tr>
-                      <th className="p-0">
+                      <th className="p-0" >
                         <BigCalendar
                           selectable
+                          dragFromOutsideItem={
+                            displayDragItemInCell ? dragFromOutsideItem : null
+                          }
                           onEventDrop={onEventDrop}
-                          onDragStart={onDragStartTeam}
-                          onDropFromOutside={onDropFromOutsidee}
+                          onDragOver={customOnDragOver}
+                          resizable
+                          
+                          onDropFromOutside={onDropFromOutside}
                           components={{
                             toolbar: CustomToolbar,
                             event: CustomEvent,
@@ -663,7 +709,6 @@ const Calendar = props => {
                           localizer={localizer}
                           defaultView="day"
                           events={getTeamMembers().items}
-                          // eventPropGetter={eventStyleGetter}
                           dayLayoutAlgorithm="no-overlap"
                           showMultiDayTimes={true}
                           startAccessor="start"
@@ -731,6 +776,7 @@ const Calendar = props => {
                             >
                               <span>Teams</span>
                             </div>
+                          
                             <div
                               onDragOver={e => removeTeamDrageOver(e)}
                               onDrop={e => removeTeamOnDrop(e, "unAssign")}
@@ -744,9 +790,10 @@ const Calendar = props => {
                                 unAssignedEmployees.map((item, index) => (
                                   <div
                                     onDragStart={e =>
-                                      addTeamDrageStart(e, item.id)
+                                     { addTeamDrageStart(e, item.id)
+                                      handleDragStart(e, item)}
                                     }
-                                    draggable
+                                    draggable="true"
                                     className="text-center"
                                     style={teamListStyle}
                                   >
@@ -1798,5 +1845,3 @@ const mapDispatchToProps = dispatch => ({
     dispatch(editAppointmentCal(data, details))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)
-
-// DragDropContext(HTML5Backend)(Calendar)
