@@ -537,7 +537,7 @@ const Customers = props => {
                                 <div className="d-flex justify-content-between">
                                   <h7>
                                     {serviceItem.appointment_date} -{" "}
-                                    {serviceItem.service.name} ($
+                                    {serviceItem?.service?.name} ($
                                     {serviceItem.price})
                                   </h7>
                                   <i
@@ -565,7 +565,7 @@ const Customers = props => {
                                 preferredServicesItem => (
                                   <div className="d-flex justify-content-between">
                                     <h7>
-                                      -{preferredServicesItem.service.name}
+                                      -{preferredServicesItem?.service?.name}
                                     </h7>
                                     <i
                                       className="fa fa-circle"
