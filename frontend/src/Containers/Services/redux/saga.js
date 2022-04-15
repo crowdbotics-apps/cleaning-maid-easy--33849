@@ -9,7 +9,7 @@ import { BASE_URL } from '../../../config/app';
 import XHR from '../../../utils/XHR';
 
 // types
-import { GET_SERVICES, ADD_SERVICES } from './types';
+import { GET_SERVICES, ADD_SERVICES,EDIT_SERVICES,DELETE_SERVICES } from './types';
 
 // actions
 import {getServicesSuccess, addServicesFailure, getServices, resetServices} from './actions'
@@ -57,12 +57,72 @@ async function addServicesAPI(data) {
   return XHR(URL, options);
 }
 
-function* addServices({data, setModal}) {
+function* addServices({data, closeModal}) {
   try {
     const response = yield call(addServicesAPI, data);
     yield put(getServices())
-    setModal(false)
+    closeModal()
     toast.success("Successfully saved!")
+  } catch (e) {
+    const { response } = e
+    yield put(addServicesFailure(response.data))
+    toast.error('Someting wrong!');
+  }
+  finally {
+    yield put(resetServices())
+  }
+}
+
+async function editServicesAPI(data,id) {
+  const URL = `${BASE_URL}/api/v1/operations/services/${id}/`;
+  const token = await sessionStorage.getItem('authToken');
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`
+    },
+    method: 'PATCH',
+    data
+  };
+
+  return XHR(URL, options);
+}
+
+function* editServices({data,id, closeModal}) {
+  try {
+    const response = yield call(editServicesAPI, data,id);
+    yield put(getServices())
+    closeModal()
+    toast.success("Successfully updated!")
+  } catch (e) {
+    const { response } = e
+    yield put(addServicesFailure(response.data))
+    toast.error('Someting wrong!');
+  }
+  finally {
+    yield put(resetServices())
+  }
+}
+
+async function deleteServicesAPI(id) {
+  const URL = `${BASE_URL}/api/v1/operations/services/${id}/`;
+  const token = await sessionStorage.getItem('authToken');
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`
+    },
+    method: 'DELETE',
+  };
+
+  return XHR(URL, options);
+}
+
+function* deleteServices({id}) {
+  try {
+    const response = yield call(deleteServicesAPI,id);
+    yield put(getServices())
+    toast.success("Successfully deleted!")
   } catch (e) {
     const { response } = e
     yield put(addServicesFailure(response.data))
@@ -75,5 +135,7 @@ function* addServices({data, setModal}) {
 
 export default all([
   takeLatest(GET_SERVICES, getService),
-  takeLatest(ADD_SERVICES, addServices)
+  takeLatest(ADD_SERVICES, addServices),
+  takeLatest(EDIT_SERVICES, editServices),
+  takeLatest(DELETE_SERVICES, deleteServices)
 ]);

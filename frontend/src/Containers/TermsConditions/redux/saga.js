@@ -11,7 +11,7 @@ import XHR from "../../../utils/XHR"
 import { GET_TERMS_CONDITIONS, GET_PRIVACY_POLICY } from "./types"
 
 // actions
-import { getTermsConditionsSuccess, getPrivacyPolicySuccess } from "./actions"
+import { getTermsConditionsSuccess, getPrivacyPolicySuccess,reset } from "./actions"
 
 async function getTermsConditionsApi() {
   const URL = `${BASE_URL}/api/v1/terms_and_conditions/`
@@ -33,6 +33,9 @@ function* getTermsConditions() {
     yield put(getTermsConditionsSuccess(response.data))
   } catch (e) {
     const { response } = e
+  }
+  finally {
+    yield put(reset())
   }
 }
 
@@ -56,6 +59,9 @@ function* getPrivacyPolicy() {
     yield put(getPrivacyPolicySuccess(response.data))
   } catch (e) {
     const { response } = e
+  }
+ finally {
+    yield put(reset())
   }
 }
 

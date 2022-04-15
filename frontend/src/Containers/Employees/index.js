@@ -47,8 +47,14 @@ import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
 function Employees(props) {
-  const { teamData, requesting, employeesList, getRequesting, backendError,changeEmployeeRequesting } =
-    props
+  const {
+    teamData,
+    requesting,
+    employeesList,
+    getRequesting,
+    backendError,
+    changeEmployeeRequesting
+  } = props
   const [selectedClient, setSelectedClient] = useState("none")
   const [editValues, setEditValues] = useState(false)
   const [itemId, setItemId] = useState(false)
@@ -76,6 +82,7 @@ function Employees(props) {
   useEffect(() => {
     if (editValues) {
       handleOnChange("firstName", editValues.name)
+      // handleOnChange("lastName", editValues.name.split(' ')[1] )
       handleOnChange("phone_number", editValues.phone_number)
       handleOnChange("zip_code", editValues.zip_code)
       handleOnChange("company_name", editValues.company_name)
@@ -173,7 +180,7 @@ function Employees(props) {
       address: state.address.value,
       team_id: parseInt(state.team_id.value)
     }
-    props.addEmployee(data, toggle,currentpage)
+    props.addEmployee(data, toggle, currentpage)
   }
 
   const editData = item => {
@@ -185,7 +192,7 @@ function Employees(props) {
     setmodal(!modal)
     resetValues()
     setEditValues(false)
-    state.email.error=''
+    state.email.error = ""
   }
 
   const updateEmployee = () => {
@@ -203,14 +210,20 @@ function Employees(props) {
     formBody.append("company_name", state.company_name.value)
     formBody.append(
       "display_company",
-      state.display_company.value===true ? true : state.display_company.value===false? false:state.display_company.value? true : false
+      state.display_company.value === true
+        ? true
+        : state.display_company.value === false
+        ? false
+        : state.display_company.value
+        ? true
+        : false
     )
     formBody.append("phone_number", state.phone_number.value)
     formBody.append("zip_code", state.zip_code.value)
     formBody.append("address", state.address.value)
     formBody.append("team_id", parseInt(state.team_id.value))
 
-    props.updateEmployee(formBody, editValues.id, toggle,currentpage)
+    props.updateEmployee(formBody, editValues.id, toggle, currentpage)
   }
 
   const [modal, setmodal] = useState(false)
@@ -233,7 +246,6 @@ function Employees(props) {
     }
     props.changeEmployeeTeam(data, currentpage)
   }
-  
 
   const [tooltipOpen, setTooltipOpen] = React.useState(false)
   function handleSelectChange(event) {
@@ -247,7 +259,7 @@ function Employees(props) {
 
   return (
     <>
-    <Toaster position="top-center" />
+      <Toaster position="top-center" />
       <div
         className="content "
         style={{
@@ -358,7 +370,7 @@ function Employees(props) {
                           </td>
                           <td>{item.phone_number}</td>
                           <td>
-                            {(changeEmployeeRequesting && item.id === itemId )? (
+                            {changeEmployeeRequesting && item.id === itemId ? (
                               <Spinner size="sm" />
                             ) : (
                               item?.assigned_team?.title
@@ -412,7 +424,7 @@ function Employees(props) {
                                 </Button>
                               </div>
                               <div>
-                                {(requesting && item.id === deleteId) ? (
+                                {requesting && item.id === deleteId ? (
                                   <Spinner style={{ marginTop: 8 }} size="sm" />
                                 ) : (
                                   <Button
@@ -490,7 +502,7 @@ function Employees(props) {
                     </button>
                   </div>
                   <div className="modal-body ">
-                    <label style={styles.labelStyle}>First Name</label>
+                    <label style={styles.labelStyle}> {editValues? "Employee Name": "First Name"}</label>
                     <div>
                       <Input
                         style={styles.inputStyle}
@@ -506,49 +518,53 @@ function Employees(props) {
                         </label>
                       )}
                     </div>
-
-                    <label style={styles.labelStyle} className="mt-3">
-                      Last Name
-                    </label>
-                    <div>
-                      <Input
-                        style={styles.inputStyle}
-                        className="border-top-0 border-right-0 border-left-0 pl-0"
-                        onChange={e =>
-                          handleOnChange("lastName", e.target.value)
-                        }
-                      />
-                      {state.lastName.error && (
-                        <label style={{ color: "red" }}>
-                          {state.lastName.error}
-                        </label>
-                      )}
-                    </div>
-                    {
-                      !editValues ? (
-                        <>
+                    {editValues ? null : (
+                      <>
                         <label style={styles.labelStyle} className="mt-3">
-                        Email
-                      </label>
-                      <div>
-                        <Input
-                          style={styles.inputStyle}
-                          className="border-top-0 border-right-0 border-left-0 pl-0"
-                          onChange={e => handleOnChange("email", e.target.value)}
-                        />
-                        {state.email.error && (
-                          <label style={{ color: "red" }}>
-                            {state.email.error}
-                          </label>
-                        )}
-                        {/* // : backendError ? (
+                          Last Name
+                        </label>
+                        <div>
+                          <Input
+                            style={styles.inputStyle}
+                            className="border-top-0 border-right-0 border-left-0 pl-0"
+                            onChange={e =>
+                              handleOnChange("lastName", e.target.value)
+                            }
+                          />
+                          {state.lastName.error && (
+                            <label style={{ color: "red" }}>
+                              {state.lastName.error}
+                            </label>
+                          )}
+                        </div>
+                      </>
+                    )}
+
+                    {!editValues ? (
+                      <>
+                        <label style={styles.labelStyle} className="mt-3">
+                          Email
+                        </label>
+                        <div>
+                          <Input
+                            style={styles.inputStyle}
+                            className="border-top-0 border-right-0 border-left-0 pl-0"
+                            onChange={e =>
+                              handleOnChange("email", e.target.value)
+                            }
+                          />
+                          {state.email.error && (
+                            <label style={{ color: "red" }}>
+                              {state.email.error}
+                            </label>
+                          )}
+                          {/* // : backendError ? (
                         //   <label style={{ color: "red" }}>{backendError}</label>
                         // ) : null} */}
-                      </div>
+                        </div>
                       </>
-                      ):null
-                    }
-                   
+                    ) : null}
+
                     <label style={styles.labelStyle} className="mt-3">
                       Company Name
                     </label>
@@ -807,17 +823,20 @@ const mapStateToProps = state => ({
   backendError: state.employees.backendError,
   employeesList: state.employees.employeesList,
   getRequesting: state.employees.getRequesting,
-  changeEmployeeRequesting:state.employees.changeEmployeeRequesting,
+  changeEmployeeRequesting: state.employees.changeEmployeeRequesting
 })
 
 const mapDispatchToProps = dispatch => ({
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  addEmployee: (data, toggle,currentpage) => dispatch(addEmployee(data, toggle,currentpage)),
+  addEmployee: (data, toggle, currentpage) =>
+    dispatch(addEmployee(data, toggle, currentpage)),
   getTeam: () => dispatch(getTeam()),
-  getEmployeeList: (index) => dispatch(getEmployeeList(index)),
-  deleteEmployee: (id,currentpage) => dispatch(deleteEmployee(id,currentpage)),
-  updateEmployee: (data, id, toggle,currentpage) =>
-    dispatch(updateEmployee(data, id, toggle,currentpage)),
-  changeEmployeeTeam: (data,currentpage) => dispatch(changeEmployeeTeam(data,currentpage))
+  getEmployeeList: index => dispatch(getEmployeeList(index)),
+  deleteEmployee: (id, currentpage) =>
+    dispatch(deleteEmployee(id, currentpage)),
+  updateEmployee: (data, id, toggle, currentpage) =>
+    dispatch(updateEmployee(data, id, toggle, currentpage)),
+  changeEmployeeTeam: (data, currentpage) =>
+    dispatch(changeEmployeeTeam(data, currentpage))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Employees)
