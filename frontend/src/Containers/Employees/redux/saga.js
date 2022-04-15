@@ -154,10 +154,10 @@ async function changeEmployeeTeamApi(data) {
   return XHR(URL, options)
 }
 
-function* changeEmployeeTeam({ data }) {
+function* changeEmployeeTeam({ data,currentpage }) {
   try {
     const response = yield call(changeEmployeeTeamApi, data)
-    yield put(getEmployeeListData(1))
+    yield put(getEmployeeListData(currentpage))
     toast.success("Successfully employee changed!")
   } catch (e) {
     const { response } = e

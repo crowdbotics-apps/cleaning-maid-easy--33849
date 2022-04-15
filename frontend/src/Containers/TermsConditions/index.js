@@ -13,7 +13,6 @@ function TermsConditions(props) {
     props.renderHtmlText("Terms Conditions")
     props.getTermsConditions()
   }, [])
-  // console.log("termsConditions",termsConditions);
 
   return (
     <div className="content bg-white pl-4">

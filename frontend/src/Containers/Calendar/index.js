@@ -1,16 +1,23 @@
-import React, { useEffect, useState, useRef,Children } from "react"
-import "react-big-calendar/lib/css/react-big-calendar.css"
-import HTML5Backend from "react-dnd-html5-backend";
-import { DragDropContext } from "react-dnd";
-import {Calendar as MyCalendar , momentLocalizer} from "react-big-calendar";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  Children,
+  useCallback
+} from "react"
+import LoadingBar from "react-top-loading-bar"
+
+import { Calendar as MyCalendar, momentLocalizer } from "react-big-calendar"
 
 import moment from "moment"
 import { connect } from "react-redux"
 import styless from "./styles.css"
 import { Toaster } from "react-hot-toast"
-import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-
-
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop"
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css"
+import "react-big-calendar/lib/css/react-big-calendar.css"
+import timezone from "moment-timezone"
+// import Draggable from 'react-draggable';
 
 // import SweetAlert from "react-bootstrap-sweetalert"
 // import "react-big-calendar/lib/css/react-big-calendar.css"
@@ -40,7 +47,8 @@ import {
   getDayAcceptedAppointments,
   getNotes,
   addNotes,
-  updateNotes
+  updateNotes,
+  editAppointmentCal
 } from "./redux/actions"
 
 import { renderHtmlText } from "../Services/redux/actions"
@@ -57,12 +65,14 @@ import {
 import useForm from "../../utils/useForm"
 
 import { events } from "variables/general.js"
-const BigCalendar = withDragAndDrop(MyCalendar);
-const localizer = momentLocalizer(moment)
+timezone.tz.setDefault("en")
 
+const BigCalendar = withDragAndDrop(MyCalendar)
+const localizer = momentLocalizer(timezone)
+
+// const Calendars = DndProvider(HTML5Backend)(Calendar);
 
 const Calendar = props => {
-
   const {
     pendingRequests,
     teamData,
@@ -70,7 +80,10 @@ const Calendar = props => {
     unAssignedEmployees,
     appointmentsDays,
     actionRequesting,
-    notesRequesting
+    notesRequesting,
+    editAppointmentCal,
+    requesting,
+    addTeamMember
   } = props
   const [addEvents, setAddEvents] = useState(events)
   const [alertMsg, setAlertMsg] = useState(null)
@@ -86,8 +99,10 @@ const Calendar = props => {
   const [pendingRequestModal, setPendingRequestModal] = useState(false)
   const [actionRequest, setActionRequest] = useState(0)
   const [calanderDate, setcalanderDate] = useState(false)
-
+  const [myEvents, setMyEvents] = useState(false)
   const calendarRef = useRef()
+  const loaderRef = useRef(null)
+  // moment.tz.setDefault(String);
 
   let newDate = ""
   const resourceDummyData = [
@@ -97,7 +112,6 @@ const Calendar = props => {
     }
   ]
   const myNewData = ""
-  // console.log("calanderDate",myNewData);
   const {
     addBtnText,
     btnStyle,
@@ -131,11 +145,11 @@ const Calendar = props => {
   useEffect(() => {
     if (viewState === 2) {
       let myDivs = document.getElementsByClassName("rbc-allday-cell")
-      let rbcEvent = document.getElementsByClassName("rbc-event")
-      let rbcEventContent = document.getElementsByClassName("rbc-event-content")
-      let rbcEventRbcEventContinuesLater = document.getElementsByClassName(
-        "rbc-event rbc-event-continues-later"
-      )
+      // let rbcEvent = document.getElementsByClassName("rbc-event")
+      // let rbcEventContent = document.getElementsByClassName("rbc-event-content")
+      // let rbcEventRbcEventContinuesLater = document.getElementsByClassName(
+      //   "rbc-event rbc-event-continues-later"
+      // )
 
       // rbcEvent.style.width = "30px"
       myDivs[0].style.display = "none"
@@ -229,7 +243,7 @@ const Calendar = props => {
       action: requestAction
     }
 
-    props.requestAction(data, modalToggle,1)
+    props.requestAction(data, modalToggle, 1)
     if (requestAction === "Accept") {
       setActionRequest(1)
     } else {
@@ -255,10 +269,6 @@ const Calendar = props => {
   }
 
   const getTeamMembers = () => {
-    // let totalTeams =
-    //   eventData && eventData.map(item => item.assigned_team.team_members.length)
-    // totalTeams = totalTeams.reduce((a, b) => a + b, 0) - 1
-
     const appoinments =
       appointmentsDays &&
       appointmentsDays
@@ -272,12 +282,12 @@ const Calendar = props => {
                 end: new Date(item?.appointment_date),
                 start: new Date(item?.appointment_date),
                 title: member?.name,
-                resourceId: item?.id,
+                resourceId: item?.assigned_team?.id,
                 color: "#88AE31",
                 desc: "",
                 memberId: member?.id,
                 teamId: item?.assigned_team.id,
-                viewState:viewState
+                viewState: viewState
 
                 // eventDetail:item
               }
@@ -286,24 +296,29 @@ const Calendar = props => {
         })
         .flat(1)
 
+    const filteredAppoinments = appoinments.filter(
+      (value, index, self) =>
+        index === self.findIndex(t => t?.memberId === value?.memberId)
+    )
+
     const service =
       appointmentsDays &&
       appointmentsDays.map((item, index) => {
         const data = {
           allDay: false,
-          end: new Date(`${item?.appointment_date}T${item?.end_time}Z`),
-          start: new Date(`${item?.appointment_date}T${item?.start_time}Z`),
+          end: new Date(`${item?.appointment_date} ${item?.end_time}`),
+          start: new Date(`${item?.appointment_date} ${item?.start_time}`),
           title: item?.title,
-          resourceId: item?.id,
+          resourceId: item?.assigned_team?.id,
           color: item.frequency.color_code,
           desc: item?.service?.description,
           eventDetail: item,
-          viewState:viewState
+          viewState: viewState
         }
         return data
       })
     if (service && service.length) {
-      appoinments.push(...service)
+      filteredAppoinments.push(...service)
     }
 
     // const teams =
@@ -326,16 +341,22 @@ const Calendar = props => {
       appointmentsDays &&
       appointmentsDays.map(element => {
         return {
-          resourceId: element.id,
+          resourceId: element?.assigned_team?.id,
           resourceTitle: element?.assigned_team?.title
         }
       })
-    // resourceList.push({ resourceId: -1, resourceTitle: "Unassigned/Notes" })
 
-    const resourceList = resourceData.length ? resourceData : resourceDummyData
-    const items = appoinments.includes(false)
-      ? appoinments.filter(v => v !== false)
-      : appoinments.filter(v => v !== undefined)
+    const filterResource = [
+      ...new Map(resourceData.map(obj => [JSON.stringify(obj), obj])).values()
+    ]
+
+    const resourceList = resourceData.length
+      ? filterResource
+      : resourceDummyData
+
+    const items = filteredAppoinments.includes(false)
+      ? filteredAppoinments.filter(v => v !== false)
+      : filteredAppoinments.filter(v => v !== undefined)
 
     return { items, resourceList }
   }
@@ -354,7 +375,6 @@ const Calendar = props => {
   }
 
   const CustomToolbar = toolbar => {
-
     // setcalanderDate((calanderDate) => toolbar.date)
     // newDate = toolbar.date
 
@@ -367,10 +387,6 @@ const Calendar = props => {
     return <div></div>
   }
 
-  // useEffect(() => {
-  //   props.renderHtmlText(ca)
-
-  // }, [])
   const addTeamDrageStart = (ev, memberId) => {
     ev.dataTransfer.setData("memberId", memberId)
   }
@@ -392,9 +408,7 @@ const Calendar = props => {
     )
   }
 
-
   const addTeamOnDrop = (ev, id) => {
-   
     let memberId = ev.dataTransfer.getData("memberId")
     // let date = ev.dataTransfer.getData("date")
 
@@ -408,7 +422,7 @@ const Calendar = props => {
     //   .filter(v => v !== false)
 
     // if (valueExists.includes(true)) {
-      props.addTeamMember(data)
+    addTeamMember(data)
     // }
   }
 
@@ -440,51 +454,74 @@ const Calendar = props => {
   function CustomEvent({ event }) {
     return (
       <>
-      <div 
-      onDrop={e => {
-        addTeamOnDrop(e, event.teamId)
-      }}
-      style={{height:100,width:100, backgroundColor:'red'}} hidden>
-
-      </div>
-      <div
-        className={viewState === 3 ? "" : "pt-1"}
-        onDragStart={e => removeTeamDrageStart(e, event.memberId, event.teamId)}
-        draggable
-        onDragOver={e =>  event.allDay && addTeamDrageOver(e)}
-        onDrop={e => {
-          addTeamOnDrop(e, event.teamId)
-        }}
-      >
-        <span
-          style={{
-            fontWeight: event.allDay || viewState === 3 ? "500" : "600",
-            fontFamily: "Montserrat",
-            fontSize: 12,
-            color: event.allDay ? "white" : "black"
+        {/* <div
+          onDrop={e => {
+            addTeamOnDrop(e, event.teamId)
           }}
-        >
-          {event.title}
-        </span>
-        {event.viewState === 1 && (
+          style={{ height: 100, width: 100, backgroundColor: "red" }}
+          hidden
+        ></div> */}
+        {event.allDay && (
           <>
-            <div className="pt-1" style={desStyle}>
-              <span>{event.desc}</span>
-            </div>
-
-            {!event.allDay && (
-              <div style={{bottom: 3 }}>
-                <span
-                  // className="rbc-day-slot rbc-event-labe"
-                  style={desStyle}
-                >{`${moment(event.start).format("h:mm A")}-${moment(
-                  event.end
-                ).format("h:mm A")}`}</span>
-              </div>
-            )}
+           
+          <div
+            className={ viewState === 3 ? "" : "pt-1"}
+            onDragStart={e =>
+              event.allDay &&
+              removeTeamDrageStart(e, event.memberId, event.teamId)
+            }
+            draggable
+            onDragOver={e => event.allDay && addTeamDrageOver(e)}
+            onDrop={e => {
+              event.allDay && addTeamOnDrop(e, event.teamId)
+            }}
+          >
+            <span
+              style={{
+                fontWeight: event.allDay ? "500" : "600",
+                fontFamily: "Montserrat",
+                fontSize: 12,
+                color: "white"
+              }}
+            >
+              {event.title}
+            </span>
+          </div>
           </>
         )}
-      </div>
+
+        {!event.allDay && (
+          <div className={viewState === 3 ? "" : "pt-1"}>
+            <span
+              style={{
+                fontWeight: viewState === 3 ? "500" : "600",
+                fontFamily: "Montserrat",
+                fontSize: 12,
+                color: "black"
+              }}
+            >
+              {event.title}
+            </span>
+            {event.viewState === 1 && (
+              <>
+                <div className="pt-1" style={desStyle}>
+                  <span>{event.desc}</span>
+                </div>
+
+                {!event.allDay && (
+                  <div>
+                    <span
+                      // className="rbc-day-slot rbc-event-labe"
+                      style={desStyle}
+                    >{`${moment(event.start).format("h:mm A")}-${moment(
+                      event.end
+                    ).format("h:mm A")}`}</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </>
     )
   }
@@ -531,40 +568,100 @@ const Calendar = props => {
   }
 
   const selectEvent = event => {
-    if(!event.allDay){
+    if (!event.allDay) {
       setAppointmentModal(true)
       setEventDetail(event)
     }
+  }
+
+  const onEventDrop = props => {
+    if (props?.isAllDay || props.event.allDay === true) {
+      if (props.event.teamId !== undefined) {
+        const id = props.resourceId
+
+        const data = {
+          member_ids: [props.event.memberId],
+          team_id: id
+        }
+        if (props.event.resourceId !== id) {
+          addTeamMember(data)
+        }
+
+        // console.log(data);
+        // addTeamMember(data)
+
+        // const valueExists = [].concat
+        //   .apply([], filterTeam(memberId))
+        //   .filter(v => v !== false)
+
+        // if (valueExists.includes(true)) {
+
+        // const swapIndex = appointmentsDays.findIndex((e) => e.id == id)
+        // console.log("swapIndex",swapIndex);
+
+        //   const data = new FormData()
+        //   data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
+        //   viewState === 1 && data.append("assigned_team_id", props?.resourceId)
+
+        //   editAppointmentCal(data, {id: id, swapIndex: swapIndex, appointmentsDays: appointmentsDays})
+        // console.log("id",id, props);
+      }
+    } else {
+      // const teamId = getTeamMembers().items.find(
+      //   v => v.allDay === false && v.resourceId === props.resourceId
+      // )
+      const id = props.event.eventDetail.id
+      const swapIndex = appointmentsDays.findIndex(e => e.id == id)
+      const data = new FormData()
+      data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
+      data.append("start_time", moment(props.start).format("HH:mm:ss"))
+      data.append("end_time", moment(props.end).format("HH:mm:ss"))
+      viewState === 1 && data.append("assigned_team_id", props?.resourceId)
+      // // console.log("props?.resourceId", data)
+      editAppointmentCal(data, {
+        id: id,
+        swapIndex: swapIndex,
+        appointmentsDays: appointmentsDays
+      })
+    }
+  }
+
+  const onDropFromOutsidee = props => {
+    // console.log("propsss", props)
+  }
+
+  const [draggedEvent, setDraggedEvent] = useState()
+  const [displayDragItemInCell, setDisplayDragItemInCell] = useState(true)
+
+  const handleDragStart = useCallback((event, item) => setDraggedEvent(item), [])
+
+  const dragFromOutsideItem = useCallback(() => draggedEvent, [draggedEvent])
+
+  const customOnDragOver = useCallback(
     
+    (dragEvent) => {
+      // check for undroppable is specific to this example
+      // and not part of API. This just demonstrates that
+      // onDragOver can optionally be passed to conditionally
+      // allow draggable items to be dropped on cal, based on
+      // whether event.preventDefault is called
+      if (draggedEvent !== 'undroppable') {
+        // console.log('preventDefault')
+        dragEvent.preventDefault()
+      }
+    },
+    [draggedEvent]
+  )
+
+
+  const onDropFromOutside = (props) => {
+    // console.log('props', props);
   }
 
-
-  // const CustomTimeSlotWrapper=({value, resource, children})=>{
-  //   // convert your `value` (a Date object) to something displayable
-  //   console.log("value",value);
-  //   return (
-  //     <div className="custom-slot-container" style={{textAlign:'right'}}>
-  //       <span className="hidden-value">{moment(value).format('h:m A')}</span>
-  //     </div>
-  //   );
-  // }
-  const moveEvent=({ event, start, end }) =>{
-    // const { events } = this.state;
-
-    // const idx = events.indexOf(event);
-    // const updatedEvent = { ...event, start, end };
-
-    // const nextEvents = [...events];
-    // nextEvents.splice(idx, 1, updatedEvent);
-
-    // this.setState({
-    //   events: nextEvents
-    // });
-  }
   
-
   return (
     <>
+      <LoadingBar color="#4B8C01" height={5} progress={requesting ? 30 : 100} />
       <div className="content">
         <Toaster position="top-center" />
         {alertMsg}
@@ -575,37 +672,27 @@ const Calendar = props => {
                 <Table borderless responsive>
                   <thead>
                     <tr>
-                      <th className="p-0">
+                      <th className="p-0" >
                         <BigCalendar
-                         selectable
-                         onEventDrop={moveEvent}
+                          selectable
+                          dragFromOutsideItem={
+                            displayDragItemInCell ? dragFromOutsideItem : null
+                          }
+                          onEventDrop={onEventDrop}
+                          onDragOver={customOnDragOver}
+                          resizable
+                          
+                          onDropFromOutside={onDropFromOutside}
                           components={{
                             toolbar: CustomToolbar,
                             event: CustomEvent,
                             week: {
                               header: WeekHeaderCellContent
                             },
-                            // timeSlotWrapper:CustomTimeSlotWrapper,
                             month: {
                               header: MonthHeaderCellContent,
                               dateHeader: DateCellWrapper
-                              // dateHeader: ({ date, label }) => {
-                              //   let highlightDate =
-                              //     events.find(event =>
-                              //       moment(date).isBetween(
-                              //         moment(event.startDate),
-                              //         moment(event.endDate),
-                              //         null,
-                              //         "[]"
-                              //       )
-                              //     ) != undefined;
-                              //   return (
-                              //     <h1 style={highlightDate ? { color: "red" } : null}>{label}</h1>
-                              //   );
-                              // }
-                            },
-                            // ateCellWrapper: ColoredDateCellWrapper,
-                            // dateCellWrapper: DateCellWrapper
+                            }
                           }}
                           ref={calendarRef}
                           resourceIdAccessor={
@@ -622,7 +709,6 @@ const Calendar = props => {
                           localizer={localizer}
                           defaultView="day"
                           events={getTeamMembers().items}
-                          // eventPropGetter={eventStyleGetter}
                           dayLayoutAlgorithm="no-overlap"
                           showMultiDayTimes={true}
                           startAccessor="start"
@@ -690,6 +776,7 @@ const Calendar = props => {
                             >
                               <span>Teams</span>
                             </div>
+                          
                             <div
                               onDragOver={e => removeTeamDrageOver(e)}
                               onDrop={e => removeTeamOnDrop(e, "unAssign")}
@@ -703,9 +790,10 @@ const Calendar = props => {
                                 unAssignedEmployees.map((item, index) => (
                                   <div
                                     onDragStart={e =>
-                                      addTeamDrageStart(e, item.id)
+                                     { addTeamDrageStart(e, item.id)
+                                      handleDragStart(e, item)}
                                     }
-                                    draggable
+                                    draggable="true"
                                     className="text-center"
                                     style={teamListStyle}
                                   >
@@ -1744,15 +1832,16 @@ const mapDispatchToProps = dispatch => ({
   getDayAcceptedAppointments: date =>
     dispatch(getDayAcceptedAppointments(date)),
   getNotes: () => dispatch(getNotes()),
-  getPendingRequests: (index) => dispatch(getPendingRequests(index)),
+  getPendingRequests: index => dispatch(getPendingRequests(index)),
   getUnAssignedEmployees: () => dispatch(getUnAssignedEmployees()),
   addNotes: (data, toggle) => dispatch(addNotes(data, toggle)),
   updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  requestAction: (data, modalToggle,index) =>
-    dispatch(requestAction(data, modalToggle,index)),
+  requestAction: (data, modalToggle, index) =>
+    dispatch(requestAction(data, modalToggle, index)),
   removeTeamMember: data => dispatch(removeTeamMember(data)),
-  addTeamMember: data => dispatch(addTeamMember(data))
+  addTeamMember: data => dispatch(addTeamMember(data)),
+  editAppointmentCal: (data, details) =>
+    dispatch(editAppointmentCal(data, details))
 })
-export default connect(mapStateToProps, mapDispatchToProps)(Calendar);
-
+export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

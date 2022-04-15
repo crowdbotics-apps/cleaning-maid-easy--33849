@@ -1,6 +1,8 @@
 import {
   GET_DAY_ACCEPTED_APPOINTEMENTS,
   GET_DAY_ACCEPTED_APPOINTEMENTS_SUCCESS,
+  GET_WEEK_ACCEPTED_APPOINTEMENTS,
+  GET_MONTH_ACCEPTED_APPOINTEMENTS,
   GET_NOTES,
   GET_NOTES_SUCCESS,
   ADD_NOTES,
@@ -17,7 +19,10 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
+
     case GET_DAY_ACCEPTED_APPOINTEMENTS:
+      case GET_WEEK_ACCEPTED_APPOINTEMENTS:
+        case GET_MONTH_ACCEPTED_APPOINTEMENTS:
       return {
         ...state,
         requesting: true
