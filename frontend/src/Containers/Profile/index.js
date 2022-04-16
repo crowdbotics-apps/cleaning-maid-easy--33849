@@ -73,11 +73,14 @@ const Profile = props => {
                       }
                     />
                   </div>
-                  <div>
-                    <label style={styles.userNameText}>
-                      {userInfo.name ? userInfo.name : "Test User"}
-                    </label>
-                  </div>
+                  {userInfo.name && (
+                    <div>
+                      <label style={styles.userNameText}>
+                        {userInfo.name && userInfo.name}
+                      </label>
+                    </div>
+                  )}
+
                   <div>
                     <label style={styles.companyText}>
                       {userInfo.company_name

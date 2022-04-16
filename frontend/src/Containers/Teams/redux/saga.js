@@ -132,8 +132,9 @@ function* deleteTeam({data}) {
 }
 
 
-async function getUnAssignedEmployeesAPi() {
-  const URL = `${BASE_URL}/api/v1/users/users_list/?user_type=Employee&un_assigned=${true}`;
+async function getUnAssignedEmployeesAPi(index) {
+  
+  const URL = `${BASE_URL}/api/v1/users/users_list/?page=${index}&un_assigned=${true}%2F%3Fpage%3D1&user_type=Employee`;
   const token = await sessionStorage.getItem('authToken');
   const options = {
     headers: {
@@ -146,10 +147,10 @@ async function getUnAssignedEmployeesAPi() {
   return XHR(URL, options);
 }
 
-function* getUnAssignedEmployees() {
+function* getUnAssignedEmployees({index}) {
   try {
-    const response = yield call(getUnAssignedEmployeesAPi);
-    yield put((getUnAssignedEmployeesSuccess(response?.data?.results)))
+    const response = yield call(getUnAssignedEmployeesAPi,index);
+    yield put((getUnAssignedEmployeesSuccess(response?.data)))
 
   } catch (e) {
     const { response } = e
@@ -176,11 +177,11 @@ async function removeTeamMemberApi(data) {
   return XHR(URL, options);
 }
 
-function* removeTeamMember({data}) {
+function* removeTeamMember({data,currentpage}) {
   try {
     const response = yield call(removeTeamMemberApi,data);
     yield put((getTeam()))
-    yield put (getUnAssignedEmployeesData())
+    yield put (getUnAssignedEmployeesData(currentpage))
     // yield put (getDayAcceptedAppointments(date))
     toast.success("Successfully removed!")
     const newDate = sessionStorage.getItem('date');
@@ -211,11 +212,11 @@ async function addTeamMemberApi(data) {
   return XHR(URL, options);
 }
 
-function* addTeamMember({data}) {
+function* addTeamMember({data,currentpage}) {
   try {
     const response = yield call(addTeamMemberApi,data);
     yield put((getTeam()))
-    yield put (getUnAssignedEmployeesData())
+    yield put (getUnAssignedEmployeesData(currentpage))
     toast.success("Successfully added!")
     const newDate = sessionStorage.getItem('date');
     const userDate = JSON.parse(newDate)
