@@ -26,8 +26,9 @@ export const getEmployees= () => ({
   type: GET_EMPLOYEES,
 });
 
-export const getUnAssignedEmployees= () => ({
+export const getUnAssignedEmployees= (index) => ({
   type: GET_UN_ASSIGNED_EMPLOYEES,
+  index
 });
 
 export const getUnAssignedEmployeesSuccess= (data) => ({
@@ -40,14 +41,16 @@ export const getEmployeesSuccess = (data) => ({
   data,
 });
 
-export const addTeamMember=(data)=>({
+export const addTeamMember=(data,currentpage)=>({
   type: ADD_TEAM_MEMBER,
   data,
+  currentpage
 })
 
-export const removeTeamMember=(data)=>({
+export const removeTeamMember=(data,currentpage)=>({
   type: REMOVE_TEAM_MEMBER,
   data,
+  currentpage
 })
 
 export const createTeam= (data, setmodal) => ({

@@ -217,9 +217,9 @@ class Sidebar extends React.Component {
               >
                 <span style={styles.textStyle}>
                   {!document.body.classList.contains("sidebar-mini")
-                    ? this.props.userInfoData.name ? this.props.userInfoData.name: userInfo
-                      ? `${userInfo.name}`
-                      : "User Name"
+                    ? this.props?.userInfoData?.name ? this.props?.userInfoData?.name: userInfo
+                      ? userInfo?.name===null ? '' : userInfo?.name?.length ===0 ?'': userInfo?.name
+                      : ''
                     : ""}
                 </span>
               </a>
@@ -227,7 +227,7 @@ class Sidebar extends React.Component {
             </NavLink>
             {
               !document.body.classList.contains("sidebar-mini")? (
-                <UserProfile />
+                <UserProfile userName={userInfo?.name}/>
               ):''
             }
             
