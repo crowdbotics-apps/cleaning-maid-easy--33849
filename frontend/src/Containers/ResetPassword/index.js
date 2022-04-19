@@ -58,7 +58,6 @@ const ResetPassword = props => {
       uid:getUrls[0],
       token:getUrls[1]
     }
-    console.log("dataa", data)
     props.resetNewPassword(data)
   }
 
@@ -115,9 +114,9 @@ const ResetPassword = props => {
                         handleOnChange("new_password2", e.target.value)
                       }
                     />
-                      {state.new_password2.error && (
+                      {state.new_password2.value && state.new_password1.value !== state.new_password2.value && (
                       <label style={{ color: "red" }}>
-                        {state.new_password2.error}
+                        Password don't match
                       </label>
                     )}
                   </FormGroup>
@@ -134,8 +133,7 @@ const ResetPassword = props => {
                       fontSize: 18,
                       paddingRight: 100
                     }}
-                    disabled={disable}
-                    href="#pablo"
+                    disabled={disable || state.new_password1.value !== state.new_password2.value}
                     onClick={() => resetPassword()}
                   >
                     {requesting ? (
