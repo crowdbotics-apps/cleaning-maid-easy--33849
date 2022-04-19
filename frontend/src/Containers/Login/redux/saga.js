@@ -52,7 +52,7 @@ function* login({ data }) {
   } catch (e) {
     const { response } = e
     yield put(loginFaluire(response?.data?.non_field_errors[0]));
-    // toast.error('Someting wrong!');
+    toast.error(`${response?.data?.non_field_errors[0]}`);
   }
 }
 

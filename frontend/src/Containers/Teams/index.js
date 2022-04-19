@@ -87,7 +87,7 @@ function Teams(props) {
       mydiv[0].style.maxHeight = ""
       mydiv[0].style.overflowY = ""
     }
-  }, [teamData,unAssignedEmployees])
+  }, [teamData, unAssignedEmployees])
 
   const handlePageChange = page => {
     setCurrentPage(page)
@@ -169,7 +169,7 @@ function Teams(props) {
       .filter(v => v !== false)
 
     if (valueExists.includes(true)) {
-      props.removeTeamMember(data,currentpage)
+      props.removeTeamMember(data, currentpage)
     }
   }
 
@@ -194,7 +194,7 @@ function Teams(props) {
       .filter(v => v !== false)
 
     if (!valueExists.includes(true)) {
-      props.addTeamMember(data,currentpage)
+      props.addTeamMember(data, currentpage)
     }
   }
   return (
@@ -276,12 +276,12 @@ function Teams(props) {
                               style={styles.borderBottom}
                               className="text-center "
                             >
-                              <img
+                              {/* <img
                                 className="mr-3"
                                 style={styles.imgStyle}
                                 alt="..."
                                 src={require("assets/icons/pencil_btn.png")}
-                              />
+                              /> */}
                               {deleteRequesting && deleteId === item.id ? (
                                 <Spinner
                                   as="span"
@@ -311,42 +311,45 @@ function Teams(props) {
                                 onDrop={e => removeTeamOnDrop(e, "unAssign")}
                                 // className="draggable"
                               >
-                                <div style={{height: 222, overflowY: 'auto'}}>
-                                {unAssignedEmployees.results &&
-                                  unAssignedEmployees.results.map(items => (
-                                    <div>
-                                      <Button
-                                        style={styles.addBtn}
-                                        color="white"
-                                        title=""
-                                        type="button"
-                                        size="sm"
-                                        onDragStart={e =>
-                                          addTeamDrageStart(e, items.id)
-                                        }
-                                        draggable
-                                      >
-                                        {items.name}
-                                      </Button>
-                                    </div>
-                                  ))}
+                                <div style={{ height: 222, overflowY: "auto" }}>
+                                  {unAssignedEmployees.results &&
+                                    unAssignedEmployees.results.map(items => (
+                                      <div>
+                                        <Button
+                                          style={styles.addBtn}
+                                          color="white"
+                                          title=""
+                                          type="button"
+                                          size="sm"
+                                          onDragStart={e =>
+                                            addTeamDrageStart(e, items.id)
+                                          }
+                                          draggable
+                                        >
+                                          {items.name}
+                                        </Button>
+                                      </div>
+                                    ))}
+                                </div>
+                                {totalCount && (
+                                  <div className="pt-3 d-flex justify-content-center">
+                                    <Pagination
+                                      aria-label="Page navigation example"
+                                      itemClass="page-item"
+                                      linkClass="page-link"
+                                      prevPageText="<"
+                                      style={{ backgroundColor: "red" }}
+                                      nextPageText=">"
+                                      firstPageText="<<"
+                                      lastPageText=">>"
+                                      activePage={currentpage}
+                                      itemsCountPerPage={24}
+                                      pageRangeDisplayed={3}
+                                      totalItemsCount={totalCount && totalCount}
+                                      onChange={handlePageChange}
+                                    />
                                   </div>
-                                  {totalCount && (
-                                <Pagination
-                                  aria-label="Page navigation example"
-                                  itemClass="page-item"
-                                  linkClass="page-link"
-                                  prevPageText="<"
-                                  nextPageText=">"
-                                  firstPageText="<<"
-                                  lastPageText=">>"
-                                  activePage={currentpage}
-                                  itemsCountPerPage={24}
-                                  pageRangeDisplayed={3}
-                                  totalItemsCount={totalCount && totalCount}
-                                  onChange={handlePageChange}
-                                />
-                            )}
+                                )}
                               </td>
                             )}
                           </tr>
@@ -409,7 +412,7 @@ function Teams(props) {
                       />
                     </button>
                   </div>
-                  <div className="modal-body ">
+                  <div className="modal-body" style={{height:550, overflowY:'auto'}}>
                     <label>Team Name</label>
                     <Input
                       style={styles.inputTextStyle}
@@ -505,7 +508,7 @@ function Teams(props) {
                     style={{ justifyContent: "center" }}
                     className="modal-footer border-top-0 "
                   >
-                    <div>
+                    <div className="pt-2 pb-2">
                       <Button
                         style={{
                           background: "linear-gradient(#E6DE18, #438B44)",
@@ -591,7 +594,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 25,
-    alignItems: "center"
+    alignItems: "center",
   },
   checkBoxStyle: {
     width: 21,
@@ -634,8 +637,10 @@ const mapDispatchToProps = dispatch => ({
   createTeam: (data, setmodal) => dispatch(createTeam(data, setmodal)),
   deleteTeam: data => dispatch(deleteTeam(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  getUnAssignedEmployees: (index) => dispatch(getUnAssignedEmployees(index)),
-  removeTeamMember: (data,currentpage) => dispatch(removeTeamMember(data,currentpage)),
-  addTeamMember: (data,currentpage) => dispatch(addTeamMember(data,currentpage))
+  getUnAssignedEmployees: index => dispatch(getUnAssignedEmployees(index)),
+  removeTeamMember: (data, currentpage) =>
+    dispatch(removeTeamMember(data, currentpage)),
+  addTeamMember: (data, currentpage) =>
+    dispatch(addTeamMember(data, currentpage))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Teams)
