@@ -30,7 +30,7 @@ const routes = [
     layout: '/auth',
   },
   {
-    path: '/resetPassword',
+    path: '/set-new-password',
     name: 'ResetPassword',
     component: ResetPassword,
     layout: '/auth',

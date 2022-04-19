@@ -25,6 +25,7 @@ import { connect } from 'react-redux';
 import { forgetPasswordRequest,resetMsg} from '../ForgotPassword/redux/actions'
 import useForm from '../../utils/useForm';
 import validator from '../../utils/validation';
+import { Toaster } from "react-hot-toast"
 
 const ForgotPassword = (props) => {
     const { forgetPasswordRequest } = props
@@ -71,6 +72,9 @@ const ForgotPassword = (props) => {
     // [props.sucessMsg])
 
     return (
+        <>
+        <Toaster/>
+       
         <div className="login-page">
             <Container>
                 <Row>
@@ -95,15 +99,6 @@ const ForgotPassword = (props) => {
                                     <h2 className="header text-center font-weight-bold" style={{ color: '#0C4DA2' }}>Forgot Password</h2>
                                 </div>
                                 <p className="text-center" style={{ fontSize: 14, paddingBottom: 40 }}>Please enter your email address below and we will send you instructions to reset your password</p>
-                                {
-                                    props.error ?
-                                        <UncontrolledAlert color="danger" fade={false} toggle={changeMsgState}>
-                                            <span>
-                                                <b>Fail - </b>
-                                                {props.error}
-                                            </span>
-                                        </UncontrolledAlert> :''
-                                }
                                 <div>
                                     <label style={{ fontSize: 12, textTransform: 'uppercase' }}>Email</label>
                                     <FormGroup>
@@ -145,6 +140,7 @@ const ForgotPassword = (props) => {
                 }}
             />
         </div>
+        </>
     );
 }
 

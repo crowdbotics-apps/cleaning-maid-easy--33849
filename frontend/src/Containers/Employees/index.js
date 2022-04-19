@@ -765,7 +765,7 @@ const styles = {
     justifyContent: "center"
   },
   stylefootter: {
-    alignSelf: "end ",
+    alignSelf: "flex-end",
     marginBottom: 33
   },
   modalImg: {
