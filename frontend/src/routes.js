@@ -14,6 +14,7 @@ import PrivacyPolicy from 'Containers/PrivacyPolicy'
 import TermsConditions from 'Containers/TermsConditions'
 import Notification from 'Containers/Notifications'
 import PendingServices from 'Containers/PendingServices'
+import Logout from './Containers/Logout/index'
 
 
 const routes = [
@@ -120,6 +121,14 @@ const routes = [
     name: 'Notification',
     icon: 'fa fa-bell-o',
     component: Notification,
+    layout: '/admin',
+    isShow: 1,
+  },
+  {
+    path: '/logout',
+    name: 'Logout',
+    icon: 'fa fa-sign-out',
+    component: Logout,
     layout: '/admin',
     isShow: 1,
   },
