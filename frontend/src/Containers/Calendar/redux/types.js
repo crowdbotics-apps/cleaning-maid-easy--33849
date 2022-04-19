@@ -7,6 +7,9 @@ export const ADD_NOTES = 'Calendar/ADD_NOTES';
 export const UPDATE_NOTES = 'Calendar/UPDATE_NOTES';
 export const GET_NOTES = 'Calendar/GET_NOTES';
 export const GET_NOTES_SUCCESS = 'Calendar/GET_NOTES_SUCCESS';
+export const EDIT_APPOINTMENT_CAL = 'Calendar/EDIT_APPOINTMENT_CAL';
+
+
 
 export const RESET = 'Calendar/RESET';
 

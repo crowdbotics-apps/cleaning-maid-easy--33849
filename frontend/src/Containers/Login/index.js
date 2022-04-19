@@ -95,20 +95,6 @@ const Login = props => {
                     Sign In
                   </h2>
                 </div>
-                {props.error ? (
-                  <UncontrolledAlert
-                    color="danger"
-                    toggle={changeMsgState}
-                    fade={false}
-                  >
-                    <span>
-                      <b>Fail - </b>
-                      {props.error}
-                    </span>
-                  </UncontrolledAlert>
-                ) : (
-                  ""
-                )}
                 <div>
                   <label style={{ fontSize: 12, textTransform: "uppercase" }}>
                     Email

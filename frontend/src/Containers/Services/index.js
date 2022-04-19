@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
 import { connect } from "react-redux"
 import { Toaster } from "react-hot-toast"
@@ -12,7 +12,9 @@ import {
   getServices,
   addServices,
   addServicesFailure,
-  renderHtmlText
+  renderHtmlText,
+  editServices,
+  deleteServices
 } from "./redux/actions"
 
 // reactstrap components
@@ -39,7 +41,7 @@ import {
 import { reduceEachLeadingCommentRange } from "typescript"
 
 const Services = props => {
-  const { servicesData, requesting, servicesError } = props
+  const { servicesData, requesting, servicesError, deleteRequesting } = props
 
   useEffect(() => {
     props.getServices()
@@ -56,7 +58,9 @@ const Services = props => {
     }
   }, [servicesData])
 
-  const [modal, setModal] = React.useState(false)
+  const [modal, setModal] = useState(false)
+  const [editValues, setEditValues] = useState(false)
+  const [deleteId, setDeleteId] = useState(false)
 
   const stateSchema = {
     serviceName: {
@@ -85,23 +89,52 @@ const Services = props => {
     }
   }
 
-  const { state, handleOnChange, disable } = useForm(
+  useEffect(() => {
+    if (editValues) {
+      handleOnChange("serviceName", editValues.name)
+      handleOnChange("serviceDescription", editValues.description)
+      handleOnChange("servicePrice", editValues.price)
+    }
+  }, [editValues])
+
+  const { state, handleOnChange, setState, disable } = useForm(
     stateSchema,
     validationStateSchema
   )
 
   // Toggle for Modal
-  const toggle = () => {
+  const addNewService = () => {
     const apidata = {
       name: state.serviceName.value,
       description: state.serviceDescription.value,
       price: state.servicePrice.value
     }
-    props.addServices(apidata, setModal)
+    props.addServices(apidata, closeModal)
   }
 
   const closeModal = () => {
     setModal(!modal)
+    setState(stateSchema)
+    setEditValues(false)
+  }
+
+  const editServiceData = item => {
+    setEditValues(item)
+    setModal(true)
+  }
+
+  const updateService = () => {
+    const apidata = {
+      name: state.serviceName.value,
+      description: state.serviceDescription.value,
+      price: state.servicePrice.value
+    }
+    props.editServices(apidata, editValues.id, closeModal)
+  }
+
+  const deleteService=(id)=>{
+    props.deleteServices(id)
+    setDeleteId(id)
   }
 
   return (
@@ -137,7 +170,7 @@ const Services = props => {
               </button>
               <div>
                 <label className="mt-5" style={styles.titleTextStyle}>
-                  Add Service
+                  {editValues ? "Update Service" : "Add Service"}
                 </label>
               </div>
             </div>
@@ -146,6 +179,7 @@ const Services = props => {
               <Input
                 style={styles.inputTextStyle}
                 className="border-0 pl-0"
+                value={state.serviceName.value}
                 onChange={e => handleOnChange("serviceName", e.target.value)}
               />
               <div style={styles.inputLineStyle} />
@@ -157,6 +191,7 @@ const Services = props => {
                 <Input
                   style={styles.inputTextStyle}
                   className="border-0 pl-0"
+                  value={state.serviceDescription.value}
                   onChange={e =>
                     handleOnChange("serviceDescription", e.target.value)
                   }
@@ -173,6 +208,7 @@ const Services = props => {
                 <label style={styles.labelTextStyle}>Service Price</label>
                 <Input
                   style={styles.inputTextStyle}
+                  value={state.servicePrice.value}
                   className="border-0 pl-0"
                   onChange={e => handleOnChange("servicePrice", e.target.value)}
                 />
@@ -187,7 +223,7 @@ const Services = props => {
             <Button
               className="mb-3"
               style={styles.btnTextStyle}
-              onClick={toggle}
+              onClick={() => (editValues ? updateService() : addNewService())}
               disabled={disable}
             >
               {requesting ? (
@@ -198,6 +234,8 @@ const Services = props => {
                   role="status"
                   aria-hidden="true"
                 />
+              ) : editValues ? (
+                "Update Service"
               ) : (
                 "Save Service"
               )}
@@ -230,19 +268,49 @@ const Services = props => {
                       servicesData.map((item, i) => (
                         <tr>
                           <td style={styles.tdataText1}>{i + 1}.</td>
-                          <td style={styles.tdataText2}>{item.name}</td>
+                          <td
+                            style={styles.tdataText2}
+                          >
+                            {item.name}
+                          </td>
                           <td style={styles.tdataText}>{item.description}</td>
                           <td style={styles.tdataText}>{item.price}</td>
                           <td className="text-right">
+                          {/* <div className="pr-2"> */}
+                                <Button
+                                  className="btn-icon btn-neutral"
+                                  size="sm"
+                                  onClick={() => editServiceData(item)}
+                                  type="button"
+                                >
+                                  <img
+                                    alt="..."
+                                    src={require("assets/icons/pencil_btn.png")}
+                                  />
+                                </Button>
+                              {/* </div> */}
+
                             <Button
                               className="btn-icon btn-neutral"
                               size="sm"
                               type="button"
+                              
                             >
-                              <img
-                                alt="..."
-                                src={require("assets/images/delete_btn.png")}
-                              />
+                              {deleteRequesting && deleteId===item.id ? (
+                                <Spinner
+                                  as="span"
+                                  animation="border"
+                                  size="sm"
+                                  role="status"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <img
+                                  alt="..."
+                                  onClick={()=>deleteService(item.id)}
+                                  src={require("assets/images/delete_btn.png")}
+                                />
+                              )}
                             </Button>
                           </td>
                         </tr>
@@ -293,14 +361,18 @@ const Services = props => {
 const mapStateToProps = state => ({
   requesting: state.services.requesting,
   servicesData: state.services.servicesData,
-  servicesError: state.services.servicesError
+  servicesError: state.services.servicesError,
+  deleteRequesting: state.services.deleteRequesting
 })
 
 const mapDispatchToProps = dispatch => ({
   getServices: () => dispatch(getServices()),
-  addServices: (data, setModal) => dispatch(addServices(data, setModal)),
+  addServices: (data, closeModal) => dispatch(addServices(data, closeModal)),
   addServicesFailure: data => dispatch(addServicesFailure(data)),
-  renderHtmlText: data => dispatch(renderHtmlText(data))
+  renderHtmlText: data => dispatch(renderHtmlText(data)),
+  editServices: (data, id, closeModal) =>
+    dispatch(editServices(data, id, closeModal)),
+    deleteServices: (id) => dispatch(deleteServices(id))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Services)
 
@@ -343,7 +415,7 @@ const styles = {
   },
   tdataText2: {
     fontSize: 14,
-    fontWeight: "600"
+    fontWeight: "600",
   },
   tdataText: {
     fontSize: 12,

@@ -458,8 +458,8 @@ const PendingServices = props => {
                         >
                           <td style={styles.tdataText1}>{i + 1}.</td>
                           <td style={styles.tdataText2}>{item.title}</td>
-                          <td style={styles.tdataText}>{item.description}</td>
-                          <td style={styles.tdataText}>{item.service.name}</td>
+                          <td style={styles.tdataText}>{item?.description}</td>
+                          <td style={styles.tdataText}>{item?.service?.name}</td>
                         </tr>
                       ))
                     )}

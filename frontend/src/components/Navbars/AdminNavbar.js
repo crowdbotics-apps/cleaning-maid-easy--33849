@@ -28,6 +28,7 @@ import {
   InputGroupAddon,
   InputGroupText,
   InputGroup,
+  Col,
   NavbarBrand,
   Navbar,
   NavItem,
@@ -38,6 +39,7 @@ import {
 } from "reactstrap"
 import { connect } from "react-redux"
 import moment from "moment"
+import '../Navbars/styles.css'
 
 import {
   getDayAcceptedAppointments,
@@ -103,7 +105,10 @@ class AdminNavbar extends React.Component {
   CustomToolbar = () => {
     const toolbar = this.props?.htmlText.toolbar
     const setViewState = this.props?.htmlText.setViewState
-    sessionStorage.setItem("date", JSON.stringify(toolbar.date))
+    sessionStorage.setItem(
+      "date",
+      JSON.stringify(moment(toolbar?.date).format("YYYY-MM-DD"))
+    )
     const goToDayView = () => {
       toolbar.onView("day")
       setViewState(1)
@@ -151,8 +156,7 @@ class AdminNavbar extends React.Component {
         newDate = new Date(mDate.getFullYear(), mDate.getMonth() - 1, 1)
         const startOfMonth = moment(newDate).startOf("month")
         const endOfMonth = moment(newDate).endOf("month")
-        const startDate = moment(startOfMonth)
-          .format("YYYY-MM-DD")
+        const startDate = moment(startOfMonth).format("YYYY-MM-DD")
         const endDate = moment(endOfMonth).format("YYYY-MM-DD")
         this.props.getMonthAcceptedAppointments(startDate, endDate)
       } else if (view === 2) {
@@ -241,49 +245,59 @@ class AdminNavbar extends React.Component {
     return (
       <div>
         <Row style={{ display: "flex", alignItems: "center" }}>
-          <button style={styles.arrowStyle} onClick={goToBack}>
-            <img alt="..." src={require("assets/icons/caretLeft.png")} />
-          </button>
+          <Col md={12} className={"d-flex flex-wrap justify-content-between"}>
+            <div className="d-flex flex-wrap ">
+            <div>
+              <button style={styles.arrowStyle} onClick={goToBack}>
+                <img alt="..." src={require("assets/icons/caretLeft.png")} />
+              </button>
+              <button style={styles.arrowStyle} onClick={goToNext}>
+                <img alt="..." src={require("assets/icons/caretRight.png")} />
+              </button>
 
-          <button style={styles.arrowStyle} onClick={goToNext}>
-            <img alt="..." src={require("assets/icons/caretRight.png")} />
-          </button>
-          <label style={styles.monthLabel}>{label()}</label>
-          <div style={styles.toolbarStyle}>
-            <Button
-              style={
-                this.state.viewState === 1
-                  ? styles.btnStyle
-                  : styles.btnWrapperStyle
-              }
-              onClick={goToDayView}
-            >
-              <span>Day</span>
+              <label style={styles.monthLabel}>{label()}</label>
+            </div>
+            {/* <div className="d-flex flex-wrap" style={{gap:100}}> */}
+            <div style={styles.toolbarStyle}>
+              <Button
+                style={
+                  this.state.viewState === 1
+                    ? styles.btnStyle
+                    : styles.btnWrapperStyle
+                }
+                onClick={goToDayView}
+              >
+                <span>Day</span>
+              </Button>
+              <Button
+                style={
+                  this.state.viewState === 2
+                    ? styles.btnStyle
+                    : styles.btnWrapperStyle
+                }
+                onClick={goToWeekView}
+              >
+                <span>Week</span>
+              </Button>
+              <Button
+                style={
+                  this.state.viewState === 3
+                    ? styles.btnStyle
+                    : styles.btnWrapperStyle
+                }
+                onClick={goToMonthView}
+              >
+                <span>Month</span>
+              </Button>
+            </div>
+            </div>
+          <div>
+            <Button onClick={() => setModal(true)} style={styles.addBtnText}>
+              Add Service
             </Button>
-            <Button
-              style={
-                this.state.viewState === 2
-                  ? styles.btnStyle
-                  : styles.btnWrapperStyle
-              }
-              onClick={goToWeekView}
-            >
-              <span>Week</span>
-            </Button>
-            <Button
-              style={
-                this.state.viewState === 3
-                  ? styles.btnStyle
-                  : styles.btnWrapperStyle
-              }
-              onClick={goToMonthView}
-            >
-              <span>Month</span>
-            </Button>
-          </div>
-          <Button onClick={() => setModal(true)} style={styles.addBtnText}>
-            Add Service
-          </Button>
+            </div>
+            {/* </div> */}
+          </Col>
         </Row>
       </div>
     )
@@ -328,7 +342,7 @@ class AdminNavbar extends React.Component {
                   <span className="navbar-toggler-bar bar3" />
                 </button>
               </div>
-              <NavbarBrand>
+              <NavbarBrand className='w-100'>
                 {this.props?.htmlText?.toolbar ? (
                   this.CustomToolbar()
                 ) : this.props.htmlText.length ? (
@@ -343,7 +357,9 @@ class AdminNavbar extends React.Component {
                     }}
                     dangerouslySetInnerHTML={{ __html: this.props.htmlText }}
                   />
-                ):''}
+                ) : (
+                  ""
+                )}
 
                 {/* <span
                   className="d-md-block"
@@ -359,11 +375,11 @@ class AdminNavbar extends React.Component {
               </NavbarBrand>
             </div>
 
-            {/* <Collapse
+            <Collapse
               className="justify-content-end"
               navbar
-              isOpen={this.state.collapseOpen}
-            > */}
+              // isOpen={this.state.collapseOpen}
+            >
 
             <Nav navbar>
               <NavItem>
@@ -376,7 +392,7 @@ class AdminNavbar extends React.Component {
                 </NavLink>
               </NavItem>
             </Nav>
-            {/* </Collapse> */}
+            </Collapse>
           </Container>
         </Navbar>
       </>
@@ -404,8 +420,8 @@ const styles = {
   addBtnText: {
     background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%)",
     fontWeight: "bold",
-    fontSize: 17,
-    marginLeft: 200
+    fontSize: 17
+    // marginLeft: 200
   },
   btnStyle: {
     background:

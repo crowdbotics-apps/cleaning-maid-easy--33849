@@ -8,7 +8,7 @@ import { connect } from "react-redux"
 import { uploadImage } from "../../Containers/Profile/redux/actions"
 
 function UserProfile(props) {
-  const { userInfoData } = props
+  const { userInfoData ,userName} = props
 
   const [userInfo, setUserInfo] = useState(false)
   const [previewImage, setPreviewImage] = useState(false)
@@ -51,35 +51,19 @@ function UserProfile(props) {
 
   return (
     <div>
-      {/* <NavLink
-        to="/admin/profile"
-        activeClassName=""
-        style={{ display: "contents" }}
-      >
-        <div>
-          <img
-            className="photo"
-            src={userInfoData ? userInfoData.profile_picture : userInfo ? userInfo.profile_picture : avatar}
-          />
-        </div>
-
-        <div className="info">
-          <a
-            data-toggle="collapse"
-            // aria-expanded={this.state.openAvatar}
-            // onClick={() =>
-            //   this.setState({ openAvatar: !this.state.openAvatar })
-            // }
-          >
-            <span style={styles.textStyle}>
-              {!document.body.classList.contains("sidebar-mini")
-                ?userInfoData? `${userInfoData.name}`: userInfo ? `${userInfo.name}` : "User Name"
-                : ""}
-            </span>
-          </a>
-        </div>
-      </NavLink> */}
-      <span style={styles.uploadText}>
+{/* userName?.length */}
+      <span style={{
+         fontSize: 8,
+         color: "#034EA2",
+         fontWeight: "600",
+         // marginLeft: 5,
+         display: "block",
+         backgroundColor: "white",
+         // overflow: 'hidden',
+         paddingTop: userName?.length===null || userName?.length===0? 25 :5,
+         border: 0,
+         outline: "none"
+      }}>
         <div className="fileinput text-center">
           <form encType="multipart/form-data">
             <input

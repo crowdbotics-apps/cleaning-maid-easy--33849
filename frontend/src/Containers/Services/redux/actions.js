@@ -4,35 +4,47 @@ import {
   ADD_SERVICES,
   ADD_SERVICES_FAILURE,
   RESET,
-  RENDER_HTML_TEXT
-} from './types';
+  RENDER_HTML_TEXT,
+  EDIT_SERVICES,
+  DELETE_SERVICES
+} from "./types"
 
-export const  getServices= () => ({
-  type: GET_SERVICES,
-});
+export const getServices = () => ({
+  type: GET_SERVICES
+})
 
-export const getServicesSuccess = (data) => ({
+export const getServicesSuccess = data => ({
   type: GET_SERVICES_SUCCESS,
-  data,
-});
+  data
+})
 
-export const addServices = (data, setModal) => ({
+export const addServices = (data, closeModal) => ({
   type: ADD_SERVICES,
   data,
-  setModal
-});
+  closeModal
+})
+export const editServices = (data, id, closeModal) => ({
+  type: EDIT_SERVICES,
+  data,
+  id,
+  closeModal
+})
 
-export const addServicesFailure = (data) => ({
+export const deleteServices = id => ({
+  type: DELETE_SERVICES,
+  id
+})
+
+export const addServicesFailure = data => ({
   type: ADD_SERVICES_FAILURE,
-  data,
-});
+  data
+})
 
-export const renderHtmlText = (data) => ({
+export const renderHtmlText = data => ({
   type: RENDER_HTML_TEXT,
-  data,
-});
+  data
+})
 
 export const resetServices = () => ({
   type: RESET
-});
-
+})

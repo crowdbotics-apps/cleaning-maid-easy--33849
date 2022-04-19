@@ -4,13 +4,16 @@ import {
   ADD_SERVICES_FAILURE,
   ADD_SERVICES,
   RENDER_HTML_TEXT,
-  RESET
+  RESET,
+  EDIT_SERVICES,
+  DELETE_SERVICES
 } from "./types"
 
 const initialState = {
   requesting: false,
   servicesData: false,
   servicesError: false,
+  deleteRequesting: false,
   htmlText: false
 }
 
@@ -18,9 +21,15 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case GET_SERVICES:
     case ADD_SERVICES:
+    case EDIT_SERVICES:
       return {
         ...state,
         requesting: true
+      }
+    case DELETE_SERVICES:
+      return {
+        ...state,
+        deleteRequesting: true
       }
 
     case GET_SERVICES_SUCCESS:
@@ -28,7 +37,8 @@ export default (state = initialState, action) => {
         ...state,
         requesting: false,
         servicesData: action.data,
-        servicesError:false
+        servicesError: false,
+        deleteRequesting: false
       }
     case ADD_SERVICES_FAILURE:
       return {
@@ -36,6 +46,7 @@ export default (state = initialState, action) => {
         requesting: false,
         servicesError: action.data
       }
+
     case RENDER_HTML_TEXT:
       return {
         ...state,
