@@ -894,20 +894,22 @@ const Calendar = props => {
                               )}
                             </div>
                             {totalCount && (
-                              <Pagination
-                                aria-label="Page navigation example"
-                                itemClass="page-item"
-                                linkClass="page-link"
-                                prevPageText="<"
-                                nextPageText=">"
-                                firstPageText="<<"
-                                lastPageText=">>"
-                                activePage={currentpage}
-                                itemsCountPerPage={24}
-                                pageRangeDisplayed={2}
-                                totalItemsCount={totalCount && totalCount}
-                                onChange={handlePageChange}
-                              />
+                              <div className="pt-3 d-flex justify-content-center">
+                                <Pagination
+                                  aria-label="Page navigation example"
+                                  itemClass="page-item"
+                                  linkClass="page-link"
+                                  prevPageText="<"
+                                  nextPageText=">"
+                                  firstPageText="<<"
+                                  lastPageText=">>"
+                                  activePage={currentpage}
+                                  itemsCountPerPage={24}
+                                  pageRangeDisplayed={2}
+                                  totalItemsCount={totalCount && totalCount}
+                                  onChange={handlePageChange}
+                                />
+                              </div>
                             )}
                             <div
                               className="text-center"
@@ -994,22 +996,24 @@ const Calendar = props => {
                               )}
                             </div>
                             {totalPendingCount && (
-                              <Pagination
-                                aria-label="Page navigation example"
-                                itemClass="page-item"
-                                linkClass="page-link"
-                                prevPageText="<"
-                                nextPageText=">"
-                                firstPageText="<<"
-                                lastPageText=">>"
-                                activePage={currentPendingPage}
-                                itemsCountPerPage={24}
-                                pageRangeDisplayed={2}
-                                totalItemsCount={
-                                  totalPendingCount && totalPendingCount
-                                }
-                                onChange={handlePendingPageChange}
-                              />
+                              <div className="pt-3 d-flex justify-content-center">
+                                <Pagination
+                                  aria-label="Page navigation example"
+                                  itemClass="page-item"
+                                  linkClass="page-link"
+                                  prevPageText="<"
+                                  nextPageText=">"
+                                  firstPageText="<<"
+                                  lastPageText=">>"
+                                  activePage={currentPendingPage}
+                                  itemsCountPerPage={24}
+                                  pageRangeDisplayed={2}
+                                  totalItemsCount={
+                                    totalPendingCount && totalPendingCount
+                                  }
+                                  onChange={handlePendingPageChange}
+                                />
+                              </div>
                             )}
                           </div>
                         </th>
@@ -1840,22 +1844,24 @@ const Calendar = props => {
                                         )}
                                     </div>
                                     {totalCount && (
-                                      <Pagination
-                                        aria-label="Page navigation example"
-                                        itemClass="page-item"
-                                        linkClass="page-link"
-                                        prevPageText="<"
-                                        nextPageText=">"
-                                        firstPageText="<<"
-                                        lastPageText=">>"
-                                        activePage={currentpage}
-                                        itemsCountPerPage={24}
-                                        pageRangeDisplayed={3}
-                                        totalItemsCount={
-                                          totalCount && totalCount
-                                        }
-                                        onChange={handlePageChange}
-                                      />
+                                      <div className="pt-3 d-flex justify-content-center">
+                                        <Pagination
+                                          aria-label="Page navigation example"
+                                          itemClass="page-item"
+                                          linkClass="page-link"
+                                          prevPageText="<"
+                                          nextPageText=">"
+                                          firstPageText="<<"
+                                          lastPageText=">>"
+                                          activePage={currentpage}
+                                          itemsCountPerPage={24}
+                                          pageRangeDisplayed={3}
+                                          totalItemsCount={
+                                            totalCount && totalCount
+                                          }
+                                          onChange={handlePageChange}
+                                        />
+                                      </div>
                                     )}
                                   </td>
                                 )}

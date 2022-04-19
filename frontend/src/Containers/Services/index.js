@@ -269,7 +269,6 @@ const Services = props => {
                         <tr>
                           <td style={styles.tdataText1}>{i + 1}.</td>
                           <td
-                            onClick={() => editServiceData(item)}
                             style={styles.tdataText2}
                           >
                             {item.name}
@@ -277,6 +276,20 @@ const Services = props => {
                           <td style={styles.tdataText}>{item.description}</td>
                           <td style={styles.tdataText}>{item.price}</td>
                           <td className="text-right">
+                          {/* <div className="pr-2"> */}
+                                <Button
+                                  className="btn-icon btn-neutral"
+                                  size="sm"
+                                  onClick={() => editServiceData(item)}
+                                  type="button"
+                                >
+                                  <img
+                                    alt="..."
+                                    src={require("assets/icons/pencil_btn.png")}
+                                  />
+                                </Button>
+                              {/* </div> */}
+
                             <Button
                               className="btn-icon btn-neutral"
                               size="sm"
@@ -403,7 +416,6 @@ const styles = {
   tdataText2: {
     fontSize: 14,
     fontWeight: "600",
-    cursor: "pointer"
   },
   tdataText: {
     fontSize: 12,
