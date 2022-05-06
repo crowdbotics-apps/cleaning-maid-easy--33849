@@ -72,6 +72,7 @@ function ScheduleService(props) {
   //StatesForTimePicker
   const [fromTime, setFromTime] = useState('-1:00')
   const [toTime, setToTime] = useState('-1:00')
+  
 
   const [appointmentData, setAppoinmentData] = useState({
     appointment_date: new Date()
@@ -115,14 +116,13 @@ function ScheduleService(props) {
 
   const validationStateSchema = {
     price: {
-      required: true,
-      validator: validator.numeric
+      required: false,
     },
     description: {
-      required: true
+      required: false
     },
     notes: {
-      required: true
+      required: false
     },
     title: {
       required: true
@@ -132,7 +132,7 @@ function ScheduleService(props) {
       validator: validator.numeric
     },
     client_address:{
-      required: true,
+      required: false,
     }
   }
 
@@ -294,18 +294,17 @@ function ScheduleService(props) {
                     <img
                       // alt="..."
                       src={locationImage}
-                      style={{ marginRight: 10 }}
+                      style={{ marginRight: 10, paddingBottom:10 }}
                     />
                    <Input
                         style={styles.inputStyle}
                         className="border-top-0 border-right-0 border-left-0 p-0"
-                        onChange={e => handleOnChange("client_address", e.target.value)}
+                        // onChange={e => handleOnChange("client_address", e.target.value)}
+                        disabled
                         value={state.client_address.value}
                       />
                   </div>
-                  <label style={{ color: "red" }}>
-                        {state.client_address.error ? state.client_address.error : null}
-                      </label>
+           
                   {/* <div
                     className="mt-4 d-flex"
                     style={{
@@ -339,10 +338,12 @@ function ScheduleService(props) {
                         name="singleSelect"
                         options={
                           customers?.length &&
-                          customers?.map(item => ({
+                          customers?.map(item => 
+                            ({
                             label: item.name,
-                            value: item.id
-                          }))
+                            value: item.id,
+                          })
+                          )
                         }
                         onChange={e => onSave("client_id", e.value)}
                         placeholder="Select Customer"
@@ -406,10 +407,14 @@ function ScheduleService(props) {
                           servicesData &&
                           servicesData.map(item => ({
                             label: item.name,
-                            value: item.id
+                            value: item.id,
+                            price:item.price
                           }))
                         }
-                        onChange={e => onSave("service_id", e.value)}
+                        onChange={e => {
+                          onSave("service_id", e.value);
+                          handleOnChange("price", e.price);
+                        }}
                         placeholder="Single Select"
                       />
                     </Col>
@@ -437,14 +442,10 @@ function ScheduleService(props) {
                     <label style={styles.labelFont}>Price</label>
                     <Input
                       style={styles.inputStyle}
+                      disabled
                       className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
-                      onChange={e => handleOnChange("price", e.target.value)}
                       value={state.price.value}
                     />
-
-                    <label style={{ color: "red" }}>
-                      {state.price.error ? state.price.error : null}
-                    </label>
                   </div>
                 </Col>
                 <Col lg="1"></Col>
@@ -463,11 +464,6 @@ function ScheduleService(props) {
                           handleOnChange("description", val.target.value)
                         }
                       />
-                      {state.description.error && (
-                        <label style={{ color: "red" }}>
-                          {state.description.error}
-                        </label>
-                      )}
                     </FormGroup>
                   </div>
                   <div>
@@ -484,11 +480,6 @@ function ScheduleService(props) {
                           handleOnChange("notes", val.target.value)
                         }
                       />
-                      {state.notes.error && (
-                        <label style={{ color: "red" }}>
-                          {state.notes.error}
-                        </label>
-                      )}
                     </FormGroup>
                   </div>
                 </Col>

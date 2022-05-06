@@ -196,7 +196,7 @@ const PendingServices = props => {
                   ></i>
                   <label style={styles.inputStyle}>
                     {moment(pendingDetails?.appointment_date).format(
-                      "d MMMM yyy"
+                      "LL"
                     )}
                   </label>
                 </div>
@@ -292,7 +292,7 @@ const PendingServices = props => {
                   style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
                   value={{
                     value: pendingDetails?.service?.id,
-                    label: pendingDetails?.service?.name
+                    label: pendingDetails?.service?.name,
                   }}
                   placeholder="Single Select"
                 />
