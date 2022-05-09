@@ -44,7 +44,7 @@ import { getAllCustomers } from "../Customers/redux/actions"
 
 //Images
 import locationImage from "../../assets/icons/mapPin.png"
-import calenderImage from "../../assets/icons/calendar.png"
+import calenderImage from "../../assets/icons/Calendar.png"
 import clockImage from "../../assets/icons/Clock.png"
 
 function ScheduleService(props) {
