@@ -132,7 +132,7 @@ const Customers = props => {
       validator: validator.email
     },
     company_name: {
-      required: true
+      required: false
     },
     phone_number: {
       required: true,
@@ -149,7 +149,7 @@ const Customers = props => {
       required: true
     },
     other: {
-      required: true
+      required: false
     },
     freq_id: {
       required: true
@@ -289,18 +289,13 @@ const Customers = props => {
               </div>
 
               <div className="mt-4">
-                <label style={styles.labelTextStyle}>Company Name*</label>
+                <label style={styles.labelTextStyle}>Company Name</label>
                 <Input
                   style={styles.inputTextStyle}
                   className="border-0 pl-0"
                   onChange={e => handleOnChange("company_name", e.target.value)}
                 />
                 <div style={styles.inputLineStyle} />
-                {state.company_name.error && (
-                  <label style={{ color: "red" }}>
-                    {state.company_name.error}
-                  </label>
-                )}
               </div>
               <div className="mt-4">
                 <label style={styles.labelTextStyle}>Phone Number*</label>
@@ -381,9 +376,6 @@ const Customers = props => {
                   onChange={e => handleOnChange("other", e.target.value)}
                 />
                 <div style={styles.inputLineStyle} />
-                {state.other.error && (
-                  <label style={{ color: "red" }}>{state.other.error}</label>
-                )}
               </div>
 
               <div className="mt-4">

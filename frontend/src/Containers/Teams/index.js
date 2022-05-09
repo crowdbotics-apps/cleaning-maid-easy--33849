@@ -20,8 +20,10 @@ import {
 import CardFooter from "reactstrap/lib/CardFooter"
 
 import { Toaster } from "react-hot-toast"
+import Pagination from "react-js-pagination"
 
 //Actions
+
 import {
   getTeam,
   getEmployees,
@@ -51,6 +53,8 @@ function Teams(props) {
   const [modal, setmodal] = useState(false)
   const [teamName, setTeamName] = useState(false)
   const [nameError, setNameError] = useState(false)
+  const [currentpage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(false)
 
   const UnAssignedTeamRef = useRef()
   const toggle = () => {
@@ -67,12 +71,13 @@ function Teams(props) {
   useEffect(() => {
     props.getTeam()
     props.renderHtmlText("Teams")
-    props.getUnAssignedEmployees()
+    props.getUnAssignedEmployees(currentpage)
     props.getEmployees()
   }, [])
 
   useEffect(() => {
     if (teamData.length) {
+      setTotalCount(unAssignedEmployees.count)
       filterTeam()
       let mydiv = document.getElementsByClassName("table-responsive-lg")
       mydiv[0].style.maxHeight = "600px"
@@ -82,17 +87,12 @@ function Teams(props) {
       mydiv[0].style.maxHeight = ""
       mydiv[0].style.overflowY = ""
     }
-  }, [teamData])
+  }, [teamData, unAssignedEmployees])
 
-  const arrayData = [
-    { image: require("assets/img/mike.jpg"), name: "muddasir", id: 1 },
-    { image: require("assets/img/mike.jpg"), name: "babur", id: 2 },
-    { image: require("assets/img/mike.jpg"), name: "subhan", id: 3 },
-    { image: require("assets/img/mike.jpg"), name: "mutasim", id: 4 },
-    { image: require("assets/img/mike.jpg"), name: "ali", id: 5 },
-    { image: require("assets/img/mike.jpg"), name: "furqan", id: 6 },
-    { image: require("assets/img/mike.jpg"), name: "etc", id: 7 }
-  ]
+  const handlePageChange = page => {
+    setCurrentPage(page)
+    props.getUnAssignedEmployees(page)
+  }
 
   const filterTeam = memberId => {
     return (
@@ -113,8 +113,8 @@ function Teams(props) {
 
   const filterData = () => {
     let filterData =
-      employeesData &&
-      employeesData.filter(item =>
+    unAssignedEmployees?.results &&
+      unAssignedEmployees.results .filter(item =>
         item.name.toLowerCase().includes(searchData.toLowerCase())
       )
     return filterData
@@ -169,7 +169,7 @@ function Teams(props) {
       .filter(v => v !== false)
 
     if (valueExists.includes(true)) {
-      props.removeTeamMember(data)
+      props.removeTeamMember(data, currentpage)
     }
   }
 
@@ -193,8 +193,8 @@ function Teams(props) {
       .apply([], filterTeam(memberId))
       .filter(v => v !== false)
 
-    if (!valueExists.includes(true)) {
-      props.addTeamMember(data)
+    if (valueExists.includes(true)) {
+      props.addTeamMember(data, currentpage)
     }
   }
   return (
@@ -239,7 +239,7 @@ function Teams(props) {
                               {item.title}
                             </td>
                             <td
-                              style={{ width: "52%", borderLeft: "" }}
+                              style={{ width: "52%", borderLeft: ""}}
                               className="task-header"
                               onDragOver={e => addTeamDrageOver(e)}
                               onDrop={e => addTeamOnDrop(e, item.id, "items")}
@@ -276,12 +276,12 @@ function Teams(props) {
                               style={styles.borderBottom}
                               className="text-center "
                             >
-                              <img
+                              {/* <img
                                 className="mr-3"
                                 style={styles.imgStyle}
                                 alt="..."
                                 src={require("assets/icons/pencil_btn.png")}
-                              />
+                              /> */}
                               {deleteRequesting && deleteId === item.id ? (
                                 <Spinner
                                   as="span"
@@ -303,7 +303,7 @@ function Teams(props) {
                             {!index && (
                               <td
                                 ref={UnAssignedTeamRef}
-                                rowSpan="7"
+                                rowSpan="23"
                                 style={{
                                   borderLeft: "1px solid rgb(212, 212, 212)"
                                 }}
@@ -311,24 +311,45 @@ function Teams(props) {
                                 onDrop={e => removeTeamOnDrop(e, "unAssign")}
                                 // className="draggable"
                               >
-                                {unAssignedEmployees &&
-                                  unAssignedEmployees.map(items => (
-                                    <div>
-                                      <Button
-                                        style={styles.addBtn}
-                                        color="white"
-                                        title=""
-                                        type="button"
-                                        size="sm"
-                                        onDragStart={e =>
-                                          addTeamDrageStart(e, items.id)
-                                        }
-                                        draggable
-                                      >
-                                        {items.name}
-                                      </Button>
-                                    </div>
-                                  ))}
+                                <div style={{ height: 222, overflowY: "auto", }}>
+                                  {unAssignedEmployees.results &&
+                                    unAssignedEmployees.results.map(items => (
+                                      <div>
+                                        <Button
+                                          style={styles.addBtn}
+                                          color="white"
+                                          title=""
+                                          type="button"
+                                          size="sm"
+                                          onDragStart={e =>
+                                            addTeamDrageStart(e, items.id)
+                                          }
+                                          draggable
+                                        >
+                                          {items.name}
+                                        </Button>
+                                      </div>
+                                    ))}
+                                </div>
+                                {totalCount && (
+                                  <div className="pt-3 d-flex justify-content-center">
+                                    <Pagination
+                                      aria-label="Page navigation example"
+                                      itemClass="page-item"
+                                      linkClass="page-link"
+                                      prevPageText="<"
+                                      style={{ backgroundColor: "red" }}
+                                      nextPageText=">"
+                                      firstPageText="<<"
+                                      lastPageText=">>"
+                                      activePage={currentpage}
+                                      itemsCountPerPage={24}
+                                      pageRangeDisplayed={3}
+                                      totalItemsCount={totalCount && totalCount}
+                                      onChange={handlePageChange}
+                                    />
+                                  </div>
+                                )}
                               </td>
                             )}
                           </tr>
@@ -391,7 +412,7 @@ function Teams(props) {
                       />
                     </button>
                   </div>
-                  <div className="modal-body ">
+                  <div className="modal-body" style={{height:550, overflowY:'auto'}}>
                     <label>Team Name</label>
                     <Input
                       style={styles.inputTextStyle}
@@ -420,11 +441,11 @@ function Teams(props) {
                         ]}
                       />
                     </div>
-                    {filterData().length === 0 ? (
+                    {filterData()?.length === 0 ? (
                       <div style={{ textAlign: "center", marginTop: 24 }}>
                         <label>No record Found</label>
                       </div>
-                    ) : filterData().length ? (
+                    ) : filterData()?.length ? (
                       filterData().map(item => (
                         <div style={styles.mainDiv}>
                           {/* <Draggable> */}
@@ -487,7 +508,7 @@ function Teams(props) {
                     style={{ justifyContent: "center" }}
                     className="modal-footer border-top-0 "
                   >
-                    <div>
+                    <div className="pt-2 pb-2">
                       <Button
                         style={{
                           background: "linear-gradient(#E6DE18, #438B44)",
@@ -573,7 +594,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 25,
-    alignItems: "center"
+    alignItems: "center",
   },
   checkBoxStyle: {
     width: 21,
@@ -616,8 +637,10 @@ const mapDispatchToProps = dispatch => ({
   createTeam: (data, setmodal) => dispatch(createTeam(data, setmodal)),
   deleteTeam: data => dispatch(deleteTeam(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  getUnAssignedEmployees: () => dispatch(getUnAssignedEmployees()),
-  removeTeamMember: data => dispatch(removeTeamMember(data)),
-  addTeamMember: data => dispatch(addTeamMember(data))
+  getUnAssignedEmployees: index => dispatch(getUnAssignedEmployees(index)),
+  removeTeamMember: (data, currentpage) =>
+    dispatch(removeTeamMember(data, currentpage)),
+  addTeamMember: (data, currentpage) =>
+    dispatch(addTeamMember(data, currentpage))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Teams)

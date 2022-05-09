@@ -73,44 +73,48 @@ const Profile = props => {
                       }
                     />
                   </div>
-                  <div>
-                    <label style={styles.userNameText}>
-                      {userInfo.name ? userInfo.name : "Test User"}
-                    </label>
-                  </div>
-                  <div>
-                    <label style={styles.companyText}>
-                      {userInfo.company_name
-                        ? userInfo.company_name
-                        : "Cleaning Maid Easy  "}
-                    </label>
-                  </div>
-                  <div className="pt-2">
-                    <img
-                      className="pr-2"
-                      alt="..."
-                      src={require("assets/icons/mapPin.png")}
-                      phone_img
-                    />
-                    <label style={styles.addressText}>
-                      {" "}
-                      {userInfo.address
-                        ? userInfo.address
-                        : "New jersey, New York"}
-                    </label>
-                  </div>
-                  <div className="pt-2">
-                    <img
-                      className="pr-2"
-                      alt="..."
-                      src={require("assets/icons/phone_img.png")}
-                    />
-                    <label style={styles.addressText}>
-                      {userInfo.phone_number
-                        ? userInfo.phone_number
-                        : "+92 302 1154779"}
-                    </label>
-                  </div>
+                  {userInfo.name && (
+                    <div>
+                      <label style={styles.userNameText}>
+                        {userInfo.name && userInfo.name}
+                      </label>
+                    </div>
+                  )}
+
+                  {userInfo.company_name && (
+                    <div>
+                      <label style={styles.companyText}>
+                        {userInfo.company_name && userInfo.company_name}
+                      </label>
+                    </div>
+                  )}
+                  {userInfo.address && (
+                    <div className="pt-2">
+                      <img
+                        className="pr-2"
+                        alt="..."
+                        src={require("assets/icons/mapPin.png")}
+                        phone_img
+                      />
+                      <label style={styles.addressText}>
+                        {" "}
+                        {userInfo.address && userInfo.address}
+                      </label>
+                    </div>
+                  )}
+                  {userInfo.phone_number && (
+                    <div className="pt-2">
+                      <img
+                        className="pr-2"
+                        alt="..."
+                        src={require("assets/icons/phone_img.png")}
+                      />
+                      <label style={styles.addressText}>
+                        {userInfo.phone_number && userInfo.phone_number}
+                      </label>
+                    </div>
+                  )}
+
                   <div style={{ paddingTop: 80 }}>
                     <Button
                       onClick={() => props.history.push("/admin/editProfile")}

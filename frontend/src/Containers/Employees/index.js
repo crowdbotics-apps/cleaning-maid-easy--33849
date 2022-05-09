@@ -143,21 +143,22 @@ function Employees(props) {
       validator: validator.email
     },
     company_name: {
-      required: true
+      required: false
     },
     display_company: {
-      // required: true
+      required: false
     },
     phone_number: {
-      required: true,
+      required: false,
       validator: validator.phone
     },
     zip_code: {
-      required: true,
+      required: false,
       validator: validator.numeric
     },
     address: {
-      required: true
+      required: false,
+      validator: validator.address
     },
     team_id: {
       required: true
@@ -502,7 +503,10 @@ function Employees(props) {
                     </button>
                   </div>
                   <div className="modal-body ">
-                    <label style={styles.labelStyle}> {editValues? "Employee Name": "First Name"}</label>
+                    <label style={styles.labelStyle}>
+                      {" "}
+                      {editValues ? "Employee Name" : "First Name"}
+                    </label>
                     <div>
                       <Input
                         style={styles.inputStyle}
@@ -565,24 +569,29 @@ function Employees(props) {
                       </>
                     ) : null}
 
-                    <label style={styles.labelStyle} className="mt-3">
-                      Company Name
-                    </label>
-                    <div>
-                      <Input
-                        style={styles.inputStyle}
-                        value={state.company_name.value}
-                        className="border-top-0 border-right-0 border-left-0 pl-0"
-                        onChange={e =>
-                          handleOnChange("company_name", e.target.value)
-                        }
-                      />
-                      {state.company_name.error && (
-                        <label style={{ color: "red" }}>
-                          {state.company_name.error}
+                    {state.display_company.value ? (
+                      <>
+                        <label style={styles.labelStyle} className="mt-3">
+                          Company Name
                         </label>
-                      )}
-                    </div>
+                        <div>
+                          <Input
+                            style={styles.inputStyle}
+                            value={state.company_name.value}
+                            className="border-top-0 border-right-0 border-left-0 pl-0"
+                            onChange={e =>
+                              handleOnChange("company_name", e.target.value)
+                            }
+                          />
+                          {state.company_name.error && (
+                            <label style={{ color: "red" }}>
+                              {state.company_name.error}
+                            </label>
+                          )}
+                        </div>
+                      </>
+                    ):null}
+
                     <div style={styles.companyshow}>
                       Display Company Name:
                       <Label>
@@ -765,7 +774,7 @@ const styles = {
     justifyContent: "center"
   },
   stylefootter: {
-    alignSelf: "end ",
+    alignSelf: "flex-end",
     marginBottom: 33
   },
   modalImg: {

@@ -13,7 +13,7 @@ import {
 const initialState = {
   employeesData: false,
   requesting: false,
-  teamData: false,
+  teamData: [],
   employeeRequesting: false,
   deleteRequesting: false,
   createRequesting: false,
