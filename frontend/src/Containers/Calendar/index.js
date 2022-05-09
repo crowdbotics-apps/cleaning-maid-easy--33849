@@ -41,7 +41,7 @@ import {
 
 //Components
 import Select from "react-select"
-import AddServices from "components/addServices"
+import ScheduleService from "../../Containers/ScheduleServices/index"
 
 //Actions
 import {
@@ -154,6 +154,12 @@ const Calendar = props => {
   useEffect(() => {
     setTotalCount(unAssignedEmployees?.count)
     setTotalPendingCount(pendingRequests?.count)
+    const mydiv = document.getElementsByClassName(
+      "react-date-picker__inputGroup"
+    )
+    if (mydiv.length) {
+      mydiv[0].style.display = "none"
+    }
     if (viewState === 2) {
       let myDivs = document.getElementsByClassName("rbc-allday-cell")
       // let rbcEvent = document.getElementsByClassName("rbc-event")
@@ -457,11 +463,10 @@ const Calendar = props => {
   const CustomToolbar = toolbar => {
     // setcalanderDate((calanderDate) => toolbar.date)
     // newDate = toolbar.date
-
     props.renderHtmlText({
       toolbar: toolbar,
       setViewState: setViewState,
-      setModal: setModal
+      setModal: setModal,
     })
 
     return <div></div>
@@ -1130,8 +1135,8 @@ const Calendar = props => {
             </div>
           </Col> */}
         </Row>
-        <Modal isOpen={modal} closeModal={closeModal}>
-          <AddServices closeModal={closeModal} styles={styles} />
+        <Modal size="xl" isOpen={modal} closeModal={closeModal}>
+          <ScheduleService closeModal={closeModal} styles={styles}  />
         </Modal>
 
         <Modal isOpen={noteModal} toggle={toggle}>
@@ -1278,7 +1283,7 @@ const Calendar = props => {
                     <label style={styles.inputStyle}>
                       {moment(
                         eventDetail?.eventDetail?.appointment_date
-                      ).format("d MMMM yyy")}
+                      ).format("LL")}
                     </label>
                   </div>
                 </Col>

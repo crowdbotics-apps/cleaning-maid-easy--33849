@@ -8,3 +8,12 @@
         width:100%;
     }
 }
+
+.react-date-picker__wrapper {
+    border: 0px !important;
+}
+.react-date-picker__inputGroup {
+    min-width: none !important;
+    padding: 0px !important;
+
+}

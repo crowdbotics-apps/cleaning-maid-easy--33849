@@ -122,6 +122,7 @@ function* deleteTeam({data}) {
     const response = yield call(deleteTeamApi, data);
     yield put((getTeam()))
     toast.success("Successfully deleted!")
+    yield put((getUnAssignedEmployeesData(1))) 
   } catch (e) {
     const { response } = e
     toast.error('Someting wrong!');
