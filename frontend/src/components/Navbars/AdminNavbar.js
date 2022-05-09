@@ -57,7 +57,7 @@ class AdminNavbar extends React.Component {
       collapseOpen: false,
       color: "bg-white",
       viewState: 1,
-      calendarValue:''
+      calendarValue: ""
     }
   }
 
@@ -73,7 +73,14 @@ class AdminNavbar extends React.Component {
     ) {
       document.documentElement.classList.toggle("nav-open")
     }
+    // const mydiv = document.getElementsByClassName(
+    //   "react-date-picker__inputGroup"
+    // )
+    // if (mydiv.length) {
+    //   mydiv[0].style.display = "none"
+    // }
   }
+
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   updateColor = () => {
     if (window.innerWidth < 993 && this.state.collapseOpen) {
@@ -103,6 +110,13 @@ class AdminNavbar extends React.Component {
       newState["color"] = "bg-white"
     }
     this.setState(newState)
+  }
+
+  onChangeDate = date => {
+    const toolbar = this.props?.htmlText.toolbar
+    toolbar.onNavigate("next", date)
+    const selectedDatee = moment(date).format("YYYY-MM-DD")
+    this.props.getDayAcceptedAppointments(selectedDatee)
   }
 
   CustomToolbar = () => {
@@ -228,37 +242,35 @@ class AdminNavbar extends React.Component {
       const date = moment(toolbar?.date)
       const todayDate = moment(new Date()).format("MM/DD/YYYY")
       const nowDay = date.format("MM/DD/YYYY")
-      
+
       // props.getDayAcceptedAppointments(newDate)
       return (
         <>
-        <span>
+          <span>
             {this.state.viewState === 1
               ? todayDate === nowDay
                 ? "Today" + ", " + date.format("MM/DD/YYYY")
                 : nowDay
               : date.format("MMMM")}
           </span>
-          {/* <DatePicker
+          {
+
+            this.state.viewState === 1 &&
+            // <div >
+            <DatePicker
             className={"calnderStyle"}
             clearIcon={false}
             wrapperClassName="datePickerBorder"
-            // value={calendarValue}
             dayPlaceholder=""
             monthPlaceholder=""
             yearPlaceholder=""
             format="dd"
-            minDate={new Date()}
-            onChange={date => {
-              this.setState({calendarValue:date})
-              // setCalenderValue(date)
-              const selectedDatee = moment(date).format("YYYY-MM-DD")
-              this.props.getDayAcceptedAppointments(selectedDatee)
-              console.log("selectedDatee",selectedDatee);
-              // onSave("appointment_date", selectedDatee)
-            }}
-          /> */}
-         
+            // minDate={new Date()}
+            onChange={date => this.onChangeDate(date)}
+          />
+          // </div>
+          }
+          
         </>
       )
     }
@@ -496,7 +508,7 @@ const styles = {
     paddingRight: 3,
     width: 265,
     height: 48,
-    borderRadius: 10,
+    borderRadius: 10
     // marginLeft:30
   }
 }
