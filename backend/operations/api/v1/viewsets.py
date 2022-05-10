@@ -62,6 +62,19 @@ class TeamViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Team.objects.all()
 
+    def destroy(self, request, *args, **kwargs):
+        team = self.get_object()
+        unassigned_team = Team.objects.filter(title__icontains="Unassigned")
+        if len(unassigned_team) > 0:
+            unassigned_team = unassigned_team.first()
+        else:
+            unassigned_team = Team.objects.create(title="Unassigned")
+        for member in team.team_members.all():
+            member.assigned_team = unassigned_team
+            member.save()
+        team.delete()
+        return Response(data='delete success')
+
 
 class CreateTeamViewSet(ViewSet):
     authentication_classes = (
