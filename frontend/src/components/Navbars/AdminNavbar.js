@@ -73,12 +73,6 @@ class AdminNavbar extends React.Component {
     ) {
       document.documentElement.classList.toggle("nav-open")
     }
-    // const mydiv = document.getElementsByClassName(
-    //   "react-date-picker__inputGroup"
-    // )
-    // if (mydiv.length) {
-    //   mydiv[0].style.display = "none"
-    // }
   }
 
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
@@ -253,24 +247,21 @@ class AdminNavbar extends React.Component {
                 : nowDay
               : date.format("MMMM")}
           </span>
-          {
-
-            this.state.viewState === 1 &&
-            // <div >
-            <DatePicker
-            className={"calnderStyle"}
-            clearIcon={false}
-            wrapperClassName="datePickerBorder"
-            dayPlaceholder=""
-            monthPlaceholder=""
-            yearPlaceholder=""
-            format="dd"
-            // minDate={new Date()}
-            onChange={date => this.onChangeDate(date)}
-          />
-          // </div>
-          }
-          
+          {this.state.viewState === 1 && (
+            <span className="calendarDatePicker">
+              <DatePicker
+                className={"calnderStyle"}
+                clearIcon={false}
+                wrapperClassName="datePickerBorder"
+                dayPlaceholder=""
+                monthPlaceholder=""
+                yearPlaceholder=""
+                format="dd"
+                // minDate={new Date()}
+                onChange={date => this.onChangeDate(date)}
+              />
+             </span>
+          )}
         </>
       )
     }

@@ -5,10 +5,11 @@ import {
   GET_FREQUENCIES_SUCCESS
 } from "./types"
 
-export const scheduleServices = (data, closeModal) => ({
+export const scheduleServices = (data, closeModal,setSlotsValue) => ({
   type: SCHEDULE_SERVICE,
   data,
-  closeModal
+  closeModal,
+  setSlotsValue
 })
 
 export const scheduleServicesSuccess = () => ({

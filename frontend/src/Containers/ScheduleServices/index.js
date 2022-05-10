@@ -20,7 +20,7 @@ import Select from "react-select"
 import { connect } from "react-redux"
 import "../ScheduleServices/style.css"
 
-import toast,{ Toaster } from "react-hot-toast"
+import toast, { Toaster } from "react-hot-toast"
 
 //Calender
 import DatePicker from "react-date-picker"
@@ -48,7 +48,7 @@ import calenderImage from "../../assets/icons/calendar.png"
 import clockImage from "../../assets/icons/Clock.png"
 
 function ScheduleService(props) {
-  const { closeModal } = props
+  const { closeModal, slotsValue, setSlotsValue } = props
   useEffect(() => {
     !closeModal && props.renderHtmlText("Schedule Service")
     props.getTeam()
@@ -57,7 +57,6 @@ function ScheduleService(props) {
     props.getAllCustomers(1)
     let mydiv = document.getElementsByClassName("react-date-picker__wrapper")
     mydiv[0].style.border = "none"
-    
   }, [])
 
   // react-date-picker__wrapper
@@ -144,6 +143,16 @@ function ScheduleService(props) {
   const onSave = (title, value) => {
     let data = { ...appointmentData }
     data[title] = value
+    if (slotsValue?.length) {
+      if (slotsValue[0] && slotsValue[1]) {
+        data["start_time"] = moment(slotsValue[0]).format("HH:mm")
+        data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
+        data["end_time"] = moment(slotsValue[1]).format("HH:mm")
+      } else {
+        data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
+      }
+    }
+
     setAppoinmentData(data)
   }
 
@@ -151,30 +160,30 @@ function ScheduleService(props) {
     const data = { ...appointmentData, ...getState(state) }
     data["status"] = "Pending"
 
-    if (data.appointment_date) {
+    if (data.appointment_date || slotsValue) {
       setSelectedDate(false)
     } else {
       setSelectedDate(true)
     }
 
-    if (data.start_time && data.end_time) {
+    if ((data.start_time && data.end_time) || slotsValue) {
       setSelectTime(false)
     } else {
       setSelectTime(true)
     }
+
     if (
-      data.end_time &&
-      data.start_time &&
-      data.appointment_date &&
+      (data.end_time || slotsValue?.length === 2) &&
+      (data.start_time || slotsValue?.length === 2) &&
+      (data.appointment_date || slotsValue[0]) &&
       data.assigned_team_id &&
       data.service_id &&
       data.frequency_id
       // data.client_id
     ) {
-      props.getScheduleServices(data,closeModal)
-    }
-    else {
-      toast.error('Someting wrong!');
+      props.getScheduleServices(data, closeModal, setSlotsValue)
+    } else {
+      toast.error("Please fill require fields!")
     }
   }
 
@@ -185,8 +194,9 @@ function ScheduleService(props) {
         className="content"
         style={{
           backgroundRepeat: !closeModal && "no-repeat",
-          backgroundSize: !closeModal &&"cover",
-          backgroundImage: !closeModal &&`url(${require("assets/images/bg_content.png")})`,
+          backgroundSize: !closeModal && "cover",
+          backgroundImage:
+            !closeModal && `url(${require("assets/images/bg_content.png")})`,
           flex: 1
         }}
       >
@@ -197,7 +207,10 @@ function ScheduleService(props) {
               className="close"
               data-dismiss="modal"
               type="button"
-              onClick={closeModal}
+              onClick={() => {
+                setSlotsValue(false)
+                closeModal()
+              }}
             >
               <i
                 style={{
@@ -217,8 +230,11 @@ function ScheduleService(props) {
 
         <Row>
           <Col md="12">
-            <Card style={ !closeModal ? styles.cardStyle:null}>
-              <CardBody className="pl-5 pr-5" style={{paddingTop:!closeModal? 50:''}}>
+            <Card style={!closeModal ? styles.cardStyle : null}>
+              <CardBody
+                className="pl-5 pr-5"
+                style={{ paddingTop: !closeModal ? 50 : "" }}
+              >
                 <Row>
                   <Col lg="6">
                     <div
@@ -235,9 +251,10 @@ function ScheduleService(props) {
 
                       <DatePicker
                         className={"calnderStyle"}
+                        disabled={slotsValue?.length ? true : false}
                         // clearIcon={false}
                         wrapperClassName="datePickerBorder"
-                        value={calendarValue}
+                        value={slotsValue ? slotsValue[0] : calendarValue}
                         minDate={new Date()}
                         onChange={date => {
                           setCalenderValue(date)
@@ -259,20 +276,16 @@ function ScheduleService(props) {
                       }}
                     >
                       <img src={clockImage} style={{ marginRight: 10 }} />
-                      {/* <label style={styles.inputStyle}>09:00AM - 11:30AM</label> */}
-                      {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileTimePicker
-                          value={startTime}
-                          onChange={(newValue) => {
-                            onSave("start_time", moment(newValue).format('HH:mm'))
-                            setStartTime(newValue);
-                          }}
-                          renderInput={(params) => <div><TextField {...params} placeholder='Start time' /></div>}
-                        />
-                  </LocalizationProvider> */}
                       <TimePicker
-                        value={fromTime}
+                        value={
+                          slotsValue
+                            ? moment(slotsValue[0]).format("HH:mm") !== "00:00"
+                              ? slotsValue[0]
+                              : fromTime
+                            : fromTime
+                        }
                         className={"timeStyle"}
+                        disabled={slotsValue?.length === 2 ? true : false}
                         clockIcon
                         disableClock={true}
                         secondPlaceholder="ss"
@@ -302,8 +315,15 @@ function ScheduleService(props) {
                         />
                   </LocalizationProvider> */}
                       <TimePicker
-                        value={toTime}
+                        value={
+                          slotsValue
+                            ? slotsValue[1]
+                              ? slotsValue[1]
+                              : toTime
+                            : toTime
+                        }
                         className={"timeStyle"}
+                        disabled={slotsValue?.length === 2 ? true : false}
                         disableClock={true}
                         onChange={e => {
                           onSave("end_time", e)
@@ -583,7 +603,7 @@ const styles = {
     fontSize: 24,
     fontWeight: "600",
     display: "grid"
-  },
+  }
 }
 
 const mapStateToProps = state => ({
@@ -597,7 +617,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: (data,closeModal) => dispatch(scheduleServices(data,closeModal)),
+  getScheduleServices: (data, closeModal, setSlotsValue) =>
+    dispatch(scheduleServices(data, closeModal, setSlotsValue)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getFrequencies: () => dispatch(getFrequencies()),
   getAllCustomers: index => dispatch(getAllCustomers(index))

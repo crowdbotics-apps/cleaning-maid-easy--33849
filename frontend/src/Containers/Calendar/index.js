@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  Children,
-  useCallback
-} from "react"
+import React, { useEffect, useState, useRef, useCallback } from "react"
 import LoadingBar from "react-top-loading-bar"
 
 import { Calendar as MyCalendar, momentLocalizer } from "react-big-calendar"
@@ -107,6 +101,7 @@ const Calendar = props => {
   const [totalCount, setTotalCount] = useState(false)
   const [currentPendingPage, setCurrentPendingPage] = useState(1)
   const [totalPendingCount, setTotalPendingCount] = useState(false)
+  const [slotsValue, setSlotsValue] = useState(false)
 
   const calendarRef = useRef()
   const UnAssignedTeamRef = useRef()
@@ -150,16 +145,10 @@ const Calendar = props => {
     props.getDayAcceptedAppointments(moment(new Date()).format("YYYY-MM-DD"))
     props.getTeam()
   }, [])
-
+  
   useEffect(() => {
     setTotalCount(unAssignedEmployees?.count)
     setTotalPendingCount(pendingRequests?.count)
-    const mydiv = document.getElementsByClassName(
-      "react-date-picker__inputGroup"
-    )
-    if (mydiv.length) {
-      mydiv[0].style.display = "none"
-    }
     if (viewState === 2) {
       let myDivs = document.getElementsByClassName("rbc-allday-cell")
       // let rbcEvent = document.getElementsByClassName("rbc-event")
@@ -723,13 +712,7 @@ const Calendar = props => {
 
   const customOnDragOver = useCallback(
     dragEvent => {
-      // check for undroppable is specific to this example
-      // and not part of API. This just demonstrates that
-      // onDragOver can optionally be passed to conditionally
-      // allow draggable items to be dropped on cal, based on
-      // whether event.preventDefault is called
       if (draggedEvent !== "undroppable") {
-        // console.log('preventDefault')
         dragEvent.preventDefault()
       }
     },
@@ -738,6 +721,25 @@ const Calendar = props => {
 
   const onDropFromOutside = props => {
     // console.log('props', props);
+  }
+
+  const onSelectSlot = ({ action, slots /*, ...props */ }) => {
+    if (viewState === 1 || viewState === 2) {
+      if (slots[1] && slots[1]) {
+        if (action === "click") {
+          setModal(true)
+          setSlotsValue(slots)
+        }
+      }
+    } else {
+        if (action === "click") {
+          setModal(true)
+          setSlotsValue(slots)
+        }
+      
+    }
+
+    return false
   }
 
   return (
@@ -754,8 +756,6 @@ const Calendar = props => {
                   <thead>
                     <tr>
                       <th className="p-0">
-                        {/* {
-                      (appointmentsDays && teamData) && ( */}
                         <BigCalendar
                           selectable
                           dragFromOutsideItem={() => setTeamModal(true)}
@@ -791,6 +791,7 @@ const Calendar = props => {
                           events={
                             getTeamMembers().items ? getTeamMembers().items : []
                           }
+                          onSelectSlot={onSelectSlot}
                           dayLayoutAlgorithm="no-overlap"
                           showMultiDayTimes={true}
                           startAccessor="start"
@@ -815,8 +816,6 @@ const Calendar = props => {
                             }
                           }}
                         />
-                        {/* )
-                      } */}
                       </th>
                       {viewState === 1 && (
                         <th
@@ -1136,7 +1135,12 @@ const Calendar = props => {
           </Col> */}
         </Row>
         <Modal size="xl" isOpen={modal} closeModal={closeModal}>
-          <ScheduleService closeModal={closeModal} styles={styles}  />
+          <ScheduleService
+            closeModal={closeModal}
+            styles={styles}
+            slotsValue={slotsValue}
+            setSlotsValue={setSlotsValue}
+          />
         </Modal>
 
         <Modal isOpen={noteModal} toggle={toggle}>

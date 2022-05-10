@@ -15,5 +15,7 @@
 .react-date-picker__inputGroup {
     min-width: none !important;
     padding: 0px !important;
-
+}
+.calendarDatePicker .react-date-picker__inputGroup {
+display: none ;
 }
