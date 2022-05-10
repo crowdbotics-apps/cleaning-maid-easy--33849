@@ -39,7 +39,9 @@ import {
 } from "reactstrap"
 import { connect } from "react-redux"
 import moment from "moment"
-import '../Navbars/styles.css'
+import "../Navbars/styles.css"
+//Calender
+import DatePicker from "react-date-picker"
 
 import {
   getDayAcceptedAppointments,
@@ -54,7 +56,8 @@ class AdminNavbar extends React.Component {
     this.state = {
       collapseOpen: false,
       color: "bg-white",
-      viewState: 1
+      viewState: 1,
+      calendarValue: ""
     }
   }
 
@@ -70,7 +73,14 @@ class AdminNavbar extends React.Component {
     ) {
       document.documentElement.classList.toggle("nav-open")
     }
+    // const mydiv = document.getElementsByClassName(
+    //   "react-date-picker__inputGroup"
+    // )
+    // if (mydiv.length) {
+    //   mydiv[0].style.display = "none"
+    // }
   }
+
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   updateColor = () => {
     if (window.innerWidth < 993 && this.state.collapseOpen) {
@@ -100,6 +110,13 @@ class AdminNavbar extends React.Component {
       newState["color"] = "bg-white"
     }
     this.setState(newState)
+  }
+
+  onChangeDate = date => {
+    const toolbar = this.props?.htmlText.toolbar
+    toolbar.onNavigate("next", date)
+    const selectedDatee = moment(date).format("YYYY-MM-DD")
+    this.props.getDayAcceptedAppointments(selectedDatee)
   }
 
   CustomToolbar = () => {
@@ -228,13 +245,33 @@ class AdminNavbar extends React.Component {
 
       // props.getDayAcceptedAppointments(newDate)
       return (
-        <span>
-          {this.state.viewState === 1
-            ? todayDate === nowDay
-              ? "Today" + ", " + date.format("MM/DD/YYYY")
-              : nowDay
-            : date.format("MMMM")}
-        </span>
+        <>
+          <span>
+            {this.state.viewState === 1
+              ? todayDate === nowDay
+                ? "Today" + ", " + date.format("MM/DD/YYYY")
+                : nowDay
+              : date.format("MMMM")}
+          </span>
+          {
+
+            this.state.viewState === 1 &&
+            // <div >
+            <DatePicker
+            className={"calnderStyle"}
+            clearIcon={false}
+            wrapperClassName="datePickerBorder"
+            dayPlaceholder=""
+            monthPlaceholder=""
+            yearPlaceholder=""
+            format="dd"
+            // minDate={new Date()}
+            onChange={date => this.onChangeDate(date)}
+          />
+          // </div>
+          }
+          
+        </>
       )
     }
 
@@ -247,54 +284,54 @@ class AdminNavbar extends React.Component {
         <Row style={{ display: "flex", alignItems: "center" }}>
           <Col md={12} className={"d-flex flex-wrap justify-content-between"}>
             <div className="d-flex flex-wrap ">
-            <div>
-              <button style={styles.arrowStyle} onClick={goToBack}>
-                <img alt="..." src={require("assets/icons/caretLeft.png")} />
-              </button>
-              <button style={styles.arrowStyle} onClick={goToNext}>
-                <img alt="..." src={require("assets/icons/caretRight.png")} />
-              </button>
+              <div>
+                <button style={styles.arrowStyle} onClick={goToBack}>
+                  <img alt="..." src={require("assets/icons/caretLeft.png")} />
+                </button>
+                <button style={styles.arrowStyle} onClick={goToNext}>
+                  <img alt="..." src={require("assets/icons/caretRight.png")} />
+                </button>
 
-              <label style={styles.monthLabel}>{label()}</label>
+                <label style={styles.monthLabel}>{label()}</label>
+              </div>
+              {/* <div className="d-flex flex-wrap" style={{gap:100}}> */}
+              <div style={styles.toolbarStyle}>
+                <Button
+                  style={
+                    this.state.viewState === 1
+                      ? styles.btnStyle
+                      : styles.btnWrapperStyle
+                  }
+                  onClick={goToDayView}
+                >
+                  <span>Day</span>
+                </Button>
+                <Button
+                  style={
+                    this.state.viewState === 2
+                      ? styles.btnStyle
+                      : styles.btnWrapperStyle
+                  }
+                  onClick={goToWeekView}
+                >
+                  <span>Week</span>
+                </Button>
+                <Button
+                  style={
+                    this.state.viewState === 3
+                      ? styles.btnStyle
+                      : styles.btnWrapperStyle
+                  }
+                  onClick={goToMonthView}
+                >
+                  <span>Month</span>
+                </Button>
+              </div>
             </div>
-            {/* <div className="d-flex flex-wrap" style={{gap:100}}> */}
-            <div style={styles.toolbarStyle}>
-              <Button
-                style={
-                  this.state.viewState === 1
-                    ? styles.btnStyle
-                    : styles.btnWrapperStyle
-                }
-                onClick={goToDayView}
-              >
-                <span>Day</span>
+            <div>
+              <Button onClick={() => setModal(true)} style={styles.addBtnText}>
+                Add Service
               </Button>
-              <Button
-                style={
-                  this.state.viewState === 2
-                    ? styles.btnStyle
-                    : styles.btnWrapperStyle
-                }
-                onClick={goToWeekView}
-              >
-                <span>Week</span>
-              </Button>
-              <Button
-                style={
-                  this.state.viewState === 3
-                    ? styles.btnStyle
-                    : styles.btnWrapperStyle
-                }
-                onClick={goToMonthView}
-              >
-                <span>Month</span>
-              </Button>
-            </div>
-            </div>
-          <div>
-            <Button onClick={() => setModal(true)} style={styles.addBtnText}>
-              Add Service
-            </Button>
             </div>
             {/* </div> */}
           </Col>
@@ -342,7 +379,7 @@ class AdminNavbar extends React.Component {
                   <span className="navbar-toggler-bar bar3" />
                 </button>
               </div>
-              <NavbarBrand className='w-100'>
+              <NavbarBrand className="w-100">
                 {this.props?.htmlText?.toolbar ? (
                   this.CustomToolbar()
                 ) : this.props.htmlText.length ? (
@@ -380,18 +417,20 @@ class AdminNavbar extends React.Component {
               navbar
               // isOpen={this.state.collapseOpen}
             >
-
-            <Nav navbar>
-              <NavItem>
-                <NavLink
-                  className="btn-magnify"
-                  href="#"
-                  onClick={e => e.preventDefault()}
-                >
-                  <img alt="..." src={require("assets/images/logo_img.png")} />
-                </NavLink>
-              </NavItem>
-            </Nav>
+              <Nav navbar>
+                <NavItem>
+                  <NavLink
+                    className="btn-magnify"
+                    href="#"
+                    onClick={e => e.preventDefault()}
+                  >
+                    <img
+                      alt="..."
+                      src={require("assets/images/logo_img.png")}
+                    />
+                  </NavLink>
+                </NavItem>
+              </Nav>
             </Collapse>
           </Container>
         </Navbar>
@@ -470,5 +509,6 @@ const styles = {
     width: 265,
     height: 48,
     borderRadius: 10
+    // marginLeft:30
   }
 }

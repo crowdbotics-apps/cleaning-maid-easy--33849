@@ -113,8 +113,8 @@ function Teams(props) {
 
   const filterData = () => {
     let filterData =
-      employeesData &&
-      employeesData.filter(item =>
+    unAssignedEmployees?.results &&
+      unAssignedEmployees.results .filter(item =>
         item.name.toLowerCase().includes(searchData.toLowerCase())
       )
     return filterData
@@ -193,7 +193,7 @@ function Teams(props) {
       .apply([], filterTeam(memberId))
       .filter(v => v !== false)
 
-    if (!valueExists.includes(true)) {
+    if (valueExists.includes(true)) {
       props.addTeamMember(data, currentpage)
     }
   }
@@ -239,7 +239,7 @@ function Teams(props) {
                               {item.title}
                             </td>
                             <td
-                              style={{ width: "52%", borderLeft: "" }}
+                              style={{ width: "52%", borderLeft: ""}}
                               className="task-header"
                               onDragOver={e => addTeamDrageOver(e)}
                               onDrop={e => addTeamOnDrop(e, item.id, "items")}
@@ -303,7 +303,7 @@ function Teams(props) {
                             {!index && (
                               <td
                                 ref={UnAssignedTeamRef}
-                                rowSpan="7"
+                                rowSpan="23"
                                 style={{
                                   borderLeft: "1px solid rgb(212, 212, 212)"
                                 }}
@@ -311,7 +311,7 @@ function Teams(props) {
                                 onDrop={e => removeTeamOnDrop(e, "unAssign")}
                                 // className="draggable"
                               >
-                                <div style={{ height: 222, overflowY: "auto" }}>
+                                <div style={{ height: 222, overflowY: "auto", }}>
                                   {unAssignedEmployees.results &&
                                     unAssignedEmployees.results.map(items => (
                                       <div>
@@ -441,11 +441,11 @@ function Teams(props) {
                         ]}
                       />
                     </div>
-                    {filterData().length === 0 ? (
+                    {filterData()?.length === 0 ? (
                       <div style={{ textAlign: "center", marginTop: 24 }}>
                         <label>No record Found</label>
                       </div>
-                    ) : filterData().length ? (
+                    ) : filterData()?.length ? (
                       filterData().map(item => (
                         <div style={styles.mainDiv}>
                           {/* <Draggable> */}

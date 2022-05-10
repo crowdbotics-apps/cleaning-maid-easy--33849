@@ -55,15 +55,17 @@ function* getFrequencies() {
   }
 }
 
-function* scheduleServices({data}) {
+function* scheduleServices({data,closeModal}) {
   try {
     const response = yield call(scheduleServicesAPI, data)
+    // closeModal(false)
     toast.success("Successfully schedule services saved!")
-    yield put(
+    closeModal ? closeModal(false) :yield put(
       push({
         pathname: '/admin/pendingServices',
       })
     );
+    
   } catch (e) {
     const { response } = e
     toast.error('Someting wrong!');
