@@ -46,7 +46,7 @@ class ResetPasswordFormCustom(ResetPasswordForm):
             print(user_pk_to_url_str(user))
             print(temp_key)
             print(default_token_generator.check_token(user, temp_key))
-            url = "https://" + current_site.domain + "/set-new-password/{0}/{1}".format(urlsafe_base64_encode(force_bytes(user.pk)), temp_key)
+            url = "https://" + current_site.domain + "/auth/set-new-password/{0}/{1}".format(urlsafe_base64_encode(force_bytes(user.pk)), temp_key)
 
             context = {
                 "current_site": current_site,
