@@ -87,10 +87,11 @@ async function createTeamApi(data) {
   return XHR(URL, options);
 }
 
-function* createTeam({data, setmodal}) {
+function* createTeam({data, setmodal,setSelectedMebers}) {
   try {
     const response = yield call(createTeamApi, data);
     setmodal(false)
+    setSelectedMebers([])
     yield put((getTeam()))
     toast.success("Successfully saved!")
   } catch (e) {

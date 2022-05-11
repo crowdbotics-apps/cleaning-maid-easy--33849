@@ -140,7 +140,7 @@ function Teams(props) {
         member_ids: selectedMembers,
         team_name: teamName
       }
-      props.createTeam(apiData, setmodal)
+      props.createTeam(apiData, setmodal,setSelectedMebers)
       setTeamName(false)
       setNameError(false)
     } else {
@@ -634,7 +634,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getEmployees: () => dispatch(getEmployees()),
-  createTeam: (data, setmodal) => dispatch(createTeam(data, setmodal)),
+  createTeam: (data, setmodal,setSelectedMebers) => dispatch(createTeam(data, setmodal,setSelectedMebers)),
   deleteTeam: data => dispatch(deleteTeam(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getUnAssignedEmployees: index => dispatch(getUnAssignedEmployees(index)),

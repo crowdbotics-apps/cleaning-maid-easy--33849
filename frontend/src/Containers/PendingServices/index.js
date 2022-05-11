@@ -47,7 +47,6 @@ import "../PendingServices/styles.css"
 
 //Actions
 import {
-  getAppointmentDetails,
   getPendingRequests,
   requestAction
 } from "./redux/actions"
@@ -450,7 +449,6 @@ const PendingServices = props => {
                         <tr
                           style={{ cursor: "pointer" }}
                           onClick={() => {
-                            // props.getAppointmentDetails()
                             setPendingDetails(item)
                             setModal(true)
                             setRequestError(false)
@@ -501,7 +499,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getPendingRequests: index => dispatch(getPendingRequests(index)),
-  getAppointmentDetails: data => dispatch(getAppointmentDetails(data)),
   requestAction: (data, modalToggle,index) =>
     dispatch(requestAction(data, modalToggle,index)),
   renderHtmlText: data => dispatch(renderHtmlText(data))

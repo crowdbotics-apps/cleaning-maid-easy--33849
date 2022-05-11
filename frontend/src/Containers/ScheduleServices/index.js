@@ -393,10 +393,14 @@ function ScheduleService(props) {
                             customers?.length &&
                             customers?.map(item => ({
                               label: item.name,
-                              value: item.id
+                              value: item.id,
+                              address:item.address
                             }))
                           }
-                          onChange={e => onSave("client_id", e.value)}
+                          onChange={e => {
+                            onSave("client_id", e.value)
+                            handleOnChange("client_address", e.address)
+                          }}
                           placeholder="Select Customer"
                         />
                         {/* <Input

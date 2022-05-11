@@ -161,7 +161,7 @@ function Employees(props) {
       validator: validator.address
     },
     team_id: {
-      required: true
+      required: false
     }
   }
 
