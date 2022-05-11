@@ -46,10 +46,7 @@ import Select from "react-select"
 import "../PendingServices/styles.css"
 
 //Actions
-import {
-  getPendingRequests,
-  requestAction
-} from "./redux/actions"
+import { getPendingRequests, requestAction } from "./redux/actions"
 
 import { renderHtmlText } from "../Services/redux/actions"
 
@@ -131,14 +128,13 @@ const PendingServices = props => {
       appointment_id: pendingDetails.id,
       action: requestAction
     }
-    props.requestAction(data, modalToggle,currentpage)
+    props.requestAction(data, modalToggle, currentpage)
     setRequestError(false)
     if (requestAction === "Accept") {
       setActionRequest(1)
     } else {
       setActionRequest(2)
     }
-   
   }
 
   const handlePageChange = page => {
@@ -194,9 +190,7 @@ const PendingServices = props => {
                     style={{ marginRight: 10, color: "grey" }}
                   ></i>
                   <label style={styles.inputStyle}>
-                    {moment(pendingDetails?.appointment_date).format(
-                      "LL"
-                    )}
+                    {moment(pendingDetails?.appointment_date).format("LL")}
                   </label>
                 </div>
               </Col>
@@ -291,7 +285,7 @@ const PendingServices = props => {
                   style={{ fontSize: 14, fontWeight: "500", color: "#000000" }}
                   value={{
                     value: pendingDetails?.service?.id,
-                    label: pendingDetails?.service?.name,
+                    label: pendingDetails?.service?.name
                   }}
                   placeholder="Single Select"
                 />
@@ -457,30 +451,34 @@ const PendingServices = props => {
                           <td style={styles.tdataText1}>{i + 1}.</td>
                           <td style={styles.tdataText2}>{item.title}</td>
                           <td style={styles.tdataText}>{item?.description}</td>
-                          <td style={styles.tdataText}>{item?.service?.name}</td>
+                          <td style={styles.tdataText}>
+                            {item?.service?.name}
+                          </td>
                         </tr>
                       ))
                     )}
                   </tbody>
                 </Table>
-                <div className="pt-3 d-flex justify-content-center">
-                  {totalCount && (
-                    <Pagination
-                      aria-label="Page navigation example"
-                      itemClass="page-item"
-                      linkClass="page-link"
-                      prevPageText="Prev"
-                      nextPageText="Next"
-                      firstPageText="First"
-                      lastPageText="Last"
-                      activePage={currentpage}
-                      itemsCountPerPage={24}
-                      pageRangeDisplayed={10}
-                      totalItemsCount={totalCount && totalCount}
-                      onChange={handlePageChange}
-                    />
-                  )}
-                </div>
+                {pendingRequests?.results?.length ? (
+                  <div className="pt-3 d-flex justify-content-center">
+                    {totalCount && (
+                      <Pagination
+                        aria-label="Page navigation example"
+                        itemClass="page-item"
+                        linkClass="page-link"
+                        prevPageText="Prev"
+                        nextPageText="Next"
+                        firstPageText="First"
+                        lastPageText="Last"
+                        activePage={currentpage}
+                        itemsCountPerPage={24}
+                        pageRangeDisplayed={10}
+                        totalItemsCount={totalCount && totalCount}
+                        onChange={handlePageChange}
+                      />
+                    )}
+                  </div>
+                ) : null}
               </CardBody>
             </Card>
           </Col>
@@ -499,8 +497,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getPendingRequests: index => dispatch(getPendingRequests(index)),
-  requestAction: (data, modalToggle,index) =>
-    dispatch(requestAction(data, modalToggle,index)),
+  requestAction: (data, modalToggle, index) =>
+    dispatch(requestAction(data, modalToggle, index)),
   renderHtmlText: data => dispatch(renderHtmlText(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(PendingServices)

@@ -440,8 +440,9 @@ function ScheduleService(props) {
                         name="singleSelect"
                         //  value={appointmentData?.assigned_team_id?.value}
                         options={
+
                           teamData &&
-                          teamData.map(item => ({
+                          teamData.filter(v => v.title !== "Unassigned").map(item => ({
                             label: item.title,
                             value: item.id
                           }))
