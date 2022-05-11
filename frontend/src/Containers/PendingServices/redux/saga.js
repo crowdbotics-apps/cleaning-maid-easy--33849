@@ -10,7 +10,6 @@ import toast from "react-hot-toast"
 
 // types
 import {
-  GET_APPOINTMENT_DETAILS,
   GET_PENDING_REQUESTS,
   REQUEST_ACTION
 } from "./types"
@@ -25,20 +24,6 @@ import {
 
 async function getPendingRequestsAPI(index) {
   const URL = `${BASE_URL}/api/v1/operations/pending_requests/?page=${index}`
-  const token = await sessionStorage.getItem("authToken")
-  const options = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Token ${token}`
-    },
-    method: "GET"
-  }
-
-  return XHR(URL, options)
-}
-
-async function getApointmentDetailsAPI() {
-  const URL = `${BASE_URL}/api/v1/operations/appointment/4/`
   const token = await sessionStorage.getItem("authToken")
   const options = {
     headers: {
@@ -89,19 +74,8 @@ function* getPendingRequests({index}) {
   }
 }
 
-function* getAppointmentDetails({ data }) {
-  try {
-    const response = yield call(getApointmentDetailsAPI, data)
-    // yield put(getAppointmentDetailsSuccess(response.data.results))
-  } catch (e) {
-    const { response } = e
-  } finally {
-    yield put(reset())
-  }
-}
 
 export default all([
   takeLatest(GET_PENDING_REQUESTS, getPendingRequests),
-  takeLatest(GET_APPOINTMENT_DETAILS, getAppointmentDetails),
   takeLatest(REQUEST_ACTION, requestAction)
 ])

@@ -161,7 +161,7 @@ function Employees(props) {
       validator: validator.address
     },
     team_id: {
-      required: true
+      required: false
     }
   }
 
@@ -452,24 +452,26 @@ function Employees(props) {
                     )}
                   </tbody>
                 </Table>
-                <div className="pt-2 d-flex justify-content-center">
-                  {totalCount && (
-                    <Pagination
-                      aria-label="Page navigation example"
-                      itemClass="page-item"
-                      linkClass="page-link"
-                      prevPageText="Prev"
-                      nextPageText="Next"
-                      firstPageText="First"
-                      lastPageText="Last"
-                      activePage={currentpage}
-                      itemsCountPerPage={24}
-                      pageRangeDisplayed={10}
-                      totalItemsCount={totalCount && totalCount}
-                      onChange={handlePageChange}
-                    />
-                  )}
-                </div>
+                {employeesList?.results?.length ? (
+                  <div className="pt-2 d-flex justify-content-center">
+                    {totalCount && (
+                      <Pagination
+                        aria-label="Page navigation example"
+                        itemClass="page-item"
+                        linkClass="page-link"
+                        prevPageText="Prev"
+                        nextPageText="Next"
+                        firstPageText="First"
+                        lastPageText="Last"
+                        activePage={currentpage}
+                        itemsCountPerPage={24}
+                        pageRangeDisplayed={10}
+                        totalItemsCount={totalCount && totalCount}
+                        onChange={handlePageChange}
+                      />
+                    )}
+                  </div>
+                ):null}
               </CardBody>
 
               <CardFooter style={styles.stylefootter}>
@@ -590,7 +592,7 @@ function Employees(props) {
                           )}
                         </div>
                       </>
-                    ):null}
+                    ) : null}
 
                     <div style={styles.companyshow}>
                       Display Company Name:

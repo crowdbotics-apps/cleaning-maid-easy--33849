@@ -337,7 +337,7 @@ const Services = props => {
                     )}
                   </tbody>
                 </Table>
-                <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-end pt-4">
                   <Button
                     className="mb-3 "
                     style={styles.addBtnText}

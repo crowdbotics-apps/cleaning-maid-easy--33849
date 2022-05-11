@@ -53,10 +53,11 @@ export const removeTeamMember=(data,currentpage)=>({
   currentpage
 })
 
-export const createTeam= (data, setmodal) => ({
+export const createTeam= (data, setmodal,setSelectedMebers) => ({
   type: CREATE_TEAM,
   data,
-  setmodal
+  setmodal,
+  setSelectedMebers
 });
 
 export const createTeamFailure= (data) => ({
