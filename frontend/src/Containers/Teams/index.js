@@ -253,7 +253,7 @@ function Teams(props) {
                                 onDragOver={e => addTeamDrageOver(e)}
                                 onDrop={e => addTeamOnDrop(e, item.id, "items")}
                               >
-                                {item.team_members?.length &&
+                                {item.team_members?.length ?
                                   item.team_members.map((items, index) => (
                                     <>
                                       {items.name !== null && (
@@ -279,7 +279,7 @@ function Teams(props) {
                                         // </Draggable>
                                       )}
                                     </>
-                                  ))}
+                                  )):null}
                               </td>
                               <td
                                 style={styles.borderBottom}
@@ -342,7 +342,7 @@ function Teams(props) {
                                         </div>
                                       ))}
                                   </div>
-                                  {totalCount && (
+                                  {totalCount?.length ? (
                                     <div className="pt-3 d-flex justify-content-center">
                                       <Pagination
                                         aria-label="Page navigation example"
@@ -362,7 +362,7 @@ function Teams(props) {
                                         onChange={handlePageChange}
                                       />
                                     </div>
-                                  )}
+                                  ):null}
                                 </td>
                               )}
                             </tr>

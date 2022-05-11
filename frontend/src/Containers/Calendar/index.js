@@ -291,7 +291,7 @@ const Calendar = props => {
           color: item.frequency.color_code,
           desc: item?.service?.description,
           eventDetail: item,
-          viewState: viewState
+          viewState: viewState,
         }
         return data
       })
@@ -496,33 +496,37 @@ const Calendar = props => {
   }
 
   const onEventDrop = props => {
-    if (props?.isAllDay || props.event.allDay === true) {
-      if (props.event.teamId !== undefined) {
-        const id = props.resourceId
-
-        const data = {
-          member_ids: [props.event.memberId],
-          team_id: id
+    const teamId=teamData.find((items)=>items.id===props.resourceId)
+      if (props?.isAllDay || props.event.allDay === true) {
+        if (props.event.teamId !== undefined) {
+          const id = props.resourceId
+  
+          const data = {
+            member_ids: [props.event.memberId],
+            team_id: id
+          }
+          if (props.event.resourceId !== id) {
+            addTeamMember(data, 1)
+            setCurrentPage(1)
+          }
         }
-        if (props.event.resourceId !== id) {
-          addTeamMember(data, 1)
-          setCurrentPage(1)
+      } else {
+        if(teamId.title !== 'Unassigned'){
+        const id = props.event.eventDetail.id
+        const swapIndex = appointmentsDays.findIndex(e => e.id == id)
+        const data = new FormData()
+        data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
+        data.append("start_time", moment(props.start).format("HH:mm:ss"))
+        data.append("end_time", moment(props.end).format("HH:mm:ss"))
+        viewState === 1 && data.append("assigned_team_id", props?.resourceId)
+        editAppointmentCal(data, {
+          id: id,
+          swapIndex: swapIndex,
+          appointmentsDays: appointmentsDays
+        })
         }
-      }
-    } else {
-      const id = props.event.eventDetail.id
-      const swapIndex = appointmentsDays.findIndex(e => e.id == id)
-      const data = new FormData()
-      data.append("appointment_date", moment(props.end).format("YYYY-MM-DD"))
-      data.append("start_time", moment(props.start).format("HH:mm:ss"))
-      data.append("end_time", moment(props.end).format("HH:mm:ss"))
-      viewState === 1 && data.append("assigned_team_id", props?.resourceId)
-      editAppointmentCal(data, {
-        id: id,
-        swapIndex: swapIndex,
-        appointmentsDays: appointmentsDays
-      })
     }
+    
   }
 
   const customOnDragOver = useCallback(
