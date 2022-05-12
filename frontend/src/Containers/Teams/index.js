@@ -197,6 +197,7 @@ function Teams(props) {
     const valueExists = [].concat
       .apply([], filterTeam(memberId))
       .filter(v => v !== false)
+      
   
     if (valueExists.includes(true)) {
       if (teamId != id) {

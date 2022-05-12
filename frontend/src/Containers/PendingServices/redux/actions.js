@@ -25,9 +25,10 @@ export const getAppointmentDetailsSuccess = data => ({
   data
 })
 
-export const requestAction = (data, modalToggle,index) => ({
+export const requestAction = (data, modalToggle,index, isCalender) => ({
   type: REQUEST_ACTION,
   data,
   modalToggle,
-  index
+  index,
+  isCalender
 })

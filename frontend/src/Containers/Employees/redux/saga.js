@@ -126,6 +126,7 @@ async function updateEmployeeApi(data, id) {
 
 function* updateEmployee({ data, id, toggle,currentpage }) {
   try {
+    console.log('data',data);
     const response = yield call(updateEmployeeApi, data, id)
     toggle()
     yield put(getEmployeeListData(currentpage))
@@ -139,39 +140,39 @@ function* updateEmployee({ data, id, toggle,currentpage }) {
   }
 }
 
-async function changeEmployeeTeamApi(data) {
-  const URL = `${BASE_URL}/api/v1/users/change_employee_team/`
-  const token = await sessionStorage.getItem("authToken")
-  const options = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Token ${token}`
-    },
-    method: "POST",
-    data
-  }
+// async function changeEmployeeTeamApi(data) {
+//   const URL = `${BASE_URL}/api/v1/users/change_employee_team/`
+//   const token = await sessionStorage.getItem("authToken")
+//   const options = {
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: `Token ${token}`
+//     },
+//     method: "POST",
+//     data
+//   }
 
-  return XHR(URL, options)
-}
+//   return XHR(URL, options)
+// }
 
-function* changeEmployeeTeam({ data,currentpage }) {
-  try {
-    const response = yield call(changeEmployeeTeamApi, data)
-    yield put(getEmployeeListData(currentpage))
-    toast.success("Successfully employee changed!")
-  } catch (e) {
-    const { response } = e
-    toast.error('Someting wrong!');
-  }
-  finally {
-    yield put(reset())
-  }
-}
+// function* changeEmployeeTeam({ data,currentpage }) {
+//   try {
+//     const response = yield call(changeEmployeeTeamApi, data)
+//     yield put(getEmployeeListData(currentpage))
+//     toast.success("Successfully employee changed!")
+//   } catch (e) {
+//     const { response } = e
+//     toast.error('Someting wrong!');
+//   }
+//   finally {
+//     yield put(reset())
+//   }
+// }
 
 export default all([
   takeLatest(GET_EMPLOYEE_LIST, getEmployeeList),
   takeLatest(ADD_EMPLOYEE, addEmployee),
   takeLatest(DELETE_EMPLOYEE, deleteEmployee),
   takeLatest(UPDATE_EMPLOYEE, updateEmployee),
-  takeLatest(CHANGE_EMPLOYEE_TEAM, changeEmployeeTeam)
+  // takeLatest(CHANGE_EMPLOYEE_TEAM, changeEmployeeTeam)
 ])

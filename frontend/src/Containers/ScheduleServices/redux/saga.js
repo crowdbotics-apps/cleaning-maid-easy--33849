@@ -14,6 +14,7 @@ import { GET_FREQUENCIES, SCHEDULE_SERVICE } from "./types"
 
 // actions
 import { getFrequenciesSuccess, scheduleServicesSuccess } from "./actions"
+import {getPendingRequests} from '../../PendingServices/redux/actions'
 
 async function scheduleServicesAPI(data) {
   const URL = `${BASE_URL}/api/v1/operations/appointment/`
@@ -59,6 +60,9 @@ function* scheduleServices({data,closeModal,setSlotsValue}) {
   try {
     const response = yield call(scheduleServicesAPI, data)
     // closeModal(false)
+    if(closeModal){
+      yield put(getPendingRequests(1))
+    }
     toast.success("Successfully schedule services saved!")
     closeModal && setSlotsValue(false)
     closeModal ? closeModal(false) :yield put(
@@ -69,7 +73,6 @@ function* scheduleServices({data,closeModal,setSlotsValue}) {
     
   } catch (e) {
     const { response } = e
-    console.log("eeeeeeeeeeeeeee",e);
     toast.error('Someting wrong!');
   } finally {
     yield put(scheduleServicesSuccess())

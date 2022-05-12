@@ -228,7 +228,7 @@ const Calendar = props => {
       action: requestAction
     }
 
-    props.requestAction(data, modalToggle, currentPendingPage)
+    props.requestAction(data, modalToggle, currentPendingPage,true)
     if (requestAction === "Accept") {
       setActionRequest(1)
     } else {
@@ -511,7 +511,7 @@ const Calendar = props => {
           }
         }
       } else {
-        if(teamId.title !== 'Unassigned'){
+        if(teamId?.title !== 'Unassigned'){
         const id = props.event.eventDetail.id
         const swapIndex = appointmentsDays.findIndex(e => e.id == id)
         const data = new FormData()
@@ -1707,8 +1707,8 @@ const mapDispatchToProps = dispatch => ({
   addNotes: (data, toggle) => dispatch(addNotes(data, toggle)),
   updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
-  requestAction: (data, modalToggle, index) =>
-    dispatch(requestAction(data, modalToggle, index)),
+  requestAction: (data, modalToggle, index, isCalender) =>
+    dispatch(requestAction(data, modalToggle, index,isCalender)),
   removeTeamMember: (data, currentpage) =>
     dispatch(removeTeamMember(data, currentpage)),
   addTeamMember: (data, currentpage) =>
