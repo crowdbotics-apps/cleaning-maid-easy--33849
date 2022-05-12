@@ -86,7 +86,12 @@ class UsersListViewSet(generics.ListAPIView):
             users_query = users_query.filter(user_type=user_type)
 
         if un_assigned:
-            users_query = users_query.filter(assigned_team__isnull=True)
+            unassigned_team = Team.objects.filter(title__icontains="Unassigned")
+            if len(unassigned_team) > 0:
+                unassigned_team = unassigned_team.first()
+            else:
+                unassigned_team = Team.objects.create(title="Unassigned")
+            users_query = users_query.filter(assigned_team=unassigned_team)
 
         return users_query
 
@@ -247,6 +252,13 @@ class CreateEmployeeViewSet(ViewSet):
                 'Error': 'Invalid Name.'
             }, 400)
 
+        if name:
+            users = User.objects.filter(name=name)
+            if len(users) > 0:
+                return Response({
+                    'Error': 'Employee with same name exists.'
+                }, 400)
+
         try:
             email = request.data['email']
         except:
@@ -294,16 +306,15 @@ class CreateEmployeeViewSet(ViewSet):
         try:
             team_id = request.data['team_id']
         except:
-            return Response({
-                'Error': 'Invalid Team ID.'
-            }, 400)
+            team_id = None
 
-        try:
-            team = Team.objects.get(id=team_id)
-        except:
-            return Response({
-                'Error': 'Invalid Team'
-            }, 400)
+        if team_id:
+            try:
+                team = Team.objects.get(id=team_id)
+            except:
+                team = None
+        else:
+            team = None
 
         try:
             user = User.objects.create(
@@ -322,6 +333,16 @@ class CreateEmployeeViewSet(ViewSet):
                 user_type='Employee',
                 assigned_team=team,
             )
+            if team is None:
+                unassigned_team = Team.objects.filter(title__icontains="Unassigned")
+                if len(unassigned_team) > 0:
+                    unassigned_team = unassigned_team.first()
+                else:
+                    unassigned_team = Team.objects.create(title="Unassigned")
+                user.assigned_team = unassigned_team
+                user.save()
+                unassigned_team.team_members.add(user)
+
             return Response(EmployeeSerializer(user).data)
         except:
             return Response({
