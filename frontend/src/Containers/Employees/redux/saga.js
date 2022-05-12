@@ -126,7 +126,6 @@ async function updateEmployeeApi(data, id) {
 
 function* updateEmployee({ data, id, toggle,currentpage }) {
   try {
-    console.log('data',data);
     const response = yield call(updateEmployeeApi, data, id)
     toggle()
     yield put(getEmployeeListData(currentpage))
