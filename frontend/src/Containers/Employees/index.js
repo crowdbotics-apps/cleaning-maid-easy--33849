@@ -40,7 +40,7 @@ import {
   updateEmployee,
   changeEmployeeTeam
 } from "../Employees/redux/actions"
-import { getTeam } from "../Teams/redux/actions"
+import { getTeam,addTeamMember } from "../Teams/redux/actions"
 
 //utils
 import useForm from "../../utils/useForm"
@@ -161,11 +161,11 @@ function Employees(props) {
       validator: validator.address
     },
     team_id: {
-      required: true
+      required: false
     }
   }
 
-  const { state, handleOnChange, disable } = useForm(
+  const { state, handleOnChange,setState, disable } = useForm(
     stateSchema,
     validationStateSchema
   )
@@ -191,9 +191,8 @@ function Employees(props) {
 
   const toggle = () => {
     setmodal(!modal)
-    resetValues()
+    setState(stateSchema)
     setEditValues(false)
-    state.email.error = ""
   }
 
   const updateEmployee = () => {
@@ -222,30 +221,19 @@ function Employees(props) {
     formBody.append("phone_number", state.phone_number.value)
     formBody.append("zip_code", state.zip_code.value)
     formBody.append("address", state.address.value)
-    formBody.append("team_id", parseInt(state.team_id.value))
+    // formBody.append("team_id", parseInt(state.team_id.value))
 
     props.updateEmployee(formBody, editValues.id, toggle, currentpage)
   }
 
   const [modal, setmodal] = useState(false)
-  const resetValues = () => {
-    state.firstName.value = null
-    state.lastName.value = null
-    state.email.value = null
-    state.company_name.value = ""
-    state.display_company.value = 0
-    state.phone_number.value = ""
-    state.zip_code.value = null
-    state.address.value = null
-    state.team_id.value = ""
-  }
 
-  const changeTeam = (teamId, eomployId) => {
+  const changeTeam = (teamId, employId) => {
     const data = {
-      employee_id: eomployId,
+      member_ids: [employId],
       team_id: teamId
     }
-    props.changeEmployeeTeam(data, currentpage)
+    props.addTeamMember(data, currentpage, true)
   }
 
   const [tooltipOpen, setTooltipOpen] = React.useState(false)
@@ -452,24 +440,26 @@ function Employees(props) {
                     )}
                   </tbody>
                 </Table>
-                <div className="pt-2 d-flex justify-content-center">
-                  {totalCount && (
-                    <Pagination
-                      aria-label="Page navigation example"
-                      itemClass="page-item"
-                      linkClass="page-link"
-                      prevPageText="Prev"
-                      nextPageText="Next"
-                      firstPageText="First"
-                      lastPageText="Last"
-                      activePage={currentpage}
-                      itemsCountPerPage={24}
-                      pageRangeDisplayed={10}
-                      totalItemsCount={totalCount && totalCount}
-                      onChange={handlePageChange}
-                    />
-                  )}
-                </div>
+                {employeesList?.results?.length ? (
+                  <div className="pt-2 d-flex justify-content-center">
+                    {totalCount && (
+                      <Pagination
+                        aria-label="Page navigation example"
+                        itemClass="page-item"
+                        linkClass="page-link"
+                        prevPageText="Prev"
+                        nextPageText="Next"
+                        firstPageText="First"
+                        lastPageText="Last"
+                        activePage={currentpage}
+                        itemsCountPerPage={24}
+                        pageRangeDisplayed={10}
+                        totalItemsCount={totalCount && totalCount}
+                        onChange={handlePageChange}
+                      />
+                    )}
+                  </div>
+                ):null}
               </CardBody>
 
               <CardFooter style={styles.stylefootter}>
@@ -590,7 +580,7 @@ function Employees(props) {
                           )}
                         </div>
                       </>
-                    ):null}
+                    ) : null}
 
                     <div style={styles.companyshow}>
                       Display Company Name:
@@ -676,6 +666,7 @@ function Employees(props) {
                       <select
                         style={styles.selectStyle}
                         value={state.team_id.value}
+                        disabled={ editValues?.id ? true:false}
                         onChange={e =>
                           handleOnChange("team_id", e.target.value)
                         }
@@ -845,7 +836,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(deleteEmployee(id, currentpage)),
   updateEmployee: (data, id, toggle, currentpage) =>
     dispatch(updateEmployee(data, id, toggle, currentpage)),
-  changeEmployeeTeam: (data, currentpage) =>
-    dispatch(changeEmployeeTeam(data, currentpage))
+    addTeamMember: (data, currentpage,isEmployee) =>
+    dispatch(addTeamMember(data, currentpage,isEmployee))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Employees)

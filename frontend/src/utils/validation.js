@@ -29,6 +29,11 @@ const validator = {
   passportNumber: {
     regEx: /(?=^.{0,9}$).*$/,
     error: "Passport numbers's length can't be more then 9"
+  },
+  address:{
+    regEx: /([a-zA-Z]+\s?)+\s([a-zA-Z]+\s?)+,\s[a-zA-Z]{2}/,
+    error: "Address must be in format like Address City, State"
+    
   }
 }
 

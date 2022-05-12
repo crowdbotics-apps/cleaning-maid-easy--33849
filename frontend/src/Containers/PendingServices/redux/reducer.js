@@ -1,7 +1,6 @@
 import {
   GET_PENDING_REQUESTS,
   GET_PENDING_REQUESTS_SUCCESS,
-  GET_APPOINTMENT_DETAILS,
   GET_APPOINTMENT_DETAILS_SUCCESS,
   REQUEST_ACTION,
   RESET
@@ -26,12 +25,6 @@ export default (state = initialState, action) => {
         requesting: false,
         pendingRequests: action.data
       }
-
-    // case GET_APPOINTMENT_DETAILS:
-    //   return {
-    //     ...state,
-    //     requesting: false
-    //   }
 
     case GET_APPOINTMENT_DETAILS_SUCCESS:
       return {

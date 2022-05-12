@@ -143,7 +143,8 @@ const Customers = props => {
       validator: validator.numeric
     },
     address: {
-      required: true
+      required: true,
+      validator: validator.address
     },
     service_id: {
       required: true
@@ -154,18 +155,6 @@ const Customers = props => {
     freq_id: {
       required: true
     }
-  }
-
-  const resetValues = () => {
-    state.fullName.value = null
-    state.email.value = null
-    state.company_name.value = ""
-    state.phone_number.value = ""
-    state.zip_code.value = null
-    state.address.value = null
-    state.service_id.value = ""
-    state.other.value = null
-    state.freq_id.value = ""
   }
 
   const filterNotifications = () => {
@@ -191,16 +180,17 @@ const Customers = props => {
     }
     let data = new FormData()
     data.append("notifications_enabled", state)
-    props.changeNotification(data, item.id,currentpage)
+    props.changeNotification(data, item.id, currentpage)
   }
 
   // Toggle for Modal
   const toggle = () => {
-    resetValues()
+    setNotificationsValue(false)
+    setState(stateSchema)
     setModal(!modal)
   }
 
-  const { state, handleOnChange, disable } = useForm(
+  const { state, handleOnChange,setState, disable } = useForm(
     stateSchema,
     validationStateSchema
   )
@@ -218,7 +208,7 @@ const Customers = props => {
       freq_id: parseInt(state.freq_id.value),
       notifications: notificationsValue
     }
-    props.addCustomer(data, toggle,currentpage)
+    props.addCustomer(data, toggle, currentpage)
   }
 
   return (
@@ -411,6 +401,7 @@ const Customers = props => {
                   offText=""
                   onColor="success"
                   fontSize={"small"}
+                  value={notificationsValue}
                   onChange={(el, state) => setNotificationsValue(state)}
                 />{" "}
               </div>
@@ -514,9 +505,7 @@ const Customers = props => {
                               </div>
                             </div>
                           </td>
-                          <td
-                            className="align-top"
-                          >
+                          <td className="align-top">
                             <div
                               style={{
                                 paddingLeft: 18,
@@ -623,24 +612,26 @@ const Customers = props => {
                     )}
                   </tbody>
                 </Table>
-                <div className="pt-4 d-flex justify-content-center">
-                  {totalCount && (
-                    <Pagination
-                      aria-label="Page navigation example"
-                      itemClass="page-item"
-                      linkClass="page-link"
-                      prevPageText="Prev"
-                      nextPageText="Next"
-                      firstPageText="First"
-                      lastPageText="Last"
-                      activePage={currentpage}
-                      itemsCountPerPage={24}
-                      pageRangeDisplayed={10}
-                      totalItemsCount={totalCount && totalCount}
-                      onChange={handlePageChange}
-                    />
-                  )}
-                </div>
+                {customers?.results?.length ? (
+                  <div className="pt-4 d-flex justify-content-center">
+                    { totalCount && (
+                      <Pagination
+                        aria-label="Page navigation example"
+                        itemClass="page-item"
+                        linkClass="page-link"
+                        prevPageText="Prev"
+                        nextPageText="Next"
+                        firstPageText="First"
+                        lastPageText="Last"
+                        activePage={currentpage}
+                        itemsCountPerPage={24}
+                        pageRangeDisplayed={10}
+                        totalItemsCount={totalCount && totalCount}
+                        onChange={handlePageChange}
+                      />
+                    )}
+                  </div>
+                ):null}
               </CardBody>
             </Card>
           </Col>
@@ -662,9 +653,11 @@ const mapDispatchToProps = dispatch => ({
   getAllCustomers: index => dispatch(getAllCustomers(index)),
   getServices: () => dispatch(getServices()),
   getFrequencies: () => dispatch(getFrequencies()),
-  addCustomer: (data, toggle,currentpage) => dispatch(addCustomer(data, toggle,currentpage)),
+  addCustomer: (data, toggle, currentpage) =>
+    dispatch(addCustomer(data, toggle, currentpage)),
   addCustomerFailure: error => dispatch(addCustomerFailure(error)),
-  changeNotification: (data, id,currentpage) => dispatch(changeNotification(data, id,currentpage)),
+  changeNotification: (data, id, currentpage) =>
+    dispatch(changeNotification(data, id, currentpage)),
   searchCustomers: data => dispatch(searchCustomers(data))
 })
 

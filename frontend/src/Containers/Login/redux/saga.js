@@ -45,7 +45,7 @@ function* login({ data }) {
     toast.success("Successfully login!")
     yield put(
       push({
-        pathname: '/admin/services'
+        pathname: '/admin/calendar'
       })
     )
 

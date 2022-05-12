@@ -113,8 +113,8 @@ function Teams(props) {
 
   const filterData = () => {
     let filterData =
-    unAssignedEmployees?.results &&
-      unAssignedEmployees.results .filter(item =>
+      unAssignedEmployees?.results &&
+      unAssignedEmployees.results.filter(item =>
         item.name.toLowerCase().includes(searchData.toLowerCase())
       )
     return filterData
@@ -140,7 +140,7 @@ function Teams(props) {
         member_ids: selectedMembers,
         team_name: teamName
       }
-      props.createTeam(apiData, setmodal)
+      props.createTeam(apiData, setmodal, setSelectedMebers)
       setTeamName(false)
       setNameError(false)
     } else {
@@ -164,12 +164,16 @@ function Teams(props) {
       member_ids: [parseInt(memberId)],
       team_id: parseInt(teamId)
     }
+
     const valueExists = [].concat
       .apply([], filterTeam(memberId))
       .filter(v => v !== false)
 
     if (valueExists.includes(true)) {
-      props.removeTeamMember(data, currentpage)
+      if(teamId!=''){
+       props.removeTeamMember(data, currentpage)
+      }
+     
     }
   }
 
@@ -183,6 +187,7 @@ function Teams(props) {
 
   const addTeamOnDrop = (ev, id, cat) => {
     let memberId = ev.dataTransfer.getData("memberId")
+    let teamId = ev.dataTransfer.getData("teamId")
 
     const data = {
       member_ids: [parseInt(memberId)],
@@ -192,9 +197,12 @@ function Teams(props) {
     const valueExists = [].concat
       .apply([], filterTeam(memberId))
       .filter(v => v !== false)
-
+      
+  
     if (valueExists.includes(true)) {
-      props.addTeamMember(data, currentpage)
+      if (teamId != id) {
+        props.addTeamMember(data, currentpage)
+      }
     }
   }
   return (
@@ -226,134 +234,140 @@ function Teams(props) {
                       </tr>
                     </thead>
                     <tbody className="container-drag">
-                      {teamData.length ? (
-                        teamData.map((item, index) => (
-                          <tr style={styles.borderBottom}>
-                            <td
-                              className="text-center "
-                              style={styles.textFont}
-                            >
-                              {index + 1}
-                            </td>
-                            <td className="" style={styles.textFont}>
-                              {item.title}
-                            </td>
-                            <td
-                              style={{ width: "52%", borderLeft: ""}}
-                              className="task-header"
-                              onDragOver={e => addTeamDrageOver(e)}
-                              onDrop={e => addTeamOnDrop(e, item.id, "items")}
-                            >
-                              {item.team_members?.length &&
-                                item.team_members.map((items, index) => (
-                                  <>
-                                    {items.name !== null && (
-                                      <Button
-                                        className
-                                        onDragStart={e =>
-                                          removeTeamDrageStart(
-                                            e,
-                                            items.id,
-                                            item.id
-                                          )
-                                        }
-                                        draggable
-                                        style={styles.addBtn}
-                                        color="white"
-                                        title=""
-                                        type="button"
-                                        size="sm"
-                                      >
-                                        {items.name}
-                                      </Button>
-                                      // </div>
-                                      // </Draggable>
-                                    )}
-                                  </>
-                                ))}
-                            </td>
-                            <td
-                              style={styles.borderBottom}
-                              className="text-center "
-                            >
-                              {/* <img
-                                className="mr-3"
-                                style={styles.imgStyle}
-                                alt="..."
-                                src={require("assets/icons/pencil_btn.png")}
-                              /> */}
-                              {deleteRequesting && deleteId === item.id ? (
-                                <Spinner
-                                  as="span"
-                                  animation="border"
-                                  size="sm"
-                                  role="status"
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                <img
-                                  style={styles.imgStyle}
-                                  onClick={() => deleteTeam(item.id)}
-                                  // style={{marginLeft:50}}
-                                  alt="..."
-                                  src={require("assets/icons/delete_btn.png")}
-                                />
-                              )}
-                            </td>
-                            {!index && (
+                      {teamData.length > 1 ? (
+                        teamData
+                          .filter(v => v.title !== "Unassigned")
+                          .map((item, index) => (
+                            <tr style={styles.borderBottom}>
                               <td
-                                ref={UnAssignedTeamRef}
-                                rowSpan="23"
-                                style={{
-                                  borderLeft: "1px solid rgb(212, 212, 212)"
-                                }}
-                                onDragOver={e => removeTeamDrageOver(e)}
-                                onDrop={e => removeTeamOnDrop(e, "unAssign")}
-                                // className="draggable"
+                                className="text-center "
+                                style={styles.textFont}
                               >
-                                <div style={{ height: 222, overflowY: "auto", }}>
-                                  {unAssignedEmployees.results &&
-                                    unAssignedEmployees.results.map(items => (
-                                      <div>
+                                {index + 1}
+                              </td>
+                              <td className="" style={styles.textFont}>
+                                {item.title}
+                              </td>
+                              <td
+                                style={{ width: "52%", borderLeft: "" }}
+                                className="task-header"
+                                onDragOver={e => addTeamDrageOver(e)}
+                                onDrop={e => addTeamOnDrop(e, item.id, "items")}
+                              >
+                                {item.team_members?.length ?
+                                  item.team_members.map((items, index) => (
+                                    <>
+                                      {items.name !== null && (
                                         <Button
+                                          className
+                                          onDragStart={e =>
+                                            removeTeamDrageStart(
+                                              e,
+                                              items.id,
+                                              item.id
+                                            )
+                                          }
+                                          draggable
                                           style={styles.addBtn}
                                           color="white"
                                           title=""
                                           type="button"
                                           size="sm"
-                                          onDragStart={e =>
-                                            addTeamDrageStart(e, items.id)
-                                          }
-                                          draggable
                                         >
                                           {items.name}
                                         </Button>
-                                      </div>
-                                    ))}
-                                </div>
-                                {totalCount && (
-                                  <div className="pt-3 d-flex justify-content-center">
-                                    <Pagination
-                                      aria-label="Page navigation example"
-                                      itemClass="page-item"
-                                      linkClass="page-link"
-                                      prevPageText="<"
-                                      style={{ backgroundColor: "red" }}
-                                      nextPageText=">"
-                                      firstPageText="<<"
-                                      lastPageText=">>"
-                                      activePage={currentpage}
-                                      itemsCountPerPage={24}
-                                      pageRangeDisplayed={3}
-                                      totalItemsCount={totalCount && totalCount}
-                                      onChange={handlePageChange}
-                                    />
-                                  </div>
+                                        // </div>
+                                        // </Draggable>
+                                      )}
+                                    </>
+                                  )):null}
+                              </td>
+                              <td
+                                style={styles.borderBottom}
+                                className="text-center "
+                              >
+                                {/* <img
+                                className="mr-3"
+                                style={styles.imgStyle}
+                                alt="..."
+                                src={require("assets/icons/pencil_btn.png")}
+                              /> */}
+                                {deleteRequesting && deleteId === item.id ? (
+                                  <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <img
+                                    style={styles.imgStyle}
+                                    onClick={() => deleteTeam(item.id)}
+                                    // style={{marginLeft:50}}
+                                    alt="..."
+                                    src={require("assets/icons/delete_btn.png")}
+                                  />
                                 )}
                               </td>
-                            )}
-                          </tr>
-                        ))
+                              {!index && (
+                                <td
+                                  ref={UnAssignedTeamRef}
+                                  rowSpan="23"
+                                  style={{
+                                    borderLeft: "1px solid rgb(212, 212, 212)"
+                                  }}
+                                  onDragOver={e => removeTeamDrageOver(e)}
+                                  onDrop={e => removeTeamOnDrop(e, "unAssign")}
+                                  // className="draggable"
+                                >
+                                  <div
+                                    style={{ height: 222, overflowY: "auto" }}
+                                  >
+                                    {unAssignedEmployees.results &&
+                                      unAssignedEmployees.results.map(items => (
+                                        <div>
+                                          <Button
+                                            style={styles.addBtn}
+                                            color="white"
+                                            title=""
+                                            type="button"
+                                            size="sm"
+                                            onDragStart={e => 
+                                              addTeamDrageStart(e, items.id)
+                                            }
+                                            draggable
+                                          >
+                                            {items.name}
+                                          </Button>
+                                        </div>
+                                      ))}
+                                  </div>
+                                  {totalCount?.length ? (
+                                    <div className="pt-3 d-flex justify-content-center">
+                                      <Pagination
+                                        aria-label="Page navigation example"
+                                        itemClass="page-item"
+                                        linkClass="page-link"
+                                        prevPageText="<"
+                                        style={{ backgroundColor: "red" }}
+                                        nextPageText=">"
+                                        firstPageText="<<"
+                                        lastPageText=">>"
+                                        activePage={currentpage}
+                                        itemsCountPerPage={24}
+                                        pageRangeDisplayed={3}
+                                        totalItemsCount={
+                                          totalCount && totalCount
+                                        }
+                                        onChange={handlePageChange}
+                                      />
+                                    </div>
+                                  ):null}
+                                </td>
+                              )}
+                            </tr>
+                          ))
                       ) : (
                         <tr>
                           <td></td>
@@ -412,7 +426,10 @@ function Teams(props) {
                       />
                     </button>
                   </div>
-                  <div className="modal-body" style={{height:550, overflowY:'auto'}}>
+                  <div
+                    className="modal-body"
+                    style={{ height: 550, overflowY: "auto" }}
+                  >
                     <label>Team Name</label>
                     <Input
                       style={styles.inputTextStyle}
@@ -594,7 +611,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 25,
-    alignItems: "center",
+    alignItems: "center"
   },
   checkBoxStyle: {
     width: 21,
@@ -634,7 +651,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getEmployees: () => dispatch(getEmployees()),
-  createTeam: (data, setmodal) => dispatch(createTeam(data, setmodal)),
+  createTeam: (data, setmodal, setSelectedMebers) =>
+    dispatch(createTeam(data, setmodal, setSelectedMebers)),
   deleteTeam: data => dispatch(deleteTeam(data)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getUnAssignedEmployees: index => dispatch(getUnAssignedEmployees(index)),

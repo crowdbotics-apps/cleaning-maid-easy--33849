@@ -41,10 +41,11 @@ export const getEmployeesSuccess = (data) => ({
   data,
 });
 
-export const addTeamMember=(data,currentpage)=>({
+export const addTeamMember=(data,currentpage,isEmployee)=>({
   type: ADD_TEAM_MEMBER,
   data,
-  currentpage
+  currentpage,
+  isEmployee
 })
 
 export const removeTeamMember=(data,currentpage)=>({
@@ -53,10 +54,11 @@ export const removeTeamMember=(data,currentpage)=>({
   currentpage
 })
 
-export const createTeam= (data, setmodal) => ({
+export const createTeam= (data, setmodal,setSelectedMebers) => ({
   type: CREATE_TEAM,
   data,
-  setmodal
+  setmodal,
+  setSelectedMebers
 });
 
 export const createTeamFailure= (data) => ({

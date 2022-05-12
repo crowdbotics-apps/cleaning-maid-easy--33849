@@ -15,7 +15,8 @@ import { GET_TEAM, GET_EMPLOYEES, CREATE_TEAM, DELETE_TEAM,GET_UN_ASSIGNED_EMPLO
 
 // actions
 import {getTeamSuccess, resetTeam, getEmployeesSuccess, getTeam,getUnAssignedEmployeesSuccess,getUnAssignedEmployees as getUnAssignedEmployeesData} from './actions'
-import {getDayAcceptedAppointments} from '../../Calendar/redux/actions'
+// import {getDayAcceptedAppointments} from '../../Calendar/redux/actions'
+import {getEmployeeList} from '../../Employees/redux/actions'
 
 
 async function getTeamAPI() {
@@ -87,10 +88,11 @@ async function createTeamApi(data) {
   return XHR(URL, options);
 }
 
-function* createTeam({data, setmodal}) {
+function* createTeam({data, setmodal,setSelectedMebers}) {
   try {
     const response = yield call(createTeamApi, data);
     setmodal(false)
+    setSelectedMebers([])
     yield put((getTeam()))
     toast.success("Successfully saved!")
   } catch (e) {
@@ -185,10 +187,10 @@ function* removeTeamMember({data,currentpage}) {
     yield put (getUnAssignedEmployeesData(currentpage))
     // yield put (getDayAcceptedAppointments(date))
     toast.success("Successfully removed!")
-    const newDate = sessionStorage.getItem('date');
-    const userDate = JSON.parse(newDate)
-    const dateFormate=moment(userDate).format("YYYY-MM-DD")
-    yield put (getDayAcceptedAppointments(dateFormate))
+    // const newDate = sessionStorage.getItem('date');
+    // const userDate = JSON.parse(newDate)
+    // const dateFormate=moment(userDate).format("YYYY-MM-DD")
+    // yield put (getDayAcceptedAppointments(dateFormate))
   } catch (e) {
     const { response } = e
     toast.error('Someting wrong!');
@@ -213,16 +215,21 @@ async function addTeamMemberApi(data) {
   return XHR(URL, options);
 }
 
-function* addTeamMember({data,currentpage}) {
+function* addTeamMember({data,currentpage,isEmployee}) {
   try {
     const response = yield call(addTeamMemberApi,data);
-    yield put((getTeam()))
-    yield put (getUnAssignedEmployeesData(currentpage))
+    if (isEmployee) {
+      yield put(getEmployeeList(currentpage))
+    } else {
+      yield put((getTeam()))
+      yield put (getUnAssignedEmployeesData(currentpage))  
+    }
+    
     toast.success("Successfully added!")
-    const newDate = sessionStorage.getItem('date');
-    const userDate = JSON.parse(newDate)
-    const dateFormate=moment(userDate).format("YYYY-MM-DD")
-    yield put (getDayAcceptedAppointments(dateFormate))
+    // const newDate = sessionStorage.getItem('date');
+    // const userDate = JSON.parse(newDate)
+    // const dateFormate=moment(userDate).format("YYYY-MM-DD")
+    // yield put (getDayAcceptedAppointments(dateFormate))
 
   } catch (e) {
     const { response } = e

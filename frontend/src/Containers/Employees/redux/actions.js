@@ -35,11 +35,11 @@ export const deleteEmployee = (id,currentpage) => ({
   currentpage
 })
 
-export const changeEmployeeTeam=(data,currentpage)=>({
-  type: CHANGE_EMPLOYEE_TEAM,
-  data,
-  currentpage
-})
+// export const changeEmployeeTeam=(data,currentpage)=>({
+//   type: CHANGE_EMPLOYEE_TEAM,
+//   data,
+//   currentpage
+// })
 
 export const getEmployeeSuccess = data => ({
   type: GET_EMPLOYEE_SUCCESS,
