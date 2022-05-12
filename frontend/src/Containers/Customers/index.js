@@ -143,7 +143,8 @@ const Customers = props => {
       validator: validator.numeric
     },
     address: {
-      required: true
+      required: true,
+      validator: validator.address
     },
     service_id: {
       required: true
@@ -154,19 +155,6 @@ const Customers = props => {
     freq_id: {
       required: true
     }
-  }
-
-  const resetValues = () => {
-    state.fullName.value = null
-    state.email.value = null
-    state.company_name.value = ""
-    state.phone_number.value = ""
-    state.zip_code.value = null
-    state.address.value = null
-    state.service_id.value = ""
-    state.other.value = null
-    state.freq_id.value = ""
-    setNotificationsValue(false)
   }
 
   const filterNotifications = () => {
@@ -197,11 +185,12 @@ const Customers = props => {
 
   // Toggle for Modal
   const toggle = () => {
-    resetValues()
+    setNotificationsValue(false)
+    setState(stateSchema)
     setModal(!modal)
   }
 
-  const { state, handleOnChange, disable } = useForm(
+  const { state, handleOnChange,setState, disable } = useForm(
     stateSchema,
     validationStateSchema
   )

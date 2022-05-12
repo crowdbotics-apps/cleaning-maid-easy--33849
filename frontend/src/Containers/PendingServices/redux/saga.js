@@ -7,12 +7,10 @@ import { BASE_URL } from "../../../config/app"
 // utils
 import XHR from "../../../utils/XHR"
 import toast from "react-hot-toast"
+import moment from 'moment';
 
 // types
-import {
-  GET_PENDING_REQUESTS,
-  REQUEST_ACTION
-} from "./types"
+import { GET_PENDING_REQUESTS, REQUEST_ACTION } from "./types"
 
 // actions
 import {
@@ -21,6 +19,7 @@ import {
   getAppointmentDetailsSuccess,
   getPendingRequests as getPendingRequestsData
 } from "./actions"
+import { getDayAcceptedAppointments } from "../../Calendar/redux/actions"
 
 async function getPendingRequestsAPI(index) {
   const URL = `${BASE_URL}/api/v1/operations/pending_requests/?page=${index}`
@@ -51,21 +50,27 @@ async function requestActionAPI(data) {
   return XHR(URL, options)
 }
 
-function* requestAction({ data, modalToggle,index }) {
+function* requestAction({ data, modalToggle, index, isCalender }) {
   try {
     const response = yield call(requestActionAPI, data)
-    yield put (getPendingRequestsData(index))
+    if (isCalender) {
+      const newDate = sessionStorage.getItem("date")
+      const userDate = JSON.parse(newDate)
+      const dateFormate = moment(userDate).format("YYYY-MM-DD")
+      yield put(getDayAcceptedAppointments(dateFormate))
+    }
+    yield put(getPendingRequestsData(index))
     modalToggle()
     toast.success(`Successfully ${data?.action}ed!`)
   } catch (e) {
     const { response } = e
-    toast.error('Someting wrong!');
+    toast.error("Someting wrong!")
   }
 }
 
-function* getPendingRequests({index}) {
+function* getPendingRequests({ index }) {
   try {
-    const response = yield call(getPendingRequestsAPI,index)
+    const response = yield call(getPendingRequestsAPI, index)
     yield put(getPendingRequestsSuccess(response.data))
   } catch (e) {
     const { response } = e
@@ -73,7 +78,6 @@ function* getPendingRequests({index}) {
     yield put(reset())
   }
 }
-
 
 export default all([
   takeLatest(GET_PENDING_REQUESTS, getPendingRequests),
