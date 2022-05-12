@@ -102,6 +102,12 @@ class CreateTeamViewSet(ViewSet):
                 'Error': 'Invalid Team Name.'
             })
 
+        duplicate_teams = Team.objects.filter(title=team_name)
+        if len(duplicate_teams) > 0:
+            return Response({
+                'Error': 'A team with this name exists!'
+            })
+
         team = Team.objects.create(
             title=team_name
         )

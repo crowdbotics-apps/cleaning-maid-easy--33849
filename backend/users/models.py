@@ -21,7 +21,7 @@ class User(AbstractUser):
 
     # First Name and Last Name do not cover name patterns
     # around the globe.
-    name = models.CharField(_("Name of User"), blank=True, null=True, max_length=255)
+    name = models.CharField(_("Name of User"), blank=True, null=True, max_length=255, unique=True)
     company_name = models.CharField(max_length=256, null=True, blank=True)
     display_company = models.BooleanField(null=True)
     address = models.CharField(max_length=500, null=True, blank=True)
