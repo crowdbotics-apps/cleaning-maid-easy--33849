@@ -3,17 +3,12 @@ import React, { useState, useEffect } from "react"
 import {
   Button,
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
   Row,
   Col,
   FormGroup,
   Input,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  UncontrolledAlert,
   Spinner
 } from "reactstrap"
 import Select from "react-select"
@@ -38,8 +33,8 @@ import { getState } from "utils/functions"
 
 //Actions
 import { getTeam } from "Containers/Teams/redux/actions"
-import { getServices, renderHtmlText } from "Containers/Services/redux/actions"
-import { getFrequencies, scheduleServices } from "./redux/actions"
+import { getServices } from "Containers/Services/redux/actions"
+import { getFrequencies, updateScheduleServices } from "./redux/actions"
 import { getAllCustomers } from "../Customers/redux/actions"
 
 //Images
@@ -47,19 +42,52 @@ import locationImage from "../../assets/icons/mapPin.png"
 import calenderImage from "../../assets/icons/Calendar.png"
 import clockImage from "../../assets/icons/Clock.png"
 
-function ScheduleService(props) {
-  const { closeModal, slotsValue, setSlotsValue } = props
+function UpdateScheduleServices(props) {
+  const { closeUpdateModal, eventDetail, viewState } = props
+
   useEffect(() => {
-    !closeModal && props.renderHtmlText("Schedule Service")
     props.getTeam()
     props.getServices()
     props.getFrequencies()
-    props.getAllCustomers(false,true)
+    props.getAllCustomers(false, true)
     let mydiv = document.getElementsByClassName("react-date-picker__wrapper")
     mydiv[0].style.border = "none"
   }, [])
 
-  // react-date-picker__wrapper
+  useEffect(() => {
+    if (eventDetail) {
+      handleOnChange("price", eventDetail?.eventDetail?.price)
+      handleOnChange("description", eventDetail?.eventDetail?.description)
+      handleOnChange("notes", eventDetail?.eventDetail?.notes)
+      handleOnChange("client_number", eventDetail?.eventDetail?.client_number)
+      handleOnChange("title", eventDetail?.eventDetail?.title)
+      handleOnChange("client_address", eventDetail?.eventDetail?.client_address)
+      setToTime(eventDetail?.end)
+      setCalenderValue(eventDetail?.start)
+      setFromTime(eventDetail?.start)
+      setAppoinmentData({
+        appointment_date: eventDetail?.eventDetail?.appointment_date,
+        start_time: eventDetail?.eventDetail?.start_time,
+        end_time: eventDetail?.eventDetail?.end_time,
+        client_id: {
+          label: eventDetail?.eventDetail?.client?.name,
+          value: eventDetail?.eventDetail?.client?.id
+        },
+        assigned_team_id: {
+          label: eventDetail?.eventDetail?.assigned_team?.title,
+          value: eventDetail?.eventDetail?.assigned_team?.id
+        },
+        service_id: {
+          label: eventDetail?.eventDetail?.service?.name,
+          value: eventDetail?.eventDetail?.service?.id
+        },
+        frequency_id: {
+          label: eventDetail?.eventDetail?.frequency?.title,
+          value: eventDetail?.eventDetail?.frequency?.id
+        }
+      })
+    }
+  }, [])
 
   const { teamData, servicesData, frequencies, requesting, customers } = props
 
@@ -74,16 +102,12 @@ function ScheduleService(props) {
   const [fromTime, setFromTime] = useState("-1:00")
   const [toTime, setToTime] = useState("-1:00")
 
+  const [btnText, setBtnText] = useState("Edit")
+  const [isEdit, setIsEdit] = useState(false)
+
   const [appointmentData, setAppoinmentData] = useState({
     appointment_date: new Date()
   })
-
-  // const [otherData, setOtherData] = useState({
-  //   assigned_team_id: [],
-  //   service_id: [],
-  //   frequency_id: [],
-  //   appointment_date: new Date()
-  // })
 
   //Useform
   const stateSchema = {
@@ -143,45 +167,52 @@ function ScheduleService(props) {
   const onSave = (title, value) => {
     let data = { ...appointmentData }
     data[title] = value
-    if (slotsValue?.length) {
-      if (slotsValue[0] && slotsValue[1]) {
-        data["start_time"] = moment(slotsValue[0]).format("HH:mm")
-        data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
-        data["end_time"] = moment(slotsValue[1]).format("HH:mm")
-      } else {
-        data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
-      }
-    }
-
     setAppoinmentData(data)
+  }
+
+  const updateData = () => {
+    if (btnText === "Save") {
+      onHandleSave()
+    } else {
+      setBtnText("Save")
+      setIsEdit(true)
+    }
   }
 
   const onHandleSave = () => {
     const data = { ...appointmentData, ...getState(state) }
-    data["status"] = "Pending"
+    data["service_id"] = data.service_id.value
+    data["assigned_team_id"] = data.assigned_team_id.value
+    data["frequency_id"] = data.frequency_id.value
+    data["client_id"] = data.client_id.value
 
-    if (data.appointment_date || slotsValue) {
+    if (data.appointment_date) {
       setSelectedDate(false)
     } else {
       setSelectedDate(true)
     }
 
-    if ((data.start_time && data.end_time) || slotsValue) {
+    if (data.start_time && data.end_time) {
       setSelectTime(false)
     } else {
       setSelectTime(true)
     }
 
     if (
-      (data.end_time || slotsValue?.length === 2) &&
-      (data.start_time || slotsValue?.length === 2) &&
-      (data.appointment_date || slotsValue[0]) &&
+      data.end_time &&
+      data.start_time &&
+      data.appointment_date &&
       data.assigned_team_id &&
       data.service_id &&
-      data.frequency_id
-      // data.client_id
+      data.frequency_id &&
+      data.client_id
     ) {
-      props.getScheduleServices(data, closeModal, setSlotsValue)
+      props.updateScheduleServices(
+        data,
+        eventDetail.eventDetail.id,
+        closeUpdateModal,
+        viewState
+      )
     } else {
       toast.error("Please fill require fields!")
     }
@@ -191,16 +222,11 @@ function ScheduleService(props) {
     <>
       <Toaster position="top-center" />
       <div
-        className="content"
         style={{
-          backgroundRepeat: !closeModal && "no-repeat",
-          backgroundSize: !closeModal && "cover",
-          backgroundImage:
-            !closeModal && `url(${require("assets/images/bg_content.png")})`,
           flex: 1
         }}
       >
-        {closeModal && (
+        {closeUpdateModal && (
           <div className="modal-header border-bottom-0">
             <button
               aria-hidden={true}
@@ -208,8 +234,7 @@ function ScheduleService(props) {
               data-dismiss="modal"
               type="button"
               onClick={() => {
-                setSlotsValue(false)
-                closeModal()
+                closeUpdateModal()
               }}
             >
               <i
@@ -222,7 +247,7 @@ function ScheduleService(props) {
             </button>
             <div>
               <label className="mt-2" style={styles.titleTextStyle}>
-                Add Service
+                {!isEdit ? "Service Details" : "Update Service"}
               </label>
             </div>
           </div>
@@ -230,10 +255,10 @@ function ScheduleService(props) {
 
         <Row>
           <Col md="12">
-            <Card style={!closeModal ? styles.cardStyle : null}>
+            <Card style={!closeUpdateModal ? styles.cardStyle : null}>
               <CardBody
                 className="pl-5 pr-5"
-                style={{ paddingTop: !closeModal ? 50 : "" }}
+                style={{ paddingTop: !closeUpdateModal ? 50 : "" }}
               >
                 <Row>
                   <Col lg="6">
@@ -251,11 +276,11 @@ function ScheduleService(props) {
 
                       <DatePicker
                         className={"calnderStyle"}
-                        disabled={slotsValue?.length ? true : false}
                         // clearIcon={false}
                         wrapperClassName="datePickerBorder"
-                        value={slotsValue ? slotsValue[0] : calendarValue}
-                        minDate={new Date()}
+                        disabled={isEdit ? false : true}
+                        value={calendarValue}
+                        // minDate={new Date()}
                         onChange={date => {
                           setCalenderValue(date)
                           const selectedDatee =
@@ -277,15 +302,9 @@ function ScheduleService(props) {
                     >
                       <img src={clockImage} style={{ marginRight: 10 }} />
                       <TimePicker
-                        value={
-                          slotsValue
-                            ? moment(slotsValue[0]).format("HH:mm") !== "00:00"
-                              ? slotsValue[0]
-                              : fromTime
-                            : fromTime
-                        }
+                        value={fromTime}
                         className={"timeStyle"}
-                        disabled={slotsValue?.length === 2 ? true : false}
+                        disabled={isEdit ? false : true}
                         clockIcon
                         disableClock={true}
                         secondPlaceholder="ss"
@@ -303,27 +322,10 @@ function ScheduleService(props) {
                       >
                         -
                       </label>
-                      {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileTimePicker
-                          value={endTime}
-                          onChange={(newValue) => {
-                            onSave("end_time", moment(newValue).format('HH:mm'))
-                            setEndTime(newValue);
-                          }}
-                          renderInput={(params) => 
-                          <div><TextField {...params} placeholder='Start time' /></div>}
-                        />
-                  </LocalizationProvider> */}
                       <TimePicker
-                        value={
-                          slotsValue
-                            ? slotsValue[1]
-                              ? slotsValue[1]
-                              : toTime
-                            : toTime
-                        }
+                        value={toTime}
                         className={"timeStyle"}
-                        disabled={slotsValue?.length === 2 ? true : false}
+                        disabled={isEdit ? false : true}
                         disableClock={true}
                         onChange={e => {
                           onSave("end_time", e)
@@ -350,24 +352,16 @@ function ScheduleService(props) {
                       <Input
                         style={styles.inputStyle}
                         className="border-top-0 border-right-0 border-left-0 p-0"
-                        // onChange={e => handleOnChange("client_address", e.target.value)}
                         disabled
                         value={state.client_address.value}
                       />
                     </div>
-
-                    {/* <div
-                    className="mt-4 d-flex"
-                    style={{
-                      justifyContent: "space-between",
-                      flexWrap: "wrap",
-                    }}
-                  > */}
                     <Row style={{ marginTop: 28 }}>
                       <Col md="12">
                         <label style={styles.labelFont}>Title</label>
                         <Input
                           style={styles.inputStyle}
+                          disabled={isEdit ? false : true}
                           className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
                           onChange={e =>
                             handleOnChange("title", e.target.value)
@@ -388,25 +382,23 @@ function ScheduleService(props) {
                         <Select
                           className="react-select"
                           classNamePrefix="react-select"
+                          value={appointmentData?.client_id}
+                          isDisabled={isEdit ? false : true}
                           name="singleSelect"
                           options={
                             customers?.length &&
                             customers?.map(item => ({
                               label: item.name,
                               value: item.id,
-                              address:item.address
+                              address: item.address
                             }))
                           }
                           onChange={e => {
-                            onSave("client_id", e.value)
+                            onSave("client_id", e)
                             handleOnChange("client_address", e.address)
                           }}
                           placeholder="Select Customer"
                         />
-                        {/* <Input
-                        style={styles.inputStyle}
-                        className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
-                      /> */}
                       </Col>
                       <Col lg="4" md="6" sm="3">
                         <label style={styles.labelFont}>Number</label>
@@ -417,6 +409,7 @@ function ScheduleService(props) {
                             handleOnChange("client_number", e.target.value)
                           }
                           value={state.client_number.value}
+                          disabled={isEdit ? false : true}
                         />
                         <label style={{ color: "red" }}>
                           {state.client_number.error
@@ -430,24 +423,22 @@ function ScheduleService(props) {
                       <label style={styles.labelFont}>
                         Assigned Employee/ Team
                       </label>
-                      {/* <Input
-                      style={styles.inputStyle}
-                      className="border-top-0 border-right-0 border-left-0 p-0"
-                    /> */}
                       <Select
                         className="react-select "
                         classNamePrefix="react-select"
                         name="singleSelect"
-                        //  value={appointmentData?.assigned_team_id?.value}
+                        value={appointmentData?.assigned_team_id}
+                        isDisabled={isEdit ? false : true}
                         options={
-
                           teamData &&
-                          teamData.filter(v => v.title !== "Unassigned").map(item => ({
-                            label: item.title,
-                            value: item.id
-                          }))
+                          teamData
+                            .filter(v => v.title !== "Unassigned")
+                            .map(item => ({
+                              label: item.title,
+                              value: item.id
+                            }))
                         }
-                        onChange={e => onSave("assigned_team_id", e.value)}
+                        onChange={e => onSave("assigned_team_id", e)}
                         placeholder="Single Select"
                       />
                     </div>
@@ -462,7 +453,8 @@ function ScheduleService(props) {
                           className="react-select"
                           classNamePrefix="react-select"
                           name="singleSelect"
-                          value={appointmentData?.service_id?.value}
+                          value={appointmentData?.service_id}
+                          isDisabled={isEdit ? false : true}
                           options={
                             servicesData &&
                             servicesData.map(item => ({
@@ -472,7 +464,7 @@ function ScheduleService(props) {
                             }))
                           }
                           onChange={e => {
-                            onSave("service_id", e.value)
+                            onSave("service_id", e)
                             handleOnChange("price", e.price)
                           }}
                           placeholder="Single Select"
@@ -484,7 +476,8 @@ function ScheduleService(props) {
                           className="react-select  "
                           classNamePrefix="react-select"
                           name="singleSelect"
-                          // value={appointmentData?.frequency_id?.value}
+                          value={appointmentData?.frequency_id}
+                          isDisabled={isEdit ? false : true}
                           options={
                             ({ label: "Select Frequency" },
                             frequencies &&
@@ -494,7 +487,7 @@ function ScheduleService(props) {
                               })))
                           }
                           placeholder="Single Select"
-                          onChange={e => onSave("frequency_id", e.value)}
+                          onChange={e => onSave("frequency_id", e)}
                         />
                       </Col>
                     </Row>
@@ -518,6 +511,7 @@ function ScheduleService(props) {
                           type="textarea"
                           rows="3"
                           placeholder="Enter description"
+                          disabled={isEdit ? false : true}
                           style={styles.textArea}
                           value={state.description.value}
                           onChange={val =>
@@ -534,6 +528,7 @@ function ScheduleService(props) {
                           type="textarea"
                           rows="3"
                           placeholder="Leave a note here..."
+                          disabled={isEdit ? false : true}
                           style={styles.textArea}
                           value={state.notes.value}
                           onChange={val =>
@@ -559,9 +554,9 @@ function ScheduleService(props) {
                   type="button"
                   disabled={disable}
                   size="lg"
-                  onClick={() => onHandleSave()}
+                  onClick={() => updateData()}
                 >
-                  {requesting ? <Spinner size="sm" /> : "Save"}
+                  {requesting ? <Spinner size="sm" /> : btnText}
                 </Button>
               </CardFooter>
             </Card>
@@ -614,18 +609,20 @@ const styles = {
 const mapStateToProps = state => ({
   teamData: state.teams.teamData,
   servicesData: state.services.servicesData,
-  frequencies: state.scheduleServices.frequencies,
-  requesting: state.scheduleServices.requesting,
+  frequencies: state.updateScheduleServices.frequencies,
+  requesting: state.updateScheduleServices.requesting,
   customers: state.customers.customers
 })
 
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  getScheduleServices: (data, closeModal, setSlotsValue) =>
-    dispatch(scheduleServices(data, closeModal, setSlotsValue)),
-  renderHtmlText: data => dispatch(renderHtmlText(data)),
+  updateScheduleServices: (data, id, closeUpdateModal, viewState) =>
+    dispatch(updateScheduleServices(data, id, closeUpdateModal, viewState)),
   getFrequencies: () => dispatch(getFrequencies()),
-  getAllCustomers: (index,isTrue) => dispatch(getAllCustomers(index,isTrue))
+  getAllCustomers: (index, isTrue) => dispatch(getAllCustomers(index, isTrue))
 })
-export default connect(mapStateToProps, mapDispatchToProps)(ScheduleService)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UpdateScheduleServices)
