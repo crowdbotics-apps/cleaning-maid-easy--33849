@@ -133,6 +133,7 @@ function* updateEmployee({ data, id, toggle,currentpage }) {
   } catch (e) {
     const { response } = e
     yield put(addEmployeeFailure(response?.data))
+    toast.error(`${response?.data?.name ? response?.data?.name :'Something Wrong!'}`);
   }
   finally {
     yield put(reset())

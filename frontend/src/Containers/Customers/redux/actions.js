@@ -1,8 +1,9 @@
 import { GET_ALL_CUSTOMERS, GET_ALL_CUSTOMERS_SUCCESS,ADD_CUSTOMER,ADD_CUSTOMER_FAILURE,CHANGE_NOTIFICATION,SEARCH_CUSTOMERS,RESET } from "./types"
 
-export const getAllCustomers = (index) => ({
+export const getAllCustomers = (index, isTrue) => ({
   type: GET_ALL_CUSTOMERS,
-  index
+  index,
+  isTrue
 })
 
 export const addCustomer = (data,toggle,currentpage) => ({

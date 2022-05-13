@@ -10,18 +10,26 @@ import toast from "react-hot-toast"
 import XHR from "../../../utils/XHR"
 
 // types
-import { GET_ALL_CUSTOMERS, ADD_CUSTOMER ,CHANGE_NOTIFICATION,SEARCH_CUSTOMERS} from "./types"
+import {
+  GET_ALL_CUSTOMERS,
+  ADD_CUSTOMER,
+  CHANGE_NOTIFICATION,
+  SEARCH_CUSTOMERS
+} from "./types"
 
 // actions
 import {
   getAllCustomersSuccess,
   getAllCustomers as getAllCustomersData,
   reset,
-  addCustomerFailure,
+  addCustomerFailure
 } from "./actions"
 
-async function getAllCustomersAPI(index) {
-  const URL = `${BASE_URL}/api/v1/users/customers_list/?page=${index}`
+async function getAllCustomersAPI(index, isTrue) {
+  const URL = `${BASE_URL}/api/v1/users/customers_list/${
+    isTrue ? "?all=true" : "?page=" + index
+  }`
+
   const token = await sessionStorage.getItem("authToken")
   const options = {
     headers: {
@@ -34,14 +42,13 @@ async function getAllCustomersAPI(index) {
   return XHR(URL, options)
 }
 
-function* getAllCustomers({index}) {
+function* getAllCustomers({ index, isTrue }) {
   try {
-    const response = yield call(getAllCustomersAPI, index)
+    const response = yield call(getAllCustomersAPI, index, isTrue)
     yield put(getAllCustomersSuccess(response?.data))
   } catch (e) {
     const { response } = e
-  }
-  finally {
+  } finally {
     yield put(reset())
   }
 }
@@ -61,7 +68,7 @@ async function addCustomerApi(data) {
   return XHR(URL, options)
 }
 
-function* addCustomer({ data,toggle,currentpage}) {
+function* addCustomer({ data, toggle, currentpage }) {
   try {
     const response = yield call(addCustomerApi, data)
     yield put(getAllCustomersData(currentpage))
@@ -70,11 +77,11 @@ function* addCustomer({ data,toggle,currentpage}) {
   } catch (e) {
     const { response } = e
     yield put(addCustomerFailure(response?.data?.Error))
-    toast.error('Someting wrong!');
+    toast.error("Someting wrong!")
   }
 }
 
-async function changeNotificationApi(data,id) {
+async function changeNotificationApi(data, id) {
   const URL = `${BASE_URL}/api/v1/users/user_info/${id}/`
 
   const token = await sessionStorage.getItem("authToken")
@@ -90,14 +97,14 @@ async function changeNotificationApi(data,id) {
   return XHR(URL, options)
 }
 
-function* changeNotification({ data,id,currentpage }) {
+function* changeNotification({ data, id, currentpage }) {
   try {
-    const response = yield call(changeNotificationApi, data,id)
+    const response = yield call(changeNotificationApi, data, id)
     yield put(getAllCustomersData(currentpage))
     toast.success("Successfully notification changed!")
   } catch (e) {
     const { response } = e
-    toast.error('Someting wrong!');
+    toast.error("Someting wrong!")
   }
 }
 
@@ -109,20 +116,19 @@ async function searchCustomersApi(data) {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`
     },
-    method: "GET",
+    method: "GET"
   }
 
   return XHR(URL, options)
 }
 
-function* searchCustomers({data}) {
+function* searchCustomers({ data }) {
   try {
-    const response = yield call(searchCustomersApi,data)
+    const response = yield call(searchCustomersApi, data)
     yield put(getAllCustomersSuccess(response?.data))
   } catch (e) {
     const { response } = e
-  }
-  finally {
+  } finally {
     yield put(reset())
   }
 }
@@ -132,6 +138,4 @@ export default all([
   takeLatest(ADD_CUSTOMER, addCustomer),
   takeLatest(CHANGE_NOTIFICATION, changeNotification),
   takeLatest(SEARCH_CUSTOMERS, searchCustomers)
-
-  
 ])
