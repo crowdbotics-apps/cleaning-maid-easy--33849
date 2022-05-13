@@ -113,6 +113,8 @@ class CreateTeamViewSet(ViewSet):
         )
         for member in members:
             team.team_members.add(member)
+            member.assigned_team = team
+            member.save()
 
         return Response(TeamSerializer(team).data)
 
@@ -182,9 +184,14 @@ class RemoveTeamMemberViewSet(ViewSet):
             })
 
         team.team_members.remove(*members)
+        unassigned_team = Team.objects.filter(title__icontains="Unassigned")
+        if len(unassigned_team) > 0:
+            unassigned_team = unassigned_team.first()
+        else:
+            unassigned_team = Team.objects.create(title="Unassigned")
 
         for member in members:
-            member.assigned_team = None
+            member.assigned_team = unassigned_team
             member.save()
 
         return Response(TeamSerializer(team).data)
