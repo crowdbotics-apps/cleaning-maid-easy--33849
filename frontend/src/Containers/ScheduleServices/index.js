@@ -54,7 +54,7 @@ function ScheduleService(props) {
     props.getTeam()
     props.getServices()
     props.getFrequencies()
-    props.getAllCustomers(1)
+    props.getAllCustomers(false,true)
     let mydiv = document.getElementsByClassName("react-date-picker__wrapper")
     mydiv[0].style.border = "none"
   }, [])
@@ -616,7 +616,7 @@ const mapStateToProps = state => ({
   servicesData: state.services.servicesData,
   frequencies: state.scheduleServices.frequencies,
   requesting: state.scheduleServices.requesting,
-  customers: state.customers.customers.results
+  customers: state.customers.customers
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -626,6 +626,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(scheduleServices(data, closeModal, setSlotsValue)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getFrequencies: () => dispatch(getFrequencies()),
-  getAllCustomers: index => dispatch(getAllCustomers(index))
+  getAllCustomers: (index,isTrue) => dispatch(getAllCustomers(index,isTrue))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(ScheduleService)

@@ -16,6 +16,7 @@ import employees from 'Containers/Employees/redux/reducer'
 import customers from 'Containers/Customers/redux/reducer'
 import termsConditions from '../Containers/TermsConditions/redux/reducer'
 import notifications from '../Containers/Notifications/redux/reducer'
+import updateScheduleServices from '../Containers/UpdateScheduleServices/redux/reducer'
 
 
 // const signInPersistConfig = {
@@ -37,5 +38,6 @@ export const combinedReducers = history => ({
   employees,
   customers,
   termsConditions,
-  notifications
+  notifications,
+  updateScheduleServices
 })

@@ -13,7 +13,6 @@ import "react-big-calendar/lib/css/react-big-calendar.css"
 import timezone from "moment-timezone"
 import Pagination from "react-js-pagination"
 
-
 import {
   Card,
   CardBody,
@@ -33,6 +32,7 @@ import {
 //Components
 import Select from "react-select"
 import ScheduleService from "../../Containers/ScheduleServices/index"
+import UpdateScheduleServices from "../UpdateScheduleServices/index"
 
 //Actions
 import {
@@ -97,6 +97,7 @@ const Calendar = props => {
   const [totalPendingCount, setTotalPendingCount] = useState(false)
   const [slotsValue, setSlotsValue] = useState(false)
   const [draggedEvent, setDraggedEvent] = useState()
+  const [updateModal, setUpdateModal] = useState(false)
 
   const calendarRef = useRef()
   const UnAssignedTeamRef = useRef()
@@ -228,7 +229,7 @@ const Calendar = props => {
       action: requestAction
     }
 
-    props.requestAction(data, modalToggle, currentPendingPage,true)
+    props.requestAction(data, modalToggle, currentPendingPage, true)
     if (requestAction === "Accept") {
       setActionRequest(1)
     } else {
@@ -245,20 +246,23 @@ const Calendar = props => {
     props.getPendingRequests(page)
   }
 
-
   const closeModal = () => {
     setModal(!modal)
   }
 
+  const closeUpdateModal = () => {
+    setUpdateModal(!updateModal)
+  }
   const getTeamMembers = () => {
-    
-    let copyTeams = [ ...teamData]
+    let copyTeams = [...teamData]
     const excludeObj = copyTeams.shift()
     const teams = [...copyTeams, excludeObj]
 
     const date = sessionStorage.getItem("date")
     const items =
-    teams && teams.map((item, index) => {
+      teams &&
+      teams
+        .map((item, index) => {
           return (
             item &&
             (viewState === 1 || viewState === 2) &&
@@ -291,7 +295,7 @@ const Calendar = props => {
           color: item.frequency.color_code,
           desc: item?.service?.description,
           eventDetail: item,
-          viewState: viewState,
+          viewState: viewState
         }
         return data
       })
@@ -301,8 +305,8 @@ const Calendar = props => {
     }
 
     const resourceData =
-    teams &&
-    teams.map(element => {
+      teams &&
+      teams.map(element => {
         return {
           resourceId: element?.id,
           resourceTitle: element?.title
@@ -405,7 +409,6 @@ const Calendar = props => {
               className={viewState === 3 ? "" : "pt-1"}
               draggable
               onDragOver={e => event.allDay && addTeamDrageOver(e)}
-              
             >
               <span
                 style={{
@@ -492,26 +495,27 @@ const Calendar = props => {
     if (!event.allDay) {
       setAppointmentModal(true)
       setEventDetail(event)
+      setUpdateModal(true)
     }
   }
 
   const onEventDrop = props => {
-    const teamId=teamData.find((items)=>items.id===props.resourceId)
-      if (props?.isAllDay || props.event.allDay === true) {
-        if (props.event.teamId !== undefined) {
-          const id = props.resourceId
-  
-          const data = {
-            member_ids: [props.event.memberId],
-            team_id: id
-          }
-          if (props.event.resourceId !== id) {
-            addTeamMember(data, 1)
-            setCurrentPage(1)
-          }
+    const teamId = teamData.find(items => items.id === props.resourceId)
+    if (props?.isAllDay || props.event.allDay === true) {
+      if (props.event.teamId !== undefined) {
+        const id = props.resourceId
+
+        const data = {
+          member_ids: [props.event.memberId],
+          team_id: id
         }
-      } else {
-        if(teamId?.title !== 'Unassigned'){
+        if (props.event.resourceId !== id) {
+          addTeamMember(data, 1)
+          setCurrentPage(1)
+        }
+      }
+    } else {
+      if (teamId?.title !== "Unassigned") {
         const id = props.event.eventDetail.id
         const swapIndex = appointmentsDays.findIndex(e => e.id == id)
         const data = new FormData()
@@ -524,9 +528,8 @@ const Calendar = props => {
           swapIndex: swapIndex,
           appointmentsDays: appointmentsDays
         })
-        }
+      }
     }
-    
   }
 
   const customOnDragOver = useCallback(
@@ -815,7 +818,7 @@ const Calendar = props => {
                                 </div>
                               )}
                             </div>
-                            { totalPendingCount && totalPendingCount ? (
+                            {totalPendingCount && totalPendingCount ? (
                               <div className="pt-3 d-flex justify-content-center">
                                 <Pagination
                                   aria-label="Page navigation example"
@@ -834,7 +837,7 @@ const Calendar = props => {
                                   onChange={handlePendingPageChange}
                                 />
                               </div>
-                            ):null}
+                            ) : null}
                           </div>
                         </th>
                       )}
@@ -961,240 +964,20 @@ const Calendar = props => {
             </div>
           </div>
         </Modal>
-
         {eventDetail && (
-          <Modal isOpen={appointmentModal} toggle={appointmentToggle}>
-            <ModalHeader style={{ borderBottom: 0 }}>
-              <b>{eventDetail?.eventDetail?.title}</b>
-              <button
-                aria-hidden={true}
-                className="close"
-                data-dismiss="modal"
-                type="button"
-                style={{ outline: "none" }}
-                onClick={appointmentToggle}
-              >
-                <i
-                  className="nc-icon nc-simple-remove"
-                  style={{ color: " #438B44" }}
-                />
-              </button>
-            </ModalHeader>
-            <ModalBody>
-              <Row>
-                <Col>
-                  {requestError ? (
-                    <Alert color="danger">Request Failed</Alert>
-                  ) : null}
-                </Col>
-              </Row>
-              <Row style={{ justifyContent: "center" }}>
-                <Col md="12">
-                  <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                    <i
-                      class="nc-icon nc-calendar-60"
-                      style={{ marginRight: 15, color: "grey" }}
-                    ></i>
-                    <label style={styles.inputStyle}>
-                      {moment(
-                        eventDetail?.eventDetail?.appointment_date
-                      ).format("LL")}
-                    </label>
-                  </div>
-                </Col>
-              </Row>
-              <Row style={{ justifyContent: "center", marginTop: 20 }}>
-                <Col md="12">
-                  <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                    <i
-                      class="fa fa-clock-o"
-                      style={{ marginRight: 15, color: "grey" }}
-                    ></i>
-                    <label style={styles.inputStyle}>
-                      {moment(
-                        eventDetail?.eventDetail?.start_time,
-                        "hh:mm"
-                      ).format("hh:mmA")}{" "}
-                      -{" "}
-                      {moment(
-                        eventDetail?.eventDetail?.end_time,
-                        "hh:mm"
-                      ).format("hh:mmA")}
-                    </label>
-                  </div>
-                </Col>
-              </Row>
-              <Row style={{ justifyContent: "center", marginTop: 20 }}>
-                <Col md="12">
-                  <div style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}>
-                    <i
-                      class="fa fa-map-marker"
-                      style={{ marginRight: 15, color: "grey" }}
-                    ></i>
-                    <label style={styles.inputStyle}>
-                      {eventDetail?.eventDetail?.client_address}
-                    </label>
-                  </div>
-                </Col>
-              </Row>
-
-              <Row className="mt-4" style={{ justifyContent: "space-between" }}>
-                <Col md="8">
-                  <label style={styles.labelfontStyles}>Client Name</label>
-                  <Input
-                    style={{
-                      width: 300,
-                      backgroundColor: "white",
-                      fontSize: 14,
-                      fontWeight: "500",
-                      color: "#000000"
-                    }}
-                    readOnly={true}
-                    value={eventDetail?.eventDetail?.client?.name}
-                    className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
-                  />
-                </Col>
-                <Col md="4">
-                  <label style={styles.labelfontStyles}>Number</label>
-                  <Input
-                    readOnly={true}
-                    value={eventDetail?.eventDetail?.client_number}
-                    style={{
-                      backgroundColor: "white",
-                      fontSize: 14,
-                      fontWeight: "500",
-                      color: "#000000"
-                    }}
-                    className="border-top-0 border-right-0 border-left-0 p-0"
-                  />
-                </Col>
-              </Row>
-
-              <Row>
-                <Col md="12">
-                  <div className="">
-                    <label style={styles.labelfontStyles}>
-                      Assigned Employee/ Team
-                    </label>
-                    <Input
-                      readOnly={true}
-                      value={eventDetail?.eventDetail?.assigned_team?.title}
-                      style={{
-                        backgroundColor: "white",
-                        fontSize: 14,
-                        fontWeight: "500",
-                        color: "#000000"
-                      }}
-                      className="border-top-0 border-right-0 border-left-0 p-0"
-                    />
-                  </div>
-                </Col>
-              </Row>
-
-              <Row
-                className="mt-4 "
-                style={{ justifyContent: "space-between" }}
-              >
-                <Col lg="6" md="6" sm="3">
-                  <label style={styles.labelfontStyles}>Services</label>
-                  <Select
-                    className="react-select "
-                    classNamePrefix="react-select"
-                    name="singleSelect"
-                    isDisabled={true}
-                    value={{
-                      value: eventDetail?.eventDetail?.service?.id,
-                      label: eventDetail?.eventDetail?.service?.name
-                    }}
-                    placeholder="Single Select"
-                  />
-                </Col>
-                <Col lg="6" md="6" sm="3">
-                  <label style={styles.labelfontStyles}>Frequency</label>
-                  <Select
-                    className="react-select  "
-                    classNamePrefix="react-select"
-                    name="singleSelect"
-                    isDisabled={true}
-                    value={{
-                      value: eventDetail?.eventDetail?.frequency?.id,
-                      label: eventDetail?.eventDetail?.frequency?.title
-                    }}
-                    placeholder="Single Select"
-                  />
-                </Col>
-              </Row>
-
-              <Row style={{ justifyContent: "center", marginTop: 20 }}>
-                <Col md="12">
-                  <div className="">
-                    <label style={styles.labelfontStyles}>Price</label>
-                    <Input
-                      readOnly={true}
-                      value={eventDetail?.eventDetail?.price}
-                      style={{
-                        backgroundColor: "white",
-                        fontSize: 14,
-                        fontWeight: "500",
-                        color: "#000000"
-                      }}
-                      className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
-                    />
-                  </div>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col>
-                  <FormGroup>
-                    <label style={styles.labelfontStyles}> Description </label>
-                    <Input
-                      readOnly={true}
-                      className="textarea"
-                      type="textarea"
-                      rows="3"
-                      style={styles.textArea}
-                      value={eventDetail?.eventDetail?.description}
-                      Modal
-                    />
-                  </FormGroup>
-                </Col>
-                <Col>
-                  <FormGroup>
-                    <label style={styles.labelfontStyles}> Notes </label>
-                    <Input
-                      readOnly={true}
-                      className="textarea"
-                      type="textarea"
-                      rows="3"
-                      style={styles.textArea}
-                      value={eventDetail?.eventDetail?.notes}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-              <div
-                style={{ justifyContent: "center" }}
-                className="modal-footer border-top-0 pt-5 pb-3"
-              >
-                <div>
-                  <Button
-                    onClick={() => setAppointmentModal(false)}
-                    style={saveBtnStyle}
-                    // disabled={disable}
-                    color="white"
-                    title=""
-                    disabled={true}
-                    type="button"
-                  >
-                    {"Save"}
-                  </Button>
-                </div>
-              </div>
-            </ModalBody>
+          <Modal
+            size="xl"
+            isOpen={updateModal}
+            closeUpdateModal={closeUpdateModal}
+          >
+            <UpdateScheduleServices
+              closeUpdateModal={closeUpdateModal}
+              styles={styles}
+              eventDetail={eventDetail}
+              viewState={viewState}
+            />
           </Modal>
         )}
-
         <Modal isOpen={pendingRequestModal} toggle={modalToggle}>
           <ModalHeader style={{ borderBottom: 0 }}>
             <span>
@@ -1708,7 +1491,7 @@ const mapDispatchToProps = dispatch => ({
   updateNotes: (data, id, toggle) => dispatch(updateNotes(data, id, toggle)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   requestAction: (data, modalToggle, index, isCalender) =>
-    dispatch(requestAction(data, modalToggle, index,isCalender)),
+    dispatch(requestAction(data, modalToggle, index, isCalender)),
   removeTeamMember: (data, currentpage) =>
     dispatch(removeTeamMember(data, currentpage)),
   addTeamMember: (data, currentpage) =>
