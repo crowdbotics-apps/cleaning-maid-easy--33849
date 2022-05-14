@@ -29,10 +29,12 @@ from operations.models import (
     Frequency,
     Service,
     Appointment,
-    Notification
+    Notification,
+    TeamMembershipRecord
 )
 
 from users.models import User
+from users.api.v1.serializers import BriefUserSerializer
 from django.db.models import Q
 
 
@@ -61,6 +63,37 @@ class TeamViewSet(ModelViewSet):
     serializer_class = TeamSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = Team.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        all_teams = Team.objects.all()
+
+        try:
+            request_date = self.request.GET.get('request_date')
+        except:
+            request_date = None
+
+        if request_date is None:
+            return Response(TeamSerializer(all_teams, many=True).data)
+
+        result = []
+
+        for team in all_teams:
+            member_list = []
+
+            team_memberships = TeamMembershipRecord.objects.filter(team=team,
+                                                                   record_date__date=request_date,
+                                                                   is_joining=False)
+            for member in team.team_members.all():
+                if len(team_memberships.filter(member=member)) <= 0:
+                    member_list.append(BriefUserSerializer(member).data)
+
+            result.append({
+                'id': team.id,
+                'title': team.title,
+                'team_members': member_list
+            })
+
+        return Response(result)
 
     def destroy(self, request, *args, **kwargs):
         team = self.get_object()
@@ -115,6 +148,11 @@ class CreateTeamViewSet(ViewSet):
             team.team_members.add(member)
             member.assigned_team = team
             member.save()
+            #membership = TeamMembershipRecord.objects.create(
+            #    member=member,
+            #    team=team,
+            #    is_joining=True
+            #)
 
         return Response(TeamSerializer(team).data)
 
@@ -146,12 +184,35 @@ class AddTeamMemberViewSet(ViewSet):
                 'Error': 'Invalid Team ID.'
             })
 
+        #try:
+        #    change_date = request.data['change_date']
+        #except:
+        #    change_date = None
+
         team.team_members.add(*members)
         for member in members:
             if member.assigned_team:
                 member.assigned_team.team_members.remove(member)
+                #canceled_membership = TeamMembershipRecord.objects.create(
+                #    member=member,
+                #    team=member.assigned_team,
+                #    is_joining=False
+                #)
+                #if change_date:
+                #    canceled_membership.record_date = change_date
+                #    canceled_membership.save()
+
             member.assigned_team = team
             member.save()
+
+            #membership = TeamMembershipRecord.objects.create(
+            #    member=member,
+            #    team=team,
+            #    is_joining=True
+            #)
+            #if change_date:
+            #    membership.record_date = change_date
+            #    membership.save()
 
         return Response(TeamSerializer(team).data)
 
@@ -183,16 +244,35 @@ class RemoveTeamMemberViewSet(ViewSet):
                 'Error': 'Invalid Team ID.'
             })
 
-        team.team_members.remove(*members)
-        unassigned_team = Team.objects.filter(title__icontains="Unassigned")
-        if len(unassigned_team) > 0:
-            unassigned_team = unassigned_team.first()
-        else:
-            unassigned_team = Team.objects.create(title="Unassigned")
+        try:
+            day_off = request.data['day_off']
+        except:
+            day_off = None
 
-        for member in members:
-            member.assigned_team = unassigned_team
-            member.save()
+        if day_off:
+            for member in members:
+                membership = TeamMembershipRecord.objects.create(
+                    record_date=day_off,
+                    member=member,
+                    team=team,
+                    is_joining=False
+                )
+        else:
+            team.team_members.remove(*members)
+            unassigned_team = Team.objects.filter(title__icontains="Unassigned")
+            if len(unassigned_team) > 0:
+                unassigned_team = unassigned_team.first()
+            else:
+                unassigned_team = Team.objects.create(title="Unassigned")
+
+            for member in members:
+                member.assigned_team = unassigned_team
+                member.save()
+                membership = TeamMembershipRecord.objects.create(
+                    member=member,
+                    team=team,
+                    is_joining=False
+                )
 
         return Response(TeamSerializer(team).data)
 
