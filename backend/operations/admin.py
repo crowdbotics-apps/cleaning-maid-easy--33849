@@ -5,7 +5,8 @@ from .models import (
     Frequency,
     Service,
     Appointment,
-    Notification
+    Notification,
+    TeamMembershipRecord
 )
 # Register your models here.
 
@@ -15,3 +16,4 @@ admin.site.register(Frequency)
 admin.site.register(Service)
 admin.site.register(Appointment)
 admin.site.register(Notification)
+admin.site.register(TeamMembershipRecord)
