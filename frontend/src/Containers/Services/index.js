@@ -175,7 +175,7 @@ const Services = props => {
               </div>
             </div>
             <div className="modal-body ">
-              <label style={styles.labelTextStyle}>Service Name</label>
+              <label style={styles.labelTextStyle}>Service Name*</label>
               <Input
                 style={styles.inputTextStyle}
                 className="border-0 pl-0"
@@ -187,7 +187,7 @@ const Services = props => {
                 <label style={{ color: "red" }}>{servicesError.name}</label>
               )}
               <div className="mt-4">
-                <label style={styles.labelTextStyle}>Service Description</label>
+                <label style={styles.labelTextStyle}>Service Description*</label>
                 <Input
                   style={styles.inputTextStyle}
                   className="border-0 pl-0"
@@ -205,7 +205,7 @@ const Services = props => {
               )}
 
               <div className="mt-4">
-                <label style={styles.labelTextStyle}>Service Price</label>
+                <label style={styles.labelTextStyle}>Service Price*</label>
                 <Input
                   style={styles.inputTextStyle}
                   value={state.servicePrice.value}

@@ -33,8 +33,10 @@ import {
 // import {getDayAcceptedAppointments} from '../../Calendar/redux/actions'
 import { getEmployeeList } from "../../Employees/redux/actions"
 
-async function getTeamAPI() {
-  const URL = `${BASE_URL}/api/v1/operations/teams/`
+async function getTeamAPI(calenderDate) {
+  const URL = `${BASE_URL}/api/v1/operations/teams${
+    calenderDate ? "/?request_date=" + calenderDate : "/"
+  }`
   const token = await sessionStorage.getItem("authToken")
   const options = {
     headers: {
@@ -47,9 +49,9 @@ async function getTeamAPI() {
   return XHR(URL, options)
 }
 
-function* getTeams() {
+function* getTeams({ calenderDate }) {
   try {
-    const response = yield call(getTeamAPI)
+    const response = yield call(getTeamAPI, calenderDate)
     yield put(getTeamSuccess(response.data))
   } catch (e) {
     const { response } = e
@@ -107,6 +109,7 @@ function* createTeam({ data, setmodal, setSelectedMebers }) {
       setmodal(false)
       setSelectedMebers([])
       yield put(getTeam())
+      yield put(getUnAssignedEmployeesData(1))
       toast.success("Successfully saved!")
     }
   } catch (e) {

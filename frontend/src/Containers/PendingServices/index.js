@@ -49,6 +49,7 @@ import "../PendingServices/styles.css"
 import { getPendingRequests, requestAction } from "./redux/actions"
 
 import { renderHtmlText } from "../Services/redux/actions"
+import UpdateScheduleServices from "../UpdateScheduleServices/index"
 
 const PendingServices = props => {
   const { requesting, pendingRequests, actionRequesting } = props
@@ -59,6 +60,8 @@ const PendingServices = props => {
   const [actionRequest, setActionRequest] = useState(0)
   const [totalCount, setTotalCount] = useState(false)
   const [currentpage, setCurrentPage] = useState(1)
+  const [editValues, setEditValues] = useState(false)
+  const [editModal, setEditModal] = useState(false)
 
   useEffect(() => {
     props.getPendingRequests(currentpage)
@@ -140,6 +143,14 @@ const PendingServices = props => {
   const handlePageChange = page => {
     setCurrentPage(page)
     props.getPendingRequests(page)
+  }
+
+  const editPendingRequest = item => {
+    setEditValues(item)
+    setEditModal(true)
+  }
+  const closeUpdateModal=()=>{
+    setEditModal(!editModal)
   }
 
   return (
@@ -416,6 +427,7 @@ const PendingServices = props => {
                       <th style={styles.theadText}>Client Name</th>
                       <th style={styles.theadText}>Notes</th>
                       <th style={styles.theadText}>Service </th>
+                      <th style={styles.theadText}> </th>
                       {/* <th style={styles.theadText}></th> */}
                     </tr>
                   </thead>
@@ -440,19 +452,50 @@ const PendingServices = props => {
                     ) : (
                       pendingRequests?.results &&
                       pendingRequests?.results?.map((item, i) => (
-                        <tr
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            setPendingDetails(item)
-                            setModal(true)
-                            setRequestError(false)
-                          }}
-                        >
+                        <tr>
                           <td style={styles.tdataText1}>{i + 1}.</td>
-                          <td style={styles.tdataText2}>{item.title}</td>
-                          <td style={styles.tdataText}>{item?.description}</td>
-                          <td style={styles.tdataText}>
+                          <td
+                            style={styles.tdataText2}
+                            onClick={() => {
+                              setPendingDetails(item)
+                              setModal(true)
+                              setRequestError(false)
+                            }}
+                          >
+                            {item.title}
+                          </td>
+                          <td
+                            style={styles.tdataText}
+                            onClick={() => {
+                              setPendingDetails(item)
+                              setModal(true)
+                              setRequestError(false)
+                            }}
+                          >
+                            {item?.description}
+                          </td>
+                          <td
+                            style={styles.tdataText}
+                            onClick={() => {
+                              setPendingDetails(item)
+                              setModal(true)
+                              setRequestError(false)
+                            }}
+                          >
                             {item?.service?.name}
+                          </td>
+                          <td className="text-center">
+                            <Button
+                              className="btn-icon btn-neutral"
+                              size="sm"
+                              onClick={() => editPendingRequest(item)}
+                              type="button"
+                            >
+                              <img
+                                alt="..."
+                                src={require("assets/icons/pencil_btn.png")}
+                              />
+                            </Button>
                           </td>
                         </tr>
                       ))
@@ -483,6 +526,18 @@ const PendingServices = props => {
             </Card>
           </Col>
         </Row>
+        <Modal
+            size="xl"
+            isOpen={editModal}
+            closeUpdateModal={closeUpdateModal}
+          >
+            <UpdateScheduleServices
+              closeUpdateModal={closeUpdateModal}
+              styles={styles}
+              eventPendingRequest={editValues}
+              currentpage={currentpage}
+            />
+          </Modal>
       </div>
     </>
   )
@@ -550,11 +605,13 @@ const styles = {
   tdataText2: {
     fontSize: 14,
     lineHeight: 3,
-    fontWeight: "600"
+    fontWeight: "600",
+    cursor: "pointer"
   },
   tdataText: {
     fontSize: 12,
-    fontWeight: "500"
+    fontWeight: "500",
+    cursor: "pointer"
   },
   addBtnText: {
     background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%)",

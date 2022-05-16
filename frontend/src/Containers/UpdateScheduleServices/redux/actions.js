@@ -6,12 +6,13 @@ import {
 } from "./types"
 
 
-export const updateScheduleServices = (data,id, closeUpdateModal,viewState) => ({
+export const updateScheduleServices = (data,id, closeUpdateModal,viewState,currentpage) => ({
   type: UPDATE_SCHEDULE_SERVICE,
   data,
   id,
   closeUpdateModal,
-  viewState
+  viewState,
+  currentpage
 })
 
 export const scheduleServicesSuccess = () => ({
