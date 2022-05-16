@@ -11,7 +11,11 @@ import {
   Modal,
   Col,
   Spinner,
-  UncontrolledAlert
+  UncontrolledAlert,
+  DropdownMenu,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownItem
 } from "reactstrap"
 import Switch from "react-bootstrap-switch"
 import "./style.css"
@@ -45,6 +49,7 @@ const Customers = props => {
   const [notificationsId, setNotificationsId] = useState([])
   const [currentpage, setCurrentPage] = useState(1)
   const [totalCount, setTotalCount] = useState(false)
+  const [customerData, setCustomerData] = useState(false)
 
   useEffect(() => {
     props.renderHtmlText("Customers")
@@ -74,6 +79,7 @@ const Customers = props => {
       }, 1500)
     }
   }, [backendError])
+
   const [selectedClient, setSelectedClient] = useState("none")
   function handleSelectChange(event) {
     setSelectedClient(event.target.value)
@@ -190,7 +196,7 @@ const Customers = props => {
     setModal(!modal)
   }
 
-  const { state, handleOnChange,setState, disable } = useForm(
+  const { state, handleOnChange, setState, disable } = useForm(
     stateSchema,
     validationStateSchema
   )
@@ -210,6 +216,24 @@ const Customers = props => {
     }
     props.addCustomer(data, toggle, currentpage)
   }
+
+  const editCustomer = data => {
+    setModal(true)
+    setCustomerData(data)
+  }
+
+  // useEffect(() => {
+  //   if(customerData){
+  //     handleOnChange('fullName',customerData.name)
+  //     handleOnChange('email',customerData.email)
+  //     handleOnChange('company_name',customerData.company)
+  //     handleOnChange('phone_number',customerData.phone_number)
+  //     handleOnChange('zip_code',customerData.zip_code)
+  //     handleOnChange('address',customerData.address)
+  //     handleOnChange('other',customerData.other)
+  //     setNotificationsValue(customerData.notifications_enabled)
+  //   }
+  // }, [customerData])
 
   return (
     <>
@@ -259,6 +283,7 @@ const Customers = props => {
               <Input
                 style={styles.inputTextStyle}
                 className="border-0 pl-0"
+                value={state.fullName.value}
                 onChange={e => handleOnChange("fullName", e.target.value)}
               />
               <div style={styles.inputLineStyle} />
@@ -269,6 +294,7 @@ const Customers = props => {
                 <label style={styles.labelTextStyle}>Email*</label>
                 <Input
                   style={styles.inputTextStyle}
+                  value={state.email.value}
                   className="border-0 pl-0"
                   onChange={e => handleOnChange("email", e.target.value)}
                 />
@@ -283,6 +309,7 @@ const Customers = props => {
                 <Input
                   style={styles.inputTextStyle}
                   className="border-0 pl-0"
+                  value={state.company_name.value}
                   onChange={e => handleOnChange("company_name", e.target.value)}
                 />
                 <div style={styles.inputLineStyle} />
@@ -291,6 +318,7 @@ const Customers = props => {
                 <label style={styles.labelTextStyle}>Phone Number*</label>
                 <Input
                   style={styles.inputTextStyle}
+                  value={state.phone_number.value}
                   className="border-0 pl-0"
                   onChange={e => handleOnChange("phone_number", e.target.value)}
                 />
@@ -307,6 +335,7 @@ const Customers = props => {
                     <label style={styles.labelTextStyle}>Zip Code*</label>
                     <Input
                       style={styles.inputTextStyle}
+                      value={state.zip_code.value}
                       className="border-0 pl-0"
                       onChange={e => handleOnChange("zip_code", e.target.value)}
                     />
@@ -324,6 +353,7 @@ const Customers = props => {
                     <Input
                       style={styles.inputTextStyle}
                       className="border-0 pl-0"
+                      value={state.address.value}
                       onChange={e => handleOnChange("address", e.target.value)}
                     />
                     <div style={styles.inputLineStyle} />
@@ -498,9 +528,49 @@ const Customers = props => {
                                 </label>
                                 <br></br>
                                 <div className="text-right">
-                                  <img
-                                    src={require("assets/icons/dot_icon.png")}
-                                  />
+                                <Button
+                                        className="btn-icon btn-neutral"
+                                        size="sm"
+                                        type="button"
+                                      >
+                                        <img
+                                          src={require("assets/icons/dot_icon.png")}
+                                        />
+                                      </Button>
+                                  {/* <UncontrolledDropdown>
+                                    <DropdownToggle
+                                      style={styles.tooggleStyle}
+                                      // className="mr-5"
+                                      data-toggle="dropdown"
+                                      id="dropdownMenu"
+                                      type="image"
+                                    >
+                                      <Button
+                                        className="btn-icon btn-neutral"
+                                        size="sm"
+                                        type="button"
+                                      >
+                                        <img
+                                          src={require("assets/icons/dot_icon.png")}
+                                        />
+                                      </Button>
+                                    </DropdownToggle>
+                                    <DropdownMenu right>
+                                      <DropdownItem
+                                        onClick={() => editCustomer(item)}
+                                      >
+                                        Edit
+                                      </DropdownItem>
+                                      <DropdownItem
+                                        onClick={() => {
+                                          // setItemId(item.id)
+                                          // changeTeam(items.id, item.id)
+                                        }}
+                                      >
+                                        Delete
+                                      </DropdownItem>
+                                    </DropdownMenu>
+                                  </UncontrolledDropdown> */}
                                 </div>
                               </div>
                             </div>
@@ -614,7 +684,7 @@ const Customers = props => {
                 </Table>
                 {customers?.results?.length ? (
                   <div className="pt-4 d-flex justify-content-center">
-                    { totalCount && (
+                    {totalCount && (
                       <Pagination
                         aria-label="Page navigation example"
                         itemClass="page-item"
@@ -631,7 +701,7 @@ const Customers = props => {
                       />
                     )}
                   </div>
-                ):null}
+                ) : null}
               </CardBody>
             </Card>
           </Col>
@@ -756,5 +826,9 @@ const styles = {
     paddingTop: 40,
     fontSize: 20,
     fontWeight: "bold"
+  },
+  tooggleStyle: {
+    backgroundColor: "transparent",
+    padding: 0
   }
 }

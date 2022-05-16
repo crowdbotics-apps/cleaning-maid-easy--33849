@@ -13,8 +13,9 @@ import {
   RESET,
 } from './types';
 
-export const getTeam= () => ({
+export const getTeam= (calenderDate) => ({
   type: GET_TEAM,
+  calenderDate
 });
 
 export const getTeamSuccess = (data) => ({

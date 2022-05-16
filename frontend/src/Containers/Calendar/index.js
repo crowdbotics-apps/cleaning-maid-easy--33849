@@ -74,7 +74,8 @@ const Calendar = props => {
     notesRequesting,
     editAppointmentCal,
     requesting,
-    addTeamMember
+    addTeamMember,
+    removeTeamMember
   } = props
   const [addEvents, setAddEvents] = useState(events)
   const [alertMsg, setAlertMsg] = useState(null)
@@ -138,7 +139,7 @@ const Calendar = props => {
     props.getNotes()
     props.getUnAssignedEmployees(currentpage)
     props.getDayAcceptedAppointments(moment(new Date()).format("YYYY-MM-DD"))
-    props.getTeam()
+    props.getTeam(moment(new Date()).format("YYYY-MM-DD"))
   }, [])
 
   useEffect(() => {
@@ -507,10 +508,17 @@ const Calendar = props => {
 
         const data = {
           member_ids: [props.event.memberId],
-          team_id: id
+          team_id: id,
         }
+
+        // const data1 = {
+        //   member_ids: [props.event.memberId],
+        //   team_id: id,
+        //   day_off:moment(props.start).format("YYYY-MM-DD")
+        // }
         if (props.event.resourceId !== id) {
           addTeamMember(data, 1)
+          // removeTeamMember(data1,1)
           setCurrentPage(1)
         }
       }
@@ -1014,7 +1022,7 @@ const Calendar = props => {
                   ></i>
                   <label style={styles.inputStyle}>
                     {moment(pendingDetails?.appointment_date).format(
-                      "d MMMM yyy"
+                      "LL"
                     )}
                   </label>
                 </div>
@@ -1498,6 +1506,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(addTeamMember(data, currentpage)),
   editAppointmentCal: (data, details) =>
     dispatch(editAppointmentCal(data, details)),
-  getTeam: () => dispatch(getTeam())
+  getTeam: (calenderDate) => dispatch(getTeam(calenderDate))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

@@ -43,7 +43,7 @@ import calenderImage from "../../assets/icons/Calendar.png"
 import clockImage from "../../assets/icons/Clock.png"
 
 function UpdateScheduleServices(props) {
-  const { closeUpdateModal, eventDetail, viewState } = props
+  const { closeUpdateModal, eventDetail, viewState,eventPendingRequest,currentpage } = props
 
   useEffect(() => {
     props.getTeam()
@@ -54,7 +54,42 @@ function UpdateScheduleServices(props) {
     mydiv[0].style.border = "none"
   }, [])
 
+ 
   useEffect(() => {
+    if(eventPendingRequest){
+      setIsEdit(true)
+      setBtnText("Save")
+      handleOnChange("price", eventPendingRequest?.price)
+      handleOnChange("description", eventPendingRequest?.description)
+      handleOnChange("notes", eventPendingRequest?.notes)
+      handleOnChange("client_number", eventPendingRequest?.client_number)
+      handleOnChange("title", eventPendingRequest?.title)
+      handleOnChange("client_address", eventPendingRequest?.client_address)
+      setToTime(new Date(`${eventPendingRequest?.appointment_date+' '+ eventPendingRequest?.end_time}`))
+      setCalenderValue(new Date(eventPendingRequest?.appointment_date))
+      setFromTime(new Date(`${eventPendingRequest?.appointment_date+' '+ eventPendingRequest?.start_time}`))
+      setAppoinmentData({
+        appointment_date: eventPendingRequest?.appointment_date,
+        start_time: eventPendingRequest?.start_time,
+        end_time: eventPendingRequest?.end_time,
+        client_id: {
+          label: eventPendingRequest?.client?.name,
+          value: eventPendingRequest?.client?.id
+        },
+        assigned_team_id: {
+          label: eventPendingRequest?.assigned_team?.title,
+          value: eventPendingRequest?.assigned_team?.id
+        },
+        service_id: {
+          label: eventPendingRequest?.service?.name,
+          value: eventPendingRequest?.service?.id
+        },
+        frequency_id: {
+          label: eventPendingRequest?.frequency?.title,
+          value: eventPendingRequest?.frequency?.id
+        }
+      })
+    }
     if (eventDetail) {
       handleOnChange("price", eventDetail?.eventDetail?.price)
       handleOnChange("description", eventDetail?.eventDetail?.description)
@@ -171,7 +206,7 @@ function UpdateScheduleServices(props) {
   }
 
   const updateData = () => {
-    if (btnText === "Save") {
+    if (isEdit===true|| btnText === "Save") {
       onHandleSave()
     } else {
       setBtnText("Save")
@@ -185,6 +220,10 @@ function UpdateScheduleServices(props) {
     data["assigned_team_id"] = data.assigned_team_id.value
     data["frequency_id"] = data.frequency_id.value
     data["client_id"] = data.client_id.value
+    if(eventPendingRequest){
+      data["status"] = "Pending"
+    }
+   
 
     if (data.appointment_date) {
       setSelectedDate(false)
@@ -209,9 +248,10 @@ function UpdateScheduleServices(props) {
     ) {
       props.updateScheduleServices(
         data,
-        eventDetail.eventDetail.id,
+        eventPendingRequest?eventPendingRequest.id: eventDetail.eventDetail.id,
         closeUpdateModal,
-        viewState
+        viewState,
+        currentpage && currentpage
       )
     } else {
       toast.error("Please fill require fields!")
@@ -234,6 +274,9 @@ function UpdateScheduleServices(props) {
               data-dismiss="modal"
               type="button"
               onClick={() => {
+                // setToTime('')
+                // setCalenderValue('')
+                // setFromTime('')
                 closeUpdateModal()
               }}
             >
@@ -358,7 +401,7 @@ function UpdateScheduleServices(props) {
                     </div>
                     <Row style={{ marginTop: 28 }}>
                       <Col md="12">
-                        <label style={styles.labelFont}>Title</label>
+                        <label style={styles.labelFont}>Title*</label>
                         <Input
                           style={styles.inputStyle}
                           disabled={isEdit ? false : true}
@@ -378,7 +421,7 @@ function UpdateScheduleServices(props) {
                       style={{ justifyContent: "space-between" }}
                     >
                       <Col lg="7" md="6" sm="3">
-                        <label style={styles.labelFont}>Client Name</label>
+                        <label style={styles.labelFont}>Client Name*</label>
                         <Select
                           className="react-select"
                           classNamePrefix="react-select"
@@ -401,7 +444,7 @@ function UpdateScheduleServices(props) {
                         />
                       </Col>
                       <Col lg="4" md="6" sm="3">
-                        <label style={styles.labelFont}>Number</label>
+                        <label style={styles.labelFont}>Number*</label>
                         <Input
                           style={styles.inputStyle}
                           className="border-top-0 border-right-0 border-left-0 p-0"
@@ -421,7 +464,7 @@ function UpdateScheduleServices(props) {
                     {/* </div> */}
                     <div className="mt-4 ">
                       <label style={styles.labelFont}>
-                        Assigned Employee/ Team
+                        Assigned Employee/ Team*
                       </label>
                       <Select
                         className="react-select "
@@ -448,7 +491,7 @@ function UpdateScheduleServices(props) {
                       style={{ justifyContent: "space-between" }}
                     >
                       <Col lg="6" md="6" sm="3">
-                        <label style={styles.labelFont}>Services</label>
+                        <label style={styles.labelFont}>Services*</label>
                         <Select
                           className="react-select"
                           classNamePrefix="react-select"
@@ -471,7 +514,7 @@ function UpdateScheduleServices(props) {
                         />
                       </Col>
                       <Col lg="6" md="6" sm="3">
-                        <label style={styles.labelFont}>Frequency</label>
+                        <label style={styles.labelFont}>Frequency*</label>
                         <Select
                           className="react-select  "
                           classNamePrefix="react-select"
@@ -617,8 +660,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  updateScheduleServices: (data, id, closeUpdateModal, viewState) =>
-    dispatch(updateScheduleServices(data, id, closeUpdateModal, viewState)),
+  updateScheduleServices: (data, id, closeUpdateModal, viewState,currentpage) =>
+    dispatch(updateScheduleServices(data, id, closeUpdateModal, viewState,currentpage)),
   getFrequencies: () => dispatch(getFrequencies()),
   getAllCustomers: (index, isTrue) => dispatch(getAllCustomers(index, isTrue))
 })

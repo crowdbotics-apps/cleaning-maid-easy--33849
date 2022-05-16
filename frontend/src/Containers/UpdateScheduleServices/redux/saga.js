@@ -16,6 +16,7 @@ import { GET_FREQUENCIES, UPDATE_SCHEDULE_SERVICE } from "./types"
 
 // actions
 import { getFrequenciesSuccess, scheduleServicesSuccess } from "./actions"
+import { getPendingRequests } from "../../PendingServices/redux/actions"
 import {
   getDayAcceptedAppointments,
   getWeekAcceptedAppointments,
@@ -61,7 +62,7 @@ function* getFrequencies() {
   }
 }
 
-function* updateScheduleServices({ data, id, closeUpdateModal, viewState }) {
+function* updateScheduleServices({ data, id, closeUpdateModal, viewState ,currentpage}) {
   try {
     const response = yield call(updateScheduleServicesApi, data, id)
     closeUpdateModal(false)
@@ -86,9 +87,13 @@ function* updateScheduleServices({ data, id, closeUpdateModal, viewState }) {
         .format("YYYY-MM-DD")
       yield put(getMonthAcceptedAppointments(startOfMonth, endOfMonth))
     } else {
-      const userDate = JSON.parse(newDate)
-      const dateFormate = moment(userDate).format("YYYY-MM-DD")
-      yield put(getDayAcceptedAppointments(dateFormate))
+      if (viewState !== undefined) {
+        const userDate = JSON.parse(newDate)
+        const dateFormate = moment(userDate).format("YYYY-MM-DD")
+        yield put(getDayAcceptedAppointments(dateFormate))
+      } else {
+        yield put(getPendingRequests(currentpage))
+      }
     }
 
     toast.success("Successfully schedule services updated!")
