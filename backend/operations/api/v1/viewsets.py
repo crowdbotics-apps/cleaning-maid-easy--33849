@@ -189,30 +189,45 @@ class AddTeamMemberViewSet(ViewSet):
         #except:
         #    change_date = None
 
-        team.team_members.add(*members)
-        for member in members:
-            if member.assigned_team:
-                member.assigned_team.team_members.remove(member)
-                #canceled_membership = TeamMembershipRecord.objects.create(
+        try:
+            day_off = request.data['day_off']
+        except:
+            day_off = None
+
+        if day_off:
+            for member in members:
+                membership = TeamMembershipRecord.objects.create(
+                    record_date=day_off,
+                    member=member,
+                    team=team,
+                    is_joining=False
+                )
+        else:
+
+            team.team_members.add(*members)
+            for member in members:
+                if member.assigned_team:
+                    member.assigned_team.team_members.remove(member)
+                    #canceled_membership = TeamMembershipRecord.objects.create(
+                    #    member=member,
+                    #    team=member.assigned_team,
+                    #    is_joining=False
+                    #)
+                    #if change_date:
+                    #    canceled_membership.record_date = change_date
+                    #    canceled_membership.save()
+
+                member.assigned_team = team
+                member.save()
+
+                #membership = TeamMembershipRecord.objects.create(
                 #    member=member,
-                #    team=member.assigned_team,
-                #    is_joining=False
+                #    team=team,
+                #    is_joining=True
                 #)
                 #if change_date:
-                #    canceled_membership.record_date = change_date
-                #    canceled_membership.save()
-
-            member.assigned_team = team
-            member.save()
-
-            #membership = TeamMembershipRecord.objects.create(
-            #    member=member,
-            #    team=team,
-            #    is_joining=True
-            #)
-            #if change_date:
-            #    membership.record_date = change_date
-            #    membership.save()
+                #    membership.record_date = change_date
+                #    membership.save()
 
         return Response(TeamSerializer(team).data)
 
