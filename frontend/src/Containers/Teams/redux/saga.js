@@ -223,14 +223,21 @@ async function addTeamMemberApi(data) {
   return XHR(URL, options)
 }
 
-function* addTeamMember({ data, currentpage, isEmployee }) {
+function* addTeamMember({ data, currentpage, isEmployee, isCalender }) {
   try {
     const response = yield call(addTeamMemberApi, data)
+    const newDate = sessionStorage.getItem("date")
     if (isEmployee) {
       yield put(getEmployeeList(currentpage))
     } else {
-      yield put(getTeam())
-      yield put(getUnAssignedEmployeesData(currentpage))
+      const userDate = JSON.parse(newDate)
+      const dateFormate = moment(userDate).format("YYYY-MM-DD")
+      if (isCalender) {
+        yield put(getTeam(dateFormate))
+      } else {
+        yield put(getTeam())
+        yield put(getUnAssignedEmployeesData(currentpage))
+      }
     }
 
     toast.success("Successfully added!")

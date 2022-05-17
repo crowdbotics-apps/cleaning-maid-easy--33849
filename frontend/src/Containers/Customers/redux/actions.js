@@ -1,4 +1,4 @@
-import { GET_ALL_CUSTOMERS, GET_ALL_CUSTOMERS_SUCCESS,ADD_CUSTOMER,ADD_CUSTOMER_FAILURE,CHANGE_NOTIFICATION,SEARCH_CUSTOMERS,RESET } from "./types"
+import { GET_ALL_CUSTOMERS, GET_ALL_CUSTOMERS_SUCCESS,ADD_CUSTOMER,ADD_CUSTOMER_FAILURE,CHANGE_NOTIFICATION,UPDATE_CUSTOMER,DELETE_CUSTOMER,SEARCH_CUSTOMERS,RESET } from "./types"
 
 export const getAllCustomers = (index, isTrue) => ({
   type: GET_ALL_CUSTOMERS,
@@ -24,6 +24,21 @@ export const searchCustomers = (data) => ({
   type: SEARCH_CUSTOMERS,
   data,
 })
+
+export const updateCustomer = (data,id,toggle,currentpage) => ({
+  type: UPDATE_CUSTOMER,
+  data,
+  id,
+  toggle,
+  currentpage
+})
+
+export const deleteCustomer = (id,currentpage) => ({
+  type: DELETE_CUSTOMER,
+  id,
+  currentpage
+})
+
 
 // export const getService = () => ({
 //   type: GET_ALL_CUSTOMERS

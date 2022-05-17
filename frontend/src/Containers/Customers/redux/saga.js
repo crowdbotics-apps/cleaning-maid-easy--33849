@@ -14,7 +14,9 @@ import {
   GET_ALL_CUSTOMERS,
   ADD_CUSTOMER,
   CHANGE_NOTIFICATION,
-  SEARCH_CUSTOMERS
+  SEARCH_CUSTOMERS,
+  DELETE_CUSTOMER,
+  UPDATE_CUSTOMER
 } from "./types"
 
 // actions
@@ -76,8 +78,8 @@ function* addCustomer({ data, toggle, currentpage }) {
     toggle()
   } catch (e) {
     const { response } = e
-    yield put(addCustomerFailure(response?.data?.Error))
-    toast.error("Someting wrong!")
+    yield put(addCustomerFailure())
+    toast.error(response?.data?.Error? response?.data?.Error : "Someting wrong!")
   }
 }
 
@@ -133,9 +135,66 @@ function* searchCustomers({ data }) {
   }
 }
 
+
+async function deleteCustomerApi(id) {
+  const URL = `${BASE_URL}/api/v1/users/user_info/${id}/`
+  const token = await sessionStorage.getItem("authToken")
+  const options = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Token ${token}`
+    },
+    method: "DELETE"
+  }
+
+  return XHR(URL, options)
+}
+
+function* deleteCustomer({ id, currentpage }) {
+  try {
+    const response = yield call(deleteCustomerApi,id)
+    yield put(getAllCustomersData(currentpage))
+    toast.success("Successfully deleted!")
+  } catch (e) {
+    const { response } = e
+    toast.error("Someting wrong!")
+  }
+}
+
+
+async function updateCustomerApi(data,id) {
+  const URL = `${BASE_URL}/api/v1/users/user_info/${id}/`
+  const token = await sessionStorage.getItem("authToken")
+  const options = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Token ${token}`
+    },
+    method: "PATCH",
+    data
+  }
+
+  return XHR(URL, options)
+}
+
+function* updateCustomer({data, id,toggle, currentpage }) {
+  try {
+    const response = yield call(updateCustomerApi,data,id)
+    yield put(getAllCustomersData(currentpage))
+    toast.success("Successfully updated!")
+    toggle()
+  } catch (e) {
+    const { response } = e
+    toast.error("Someting wrong!")
+  }
+}
+
 export default all([
   takeLatest(GET_ALL_CUSTOMERS, getAllCustomers),
   takeLatest(ADD_CUSTOMER, addCustomer),
   takeLatest(CHANGE_NOTIFICATION, changeNotification),
-  takeLatest(SEARCH_CUSTOMERS, searchCustomers)
+  takeLatest(SEARCH_CUSTOMERS, searchCustomers),
+  takeLatest(DELETE_CUSTOMER, deleteCustomer),
+  takeLatest(UPDATE_CUSTOMER, updateCustomer)
+
 ])
