@@ -19,6 +19,18 @@ class Team(models.Model):
         return self.title
 
 
+class TeamMembershipRecord(models.Model):
+    record_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    member = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    is_joining = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.member.name + " - " + self.team.title + " - " + str(self.record_date)
+
+
 class Frequency(models.Model):
     title = models.CharField(max_length=256)
     color_code = models.CharField(max_length=256)

@@ -235,6 +235,14 @@ class CustomersListViewSet(generics.ListAPIView):
 
         return users_query
 
+    @property
+    def paginator(self):
+        self._paginator = super(CustomersListViewSet, self).paginator
+        if self.request.GET.get('all') == 'true':
+            self._paginator = None
+            #self.serializer_class = BriefUserSerializer
+        return self._paginator
+
 
 class CreateEmployeeViewSet(ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
