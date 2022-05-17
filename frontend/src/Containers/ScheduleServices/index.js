@@ -249,7 +249,7 @@ function ScheduleService(props) {
 
         <Row>
           <Col md="12">
-            <Card style={!closeModal ? styles.cardStyle : null}>
+            <Card style={!closeModal ? styles.cardStyle : styles.bottomStyle}>
               <CardBody
                 className="pl-5 pr-5"
                 style={{ paddingTop: !closeModal ? 50 : "" }}
@@ -585,6 +585,9 @@ const styles = {
     marginLeft: 54,
     marginRight: 54,
     opacity: 0.94
+  },
+  bottomStyle:{
+    marginBottom:'auto'
   },
   textArea: {
     opacity: "0.6",

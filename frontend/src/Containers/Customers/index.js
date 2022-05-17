@@ -34,6 +34,7 @@ import {
 } from "./redux/actions"
 import { getServices } from "../Services/redux/actions"
 import { getFrequencies } from "Containers/ScheduleServices/redux/actions"
+import { deleteCustomer, updateCustomer } from "../Customers/redux/actions"
 
 import { Toaster } from "react-hot-toast"
 
@@ -42,7 +43,7 @@ import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
 const Customers = props => {
-  const { customers, servicesData, frequencies, requesting, backendError } =
+  const { customers, servicesData, frequencies, requesting } =
     props
   const [modal, setModal] = React.useState(false)
   const [notificationsValue, setNotificationsValue] = useState(false)
@@ -71,14 +72,6 @@ const Customers = props => {
       mydiv[0].style.overflowY = ""
     }
   }, [customers])
-
-  useEffect(() => {
-    if (backendError) {
-      setTimeout(() => {
-        props.addCustomerFailure(false)
-      }, 1500)
-    }
-  }, [backendError])
 
   const [selectedClient, setSelectedClient] = useState("none")
   function handleSelectChange(event) {
@@ -159,7 +152,7 @@ const Customers = props => {
       required: false
     },
     freq_id: {
-      required: true
+      required: customerData ? false:true
     }
   }
 
@@ -194,6 +187,7 @@ const Customers = props => {
     setNotificationsValue(false)
     setState(stateSchema)
     setModal(!modal)
+    setCustomerData(false)
   }
 
   const { state, handleOnChange, setState, disable } = useForm(
@@ -217,23 +211,39 @@ const Customers = props => {
     props.addCustomer(data, toggle, currentpage)
   }
 
+  const updateCustomerData = () => {
+    const data = new FormData()
+    data.append("name", state.fullName.value)
+    data.append("email", state.email.value)
+    data.append("company_name", state.company_name.value)
+    data.append("phone_number", state.phone_number.value)
+    data.append("zip_code", state.zip_code.value)
+    data.append("address", state.address.value)
+    data.append("service_id", parseInt(state.service_id.value))
+    data.append("other", state.other.value)
+    data.append("notifications_enabled", notificationsValue)
+    props.updateCustomer(data, customerData.id, toggle, currentpage)
+  }
+
   const editCustomer = data => {
     setModal(true)
     setCustomerData(data)
   }
 
-  // useEffect(() => {
-  //   if(customerData){
-  //     handleOnChange('fullName',customerData.name)
-  //     handleOnChange('email',customerData.email)
-  //     handleOnChange('company_name',customerData.company)
-  //     handleOnChange('phone_number',customerData.phone_number)
-  //     handleOnChange('zip_code',customerData.zip_code)
-  //     handleOnChange('address',customerData.address)
-  //     handleOnChange('other',customerData.other)
-  //     setNotificationsValue(customerData.notifications_enabled)
-  //   }
-  // }, [customerData])
+  useEffect(() => {
+    if (customerData) {
+      handleOnChange("fullName", customerData.name)
+      handleOnChange("email", customerData.email)
+      handleOnChange("company_name", customerData.company)
+      handleOnChange("phone_number", customerData.phone_number)
+      handleOnChange("zip_code", customerData.zip_code)
+      handleOnChange("address", customerData.address)
+      handleOnChange("other", customerData.other)
+      handleOnChange("service_id", customerData?.service?.id)
+
+      setNotificationsValue(customerData.notifications_enabled)
+    }
+  }, [customerData])
 
   return (
     <>
@@ -264,18 +274,9 @@ const Customers = props => {
               </button>
               <div>
                 <label className="mt-5" style={styles.titleTextStyle}>
-                  Add Customer
+                  {customerData ? "Update Customer" : "Add Customer"}
                 </label>
               </div>
-            </div>
-            <div style={{ paddingRight: 40, paddingLeft: 40 }}>
-              {backendError ? (
-                <UncontrolledAlert color="danger" fade={false}>
-                  <span>{backendError}</span>
-                </UncontrolledAlert>
-              ) : (
-                ""
-              )}
             </div>
 
             <div className="modal-body ">
@@ -392,38 +393,41 @@ const Customers = props => {
                 <label style={styles.labelTextStyle}>Others</label>
                 <Input
                   style={styles.inputTextStyle}
+                  value={state.other.value}
                   className="border-0 pl-0"
                   onChange={e => handleOnChange("other", e.target.value)}
                 />
                 <div style={styles.inputLineStyle} />
               </div>
+              {!customerData && (
+                <div className="mt-4">
+                  <label style={styles.labelTextStyle}>Frequency*</label>
+                  <div style={styles.mainstyle} className="mt-4">
+                    <select
+                      style={styles.selectStyle}
+                      value={state.freq_id.value}
+                      onChange={e => handleOnChange("freq_id", e.target.value)}
+                    >
+                      <option value="" selected disabled>
+                        Select
+                      </option>
 
-              <div className="mt-4">
-                <label style={styles.labelTextStyle}>Frequency*</label>
-                <div style={styles.mainstyle} className="mt-4">
-                  <select
-                    style={styles.selectStyle}
-                    value={state.freq_id.value}
-                    onChange={e => handleOnChange("freq_id", e.target.value)}
-                  >
-                    <option value="" selected disabled>
-                      Select
-                    </option>
-
-                    {frequencies &&
-                      frequencies.map(frequenciesList => (
-                        <option value={frequenciesList.id}>
-                          {frequenciesList.title}
-                        </option>
-                      ))}
-                  </select>
-                  {state.freq_id.error && (
-                    <label style={{ color: "red" }}>
-                      {state.freq_id.error}
-                    </label>
-                  )}
+                      {frequencies &&
+                        frequencies.map(frequenciesList => (
+                          <option value={frequenciesList.id}>
+                            {frequenciesList.title}
+                          </option>
+                        ))}
+                    </select>
+                    {state.freq_id.error && (
+                      <label style={{ color: "red" }}>
+                        {state.freq_id.error}
+                      </label>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
+
               <div className="mt-4 d-flex justify-content-between">
                 <label style={styles.labelTextStyle}>Notifications</label>
                 <Switch
@@ -442,7 +446,9 @@ const Customers = props => {
               disabled={disable}
               className="mb-3"
               style={styles.btnTextStyle}
-              onClick={addNewCustomer}
+              onClick={() =>
+                customerData ? updateCustomerData() : addNewCustomer()
+              }
             >
               {requesting ? (
                 <Spinner
@@ -452,6 +458,8 @@ const Customers = props => {
                   role="status"
                   aria-hidden="true"
                 />
+              ) : customerData ? (
+                "Update Service"
               ) : (
                 "Save Service"
               )}
@@ -528,7 +536,7 @@ const Customers = props => {
                                 </label>
                                 <br></br>
                                 <div className="text-right">
-                                <Button
+                                  {/* <Button
                                         className="btn-icon btn-neutral"
                                         size="sm"
                                         type="button"
@@ -536,8 +544,8 @@ const Customers = props => {
                                         <img
                                           src={require("assets/icons/dot_icon.png")}
                                         />
-                                      </Button>
-                                  {/* <UncontrolledDropdown>
+                                      </Button> */}
+                                  <UncontrolledDropdown>
                                     <DropdownToggle
                                       style={styles.tooggleStyle}
                                       // className="mr-5"
@@ -563,14 +571,16 @@ const Customers = props => {
                                       </DropdownItem>
                                       <DropdownItem
                                         onClick={() => {
-                                          // setItemId(item.id)
-                                          // changeTeam(items.id, item.id)
+                                          props.deleteCustomer(
+                                            item.id,
+                                            currentpage
+                                          )
                                         }}
                                       >
                                         Delete
                                       </DropdownItem>
                                     </DropdownMenu>
-                                  </UncontrolledDropdown> */}
+                                  </UncontrolledDropdown>
                                 </div>
                               </div>
                             </div>
@@ -715,7 +725,6 @@ const mapStateToProps = state => ({
   customers: state.customers.customers,
   servicesData: state.services.servicesData,
   frequencies: state.scheduleServices.frequencies,
-  backendError: state.customers.backendError
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -728,7 +737,11 @@ const mapDispatchToProps = dispatch => ({
   addCustomerFailure: error => dispatch(addCustomerFailure(error)),
   changeNotification: (data, id, currentpage) =>
     dispatch(changeNotification(data, id, currentpage)),
-  searchCustomers: data => dispatch(searchCustomers(data))
+  searchCustomers: data => dispatch(searchCustomers(data)),
+  deleteCustomer: (id, currentpage) =>
+    dispatch(deleteCustomer(id, currentpage)),
+  updateCustomer: (data, id, toggle, currentpage) =>
+    dispatch(updateCustomer(data, id, toggle, currentpage))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Customers)

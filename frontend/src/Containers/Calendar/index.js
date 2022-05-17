@@ -506,18 +506,18 @@ const Calendar = props => {
       if (props.event.teamId !== undefined) {
         const id = props.resourceId
 
+        // const data = {
+        //   member_ids: [props.event.memberId],
+        //   team_id: id,
+        // }
+
         const data = {
           member_ids: [props.event.memberId],
           team_id: id,
+          day_off:moment(props.start).format("YYYY-MM-DD")
         }
-
-        // const data1 = {
-        //   member_ids: [props.event.memberId],
-        //   team_id: id,
-        //   day_off:moment(props.start).format("YYYY-MM-DD")
-        // }
         if (props.event.resourceId !== id) {
-          addTeamMember(data, 1)
+          addTeamMember(data, 1,false, true)
           // removeTeamMember(data1,1)
           setCurrentPage(1)
         }
@@ -1502,8 +1502,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestAction(data, modalToggle, index, isCalender)),
   removeTeamMember: (data, currentpage) =>
     dispatch(removeTeamMember(data, currentpage)),
-  addTeamMember: (data, currentpage) =>
-    dispatch(addTeamMember(data, currentpage)),
+  addTeamMember: (data, currentpage,isEmployee, isCalender) =>
+    dispatch(addTeamMember(data, currentpage,isEmployee,isCalender)),
   editAppointmentCal: (data, details) =>
     dispatch(editAppointmentCal(data, details)),
   getTeam: (calenderDate) => dispatch(getTeam(calenderDate))

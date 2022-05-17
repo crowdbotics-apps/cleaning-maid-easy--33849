@@ -6,6 +6,12 @@ export const ADD_CUSTOMER_FAILURE = "CleaningMaidEasy/Customers/ADD_CUSTOMER_FAI
 
 export const CHANGE_NOTIFICATION = "CleaningMaidEasy/Customers/CHANGE_NOTIFICATION"
 export const SEARCH_CUSTOMERS = "CleaningMaidEasy/Customers/SEARCH_CUSTOMERS"
+export const UPDATE_CUSTOMER = "CleaningMaidEasy/Customers/UPDATE_CUSTOMER"
+export const DELETE_CUSTOMER = "CleaningMaidEasy/Customers/DELETE_CUSTOMER"
+
+
+
+
 
 
 export const RESET = "CleaningMaidEasy/Customers/RESET"
