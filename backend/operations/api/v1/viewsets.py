@@ -76,6 +76,7 @@ class TeamViewSet(ModelViewSet):
             return Response(TeamSerializer(all_teams, many=True).data)
 
         result = []
+        off_members = []
 
         for team in all_teams:
             member_list = []
@@ -86,12 +87,17 @@ class TeamViewSet(ModelViewSet):
             for member in team.team_members.all():
                 if len(team_memberships.filter(member=member)) <= 0:
                     member_list.append(BriefUserSerializer(member).data)
+                else:
+                    off_members.append(BriefUserSerializer(member).data)
 
             result.append({
                 'id': team.id,
                 'title': team.title,
                 'team_members': member_list
             })
+        for res in result:
+            if 'assigned' in res['title']:
+                res['team_members'] = res['team_members'] + off_members
 
         return Response(result)
 

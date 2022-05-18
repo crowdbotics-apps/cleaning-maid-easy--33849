@@ -13,10 +13,14 @@ class UserInfoSerializer(serializers.ModelSerializer):
             'company_name',
             "display_company",
             'address',
+            'zip_code',
+            'service',
+            'frequency',
             'email',
             'phone_number',
             'user_type',
-            'notifications_enabled'
+            'notifications_enabled',
+            'other'
         )
 
 
