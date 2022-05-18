@@ -1,9 +1,8 @@
-import { GET_ALL_CUSTOMERS, GET_ALL_CUSTOMERS_SUCCESS,RESET,ADD_CUSTOMER,ADD_CUSTOMER_FAILURE} from "./types"
+import { GET_ALL_CUSTOMERS, GET_ALL_CUSTOMERS_SUCCESS,RESET,ADD_CUSTOMER,ADD_CUSTOMER_FAILURE,UPDATE_CUSTOMER} from "./types"
 
 const initialState = {
   requesting: false,
   customers: false,
-  backendError: false,
 }
 
 export default (state = initialState, action) => {
@@ -11,6 +10,7 @@ export default (state = initialState, action) => {
 
     case GET_ALL_CUSTOMERS:
       case ADD_CUSTOMER:
+        case UPDATE_CUSTOMER:
       return {
         ...state,
         requesting: true
@@ -26,7 +26,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         requesting: false,
-        backendError: action.error
       }
 
       case RESET:

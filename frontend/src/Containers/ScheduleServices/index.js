@@ -54,13 +54,12 @@ function ScheduleService(props) {
     props.getTeam()
     props.getServices()
     props.getFrequencies()
-    props.getAllCustomers(false,true)
+    props.getAllCustomers(false, true)
     let mydiv = document.getElementsByClassName("react-date-picker__wrapper")
     mydiv[0].style.border = "none"
   }, [])
 
   // react-date-picker__wrapper
-
   const { teamData, servicesData, frequencies, requesting, customers } = props
 
   //StatesForTimeDateValidation
@@ -143,15 +142,24 @@ function ScheduleService(props) {
   const onSave = (title, value) => {
     let data = { ...appointmentData }
     data[title] = value
+    data['start_time']=fromTime
+    data['end_time']=toTime
+
+
+    // data["start_time"] = moment(toTime).format("HH:mm")
+    // data["end_time"] = moment(fromTime).format("HH:mm")
     if (slotsValue?.length) {
-      if (slotsValue[0] && slotsValue[1]) {
-        data["start_time"] = moment(slotsValue[0]).format("HH:mm")
-        data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
-        data["end_time"] = moment(slotsValue[1]).format("HH:mm")
-      } else {
-        data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
-      }
+      data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
     }
+    // if (slotsValue?.length) {
+    //   if (slotsValue[0] && slotsValue[1]) {
+    //     data["start_time"] = moment(slotsValue[0]).format("HH:mm")
+    //     data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
+    //     data["end_time"] = moment(slotsValue[1]).format("HH:mm")
+    //   } else {
+    //     data["appointment_date"] = moment(slotsValue[0]).format("YYYY-MM-DD")
+    //   }
+    // }
 
     setAppoinmentData(data)
   }
@@ -160,22 +168,25 @@ function ScheduleService(props) {
     const data = { ...appointmentData, ...getState(state) }
     data["status"] = "Pending"
 
-    if (data.appointment_date || slotsValue) {
+    const datas=moment(new Date()).format("ddd MMM YYYY")
+    const myData=moment(data.appointment_date).format("ddd MMM YYYY")
+    if (datas!==myData) {
       setSelectedDate(false)
     } else {
       setSelectedDate(true)
     }
 
-    if ((data.start_time && data.end_time) || slotsValue) {
+    if (data.start_time!=='-1:00' && data.end_time!=='-1:00') {
       setSelectTime(false)
+      
     } else {
       setSelectTime(true)
     }
 
     if (
-      (data.end_time || slotsValue?.length === 2) &&
-      (data.start_time || slotsValue?.length === 2) &&
-      (data.appointment_date || slotsValue[0]) &&
+      data.end_time &&
+      data.start_time &&
+      (data.appointment_date || slotsValue && slotsValue[0]) &&
       data.assigned_team_id &&
       data.service_id &&
       data.frequency_id
@@ -186,6 +197,14 @@ function ScheduleService(props) {
       toast.error("Please fill require fields!")
     }
   }
+
+  useEffect(() => {
+    if (slotsValue) {
+      setToTime(moment(slotsValue[1]).format("HH:mm"))
+      setCalenderValue(slotsValue[0])
+      setFromTime(moment(slotsValue[0]).format("HH:mm"))
+    }
+  }, [slotsValue])
 
   return (
     <>
@@ -230,7 +249,7 @@ function ScheduleService(props) {
 
         <Row>
           <Col md="12">
-            <Card style={!closeModal ? styles.cardStyle : null}>
+            <Card style={!closeModal ? styles.cardStyle : styles.bottomStyle}>
               <CardBody
                 className="pl-5 pr-5"
                 style={{ paddingTop: !closeModal ? 50 : "" }}
@@ -254,7 +273,7 @@ function ScheduleService(props) {
                         disabled={slotsValue?.length ? true : false}
                         // clearIcon={false}
                         wrapperClassName="datePickerBorder"
-                        value={slotsValue ? slotsValue[0] : calendarValue}
+                        value={calendarValue}
                         minDate={new Date()}
                         onChange={date => {
                           setCalenderValue(date)
@@ -277,15 +296,9 @@ function ScheduleService(props) {
                     >
                       <img src={clockImage} style={{ marginRight: 10 }} />
                       <TimePicker
-                        value={
-                          slotsValue
-                            ? moment(slotsValue[0]).format("HH:mm") !== "00:00"
-                              ? slotsValue[0]
-                              : fromTime
-                            : fromTime
-                        }
+                        value={fromTime}
                         className={"timeStyle"}
-                        disabled={slotsValue?.length === 2 ? true : false}
+                        // disabled={slotsValue?.length === 2 ? true : false}
                         clockIcon
                         disableClock={true}
                         secondPlaceholder="ss"
@@ -315,15 +328,9 @@ function ScheduleService(props) {
                         />
                   </LocalizationProvider> */}
                       <TimePicker
-                        value={
-                          slotsValue
-                            ? slotsValue[1]
-                              ? slotsValue[1]
-                              : toTime
-                            : toTime
-                        }
+                        value={toTime}
                         className={"timeStyle"}
-                        disabled={slotsValue?.length === 2 ? true : false}
+                        // disabled={slotsValue?.length === 2 ? true : false}
                         disableClock={true}
                         onChange={e => {
                           onSave("end_time", e)
@@ -365,7 +372,7 @@ function ScheduleService(props) {
                   > */}
                     <Row style={{ marginTop: 28 }}>
                       <Col md="12">
-                        <label style={styles.labelFont}>Title</label>
+                        <label style={styles.labelFont}>Title*</label>
                         <Input
                           style={styles.inputStyle}
                           className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
@@ -384,7 +391,7 @@ function ScheduleService(props) {
                       style={{ justifyContent: "space-between" }}
                     >
                       <Col lg="7" md="6" sm="3">
-                        <label style={styles.labelFont}>Client Name</label>
+                        <label style={styles.labelFont}>Client Name*</label>
                         <Select
                           className="react-select"
                           classNamePrefix="react-select"
@@ -394,7 +401,7 @@ function ScheduleService(props) {
                             customers?.map(item => ({
                               label: item.name,
                               value: item.id,
-                              address:item.address
+                              address: item.address
                             }))
                           }
                           onChange={e => {
@@ -409,7 +416,7 @@ function ScheduleService(props) {
                       /> */}
                       </Col>
                       <Col lg="4" md="6" sm="3">
-                        <label style={styles.labelFont}>Number</label>
+                        <label style={styles.labelFont}>Number*</label>
                         <Input
                           style={styles.inputStyle}
                           className="border-top-0 border-right-0 border-left-0 p-0"
@@ -428,7 +435,7 @@ function ScheduleService(props) {
                     {/* </div> */}
                     <div className="mt-4 ">
                       <label style={styles.labelFont}>
-                        Assigned Employee/ Team
+                        Assigned Employee/ Team*
                       </label>
                       {/* <Input
                       style={styles.inputStyle}
@@ -440,12 +447,13 @@ function ScheduleService(props) {
                         name="singleSelect"
                         //  value={appointmentData?.assigned_team_id?.value}
                         options={
-
                           teamData &&
-                          teamData.filter(v => v.title !== "Unassigned").map(item => ({
-                            label: item.title,
-                            value: item.id
-                          }))
+                          teamData
+                            .filter(v => v.title !== "Unassigned")
+                            .map(item => ({
+                              label: item.title,
+                              value: item.id
+                            }))
                         }
                         onChange={e => onSave("assigned_team_id", e.value)}
                         placeholder="Single Select"
@@ -457,7 +465,7 @@ function ScheduleService(props) {
                       style={{ justifyContent: "space-between" }}
                     >
                       <Col lg="6" md="6" sm="3">
-                        <label style={styles.labelFont}>Services</label>
+                        <label style={styles.labelFont}>Services*</label>
                         <Select
                           className="react-select"
                           classNamePrefix="react-select"
@@ -479,7 +487,7 @@ function ScheduleService(props) {
                         />
                       </Col>
                       <Col lg="6" md="6" sm="3">
-                        <label style={styles.labelFont}>Frequency</label>
+                        <label style={styles.labelFont}>Frequency*</label>
                         <Select
                           className="react-select  "
                           classNamePrefix="react-select"
@@ -578,6 +586,9 @@ const styles = {
     marginRight: 54,
     opacity: 0.94
   },
+  bottomStyle:{
+    marginBottom:'auto'
+  },
   textArea: {
     opacity: "0.6",
     webkitBoxShadow: "1px 3px 1px #9E9E9E",
@@ -626,6 +637,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(scheduleServices(data, closeModal, setSlotsValue)),
   renderHtmlText: data => dispatch(renderHtmlText(data)),
   getFrequencies: () => dispatch(getFrequencies()),
-  getAllCustomers: (index,isTrue) => dispatch(getAllCustomers(index,isTrue))
+  getAllCustomers: (index, isTrue) => dispatch(getAllCustomers(index, isTrue))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(ScheduleService)

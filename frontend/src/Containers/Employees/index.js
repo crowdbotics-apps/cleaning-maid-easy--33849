@@ -495,7 +495,7 @@ function Employees(props) {
                   <div className="modal-body ">
                     <label style={styles.labelStyle}>
                       {" "}
-                      {editValues ? "Employee Name" : "First Name"}
+                      {editValues ? "Employee Name*" : "First Name*"}
                     </label>
                     <div>
                       <Input
@@ -515,7 +515,7 @@ function Employees(props) {
                     {editValues ? null : (
                       <>
                         <label style={styles.labelStyle} className="mt-3">
-                          Last Name
+                          Last Name*
                         </label>
                         <div>
                           <Input
@@ -537,7 +537,7 @@ function Employees(props) {
                     {!editValues ? (
                       <>
                         <label style={styles.labelStyle} className="mt-3">
-                          Email
+                          Email*
                         </label>
                         <div>
                           <Input

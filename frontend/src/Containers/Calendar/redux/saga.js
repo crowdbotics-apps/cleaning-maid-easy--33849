@@ -32,6 +32,7 @@ import {
   getMonthAcceptedAppointments as getMonthAcceptedAppointmentsData
 } from "./actions"
 
+import {getTeam} from '../../Teams/redux/actions'
 async function getDayAcceptedAppointmentsApi(date) {
   const URL = `${BASE_URL}/api/v1/operations/day_calendar/?day=${date}`
   const token = await sessionStorage.getItem("authToken")
@@ -50,6 +51,8 @@ function* getDayAcceptedAppointments({ date }) {
   try {
     const response = yield call(getDayAcceptedAppointmentsApi, date)
     yield put(getDayAcceptedAppointmentsSuccess(response.data))
+    yield put(getTeam(date))
+
   } catch (e) {
     const { response } = e
   }

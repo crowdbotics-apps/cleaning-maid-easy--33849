@@ -188,21 +188,21 @@ function Teams(props) {
   const addTeamOnDrop = (ev, id, cat) => {
     let memberId = ev.dataTransfer.getData("memberId")
     let teamId = ev.dataTransfer.getData("teamId")
-
     const data = {
       member_ids: [parseInt(memberId)],
       team_id: parseInt(id)
     }
-
     const valueExists = [].concat
       .apply([], filterTeam(memberId))
       .filter(v => v !== false)
       
-  
     if (valueExists.includes(true)) {
       if (teamId != id) {
         props.addTeamMember(data, currentpage)
       }
+    }
+    else {
+      props.addTeamMember(data, currentpage)
     }
   }
   return (

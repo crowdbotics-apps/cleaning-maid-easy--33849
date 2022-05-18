@@ -13,8 +13,9 @@ import {
   RESET,
 } from './types';
 
-export const getTeam= () => ({
+export const getTeam= (calenderDate) => ({
   type: GET_TEAM,
+  calenderDate
 });
 
 export const getTeamSuccess = (data) => ({
@@ -41,11 +42,12 @@ export const getEmployeesSuccess = (data) => ({
   data,
 });
 
-export const addTeamMember=(data,currentpage,isEmployee)=>({
+export const addTeamMember=(data,currentpage,isEmployee, isCalender)=>({
   type: ADD_TEAM_MEMBER,
   data,
   currentpage,
-  isEmployee
+  isEmployee,
+  isCalender
 })
 
 export const removeTeamMember=(data,currentpage)=>({
