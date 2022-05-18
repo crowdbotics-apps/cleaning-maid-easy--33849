@@ -117,6 +117,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     service_history = serializers.SerializerMethodField()
     company = serializers.SerializerMethodField()
     service = ServiceSerializer(read_only=True)
+    frequency = FrequencySerializer(read_only=True)
 
     class Meta:
         model = User
@@ -130,6 +131,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             'company',
             'service_history',
             'service',
+            'frequency',
             'other',
             'notifications_enabled'
         )
