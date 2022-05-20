@@ -76,28 +76,26 @@ class TeamViewSet(ModelViewSet):
             return Response(TeamSerializer(all_teams, many=True).data)
 
         result = []
-        off_members = []
 
         for team in all_teams:
             member_list = []
 
-            team_memberships = TeamMembershipRecord.objects.filter(team=team,
-                                                                   record_date__date=request_date,
-                                                                   is_joining=False)
             for member in team.team_members.all():
-                if len(team_memberships.filter(member=member)) <= 0:
+                team_memberships = TeamMembershipRecord.objects.filter(member=member,
+                                                                       record_date__date=request_date,
+                                                                       is_joining=False)
+                if len(team_memberships) <= 0:
                     member_list.append(BriefUserSerializer(member).data)
-                else:
-                    off_members.append(BriefUserSerializer(member).data)
 
             result.append({
                 'id': team.id,
                 'title': team.title,
                 'team_members': member_list
             })
-        for res in result:
-            if 'assigned' in res['title']:
-                res['team_members'] = res['team_members'] + off_members
+        for day_off in TeamMembershipRecord.objects.filter(record_date__date=request_date, is_joining=False):
+            for res in result:
+                if res['title'] == day_off.team.title:
+                    res['team_members'] = res['team_members'] + [BriefUserSerializer(day_off.member).data]
 
         return Response(result)
 
@@ -234,6 +232,11 @@ class AddTeamMemberViewSet(ViewSet):
                 #if change_date:
                 #    membership.record_date = change_date
                 #    membership.save()
+        if day_off:
+            result = TeamSerializer(team).data
+            for member in members:
+                result['team_members'] = result['team_members'] + [BriefUserSerializer(member).data]
+            return Response(result)
 
         return Response(TeamSerializer(team).data)
 
