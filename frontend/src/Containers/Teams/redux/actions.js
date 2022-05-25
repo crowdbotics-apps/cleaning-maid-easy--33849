@@ -10,6 +10,7 @@ import {
   GET_UN_ASSIGNED_EMPLOYEES_SUCCESS,
   REMOVE_TEAM_MEMBER,
   ADD_TEAM_MEMBER,
+  GET_CALENDAR_TEAM_SUCCESS,
   RESET,
 } from './types';
 
@@ -20,6 +21,11 @@ export const getTeam= (calenderDate) => ({
 
 export const getTeamSuccess = (data) => ({
   type: GET_TEAM_SUCCESS,
+  data,
+});
+
+export const getCalenderTeamSuccess = (data) => ({
+  type: GET_CALENDAR_TEAM_SUCCESS,
   data,
 });
 

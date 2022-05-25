@@ -36,6 +36,9 @@ import { getTeam } from "Containers/Teams/redux/actions"
 import { getServices } from "Containers/Services/redux/actions"
 import { getFrequencies, updateScheduleServices } from "./redux/actions"
 import { getAllCustomers } from "../Customers/redux/actions"
+import {
+  requestAction
+} from "../PendingServices/redux/actions"
 
 //Images
 import locationImage from "../../assets/icons/mapPin.png"
@@ -43,8 +46,16 @@ import calenderImage from "../../assets/icons/Calendar.png"
 import clockImage from "../../assets/icons/Clock.png"
 
 function UpdateScheduleServices(props) {
-  const { closeUpdateModal, eventDetail, viewState,eventPendingRequest,currentpage } = props
-
+  const {
+    closeUpdateModal,
+    eventDetail,
+    viewState,
+    eventPendingRequest,
+    currentpage,
+    actionRequesting,
+    isCalender,
+    pendingCalendar
+  } = props
   useEffect(() => {
     props.getTeam()
     props.getServices()
@@ -54,20 +65,36 @@ function UpdateScheduleServices(props) {
     mydiv[0].style.border = "none"
   }, [])
 
- 
   useEffect(() => {
-    if(eventPendingRequest){
-      setIsEdit(true)
-      setBtnText("Save")
+    if (eventPendingRequest) {
+      setPendingDetailsId(eventPendingRequest?.id)
+      setIsEdit(false)
+      setBtnText("Edit")
       handleOnChange("price", eventPendingRequest?.price)
       handleOnChange("description", eventPendingRequest?.description)
       handleOnChange("notes", eventPendingRequest?.notes)
       handleOnChange("client_number", eventPendingRequest?.client_number)
       handleOnChange("title", eventPendingRequest?.title)
       handleOnChange("client_address", eventPendingRequest?.client_address)
-      setToTime(new Date(`${eventPendingRequest?.appointment_date+' '+ eventPendingRequest?.end_time}`))
+      setToTime(
+        new Date(
+          `${
+            eventPendingRequest?.appointment_date +
+            " " +
+            eventPendingRequest?.end_time
+          }`
+        )
+      )
       setCalenderValue(new Date(eventPendingRequest?.appointment_date))
-      setFromTime(new Date(`${eventPendingRequest?.appointment_date+' '+ eventPendingRequest?.start_time}`))
+      setFromTime(
+        new Date(
+          `${
+            eventPendingRequest?.appointment_date +
+            " " +
+            eventPendingRequest?.start_time
+          }`
+        )
+      )
       setAppoinmentData({
         appointment_date: eventPendingRequest?.appointment_date,
         start_time: eventPendingRequest?.start_time,
@@ -91,6 +118,7 @@ function UpdateScheduleServices(props) {
       })
     }
     if (eventDetail) {
+      setPendingDetailsId(eventDetail?.eventDetail?.id)
       handleOnChange("price", eventDetail?.eventDetail?.price)
       handleOnChange("description", eventDetail?.eventDetail?.description)
       handleOnChange("notes", eventDetail?.eventDetail?.notes)
@@ -143,7 +171,15 @@ function UpdateScheduleServices(props) {
   const [appointmentData, setAppoinmentData] = useState({
     appointment_date: new Date()
   })
+  const [pendingDetailsId, setPendingDetailsId]=useState('')
 
+  const [actionRequest, setActionRequest] = useState(0)
+  
+  useEffect(() => {
+    if (btnText === "Edit") {
+      setIsEdit(false)
+    }
+  }, [btnText])
   //Useform
   const stateSchema = {
     price: {
@@ -206,10 +242,11 @@ function UpdateScheduleServices(props) {
   }
 
   const updateData = () => {
-    if (isEdit===true|| btnText === "Save") {
+    if (isEdit === true || btnText === "Update") {
       onHandleSave()
-    } else {
-      setBtnText("Save")
+    }
+    else {
+      setBtnText("Update")
       setIsEdit(true)
     }
   }
@@ -220,11 +257,9 @@ function UpdateScheduleServices(props) {
     data["assigned_team_id"] = data.assigned_team_id.value
     data["frequency_id"] = data.frequency_id.value
     data["client_id"] = data.client_id.value
-    if(eventPendingRequest){
+    if (eventPendingRequest) {
       data["status"] = "Pending"
     }
-   
-
     if (data.appointment_date) {
       setSelectedDate(false)
     } else {
@@ -248,14 +283,37 @@ function UpdateScheduleServices(props) {
     ) {
       props.updateScheduleServices(
         data,
-        eventPendingRequest?eventPendingRequest.id: eventDetail.eventDetail.id,
+        eventPendingRequest
+          ? eventPendingRequest.id
+          : eventDetail.eventDetail.id,
+        setBtnText,
         closeUpdateModal,
         viewState,
-        currentpage && currentpage
+        currentpage && currentpage,
+        isCalender && isCalender,
       )
     } else {
       toast.error("Please fill require fields!")
     }
+  }
+
+  const acceptRequest = requestAction => {
+    const data = {
+      appointment_id: pendingDetailsId,
+      action: requestAction
+    }
+    props.requestAction(data, modalToggle, currentpage,pendingCalendar && pendingCalendar)
+    // setRequestError(false)
+    if (requestAction === "Accept") {
+      setActionRequest(1)
+    } else {
+      setActionRequest(2)
+    }
+  }
+
+  const modalToggle = () => {
+    closeUpdateModal(false)
+    setActionRequest(0)
   }
 
   return (
@@ -298,7 +356,9 @@ function UpdateScheduleServices(props) {
 
         <Row>
           <Col md="12">
-            <Card style={!closeUpdateModal ? styles.cardStyle :styles.bottomStyle}>
+            <Card
+              style={!closeUpdateModal ? styles.cardStyle : styles.bottomStyle}
+            >
               <CardBody
                 className="pl-5 pr-5"
                 style={{ paddingTop: !closeUpdateModal ? 50 : "" }}
@@ -456,7 +516,7 @@ function UpdateScheduleServices(props) {
                         />
                         <label style={{ color: "red" }}>
                           {state.client_number.error
-                            ? state.client_number.error
+                            ? state.client_number.erroracceptRequest
                             : null}
                         </label>
                       </Col>
@@ -584,6 +644,39 @@ function UpdateScheduleServices(props) {
                 </Row>
               </CardBody>
               <CardFooter className="text-lg-right text-center">
+                {(!eventDetail?.start && btnText === "Edit" )&& (
+                  <>
+                    <Button
+                      style={styles.addBtnText}
+                      color="white"
+                      title=""
+                      type="button"
+                      disabled={disable}
+                      size="lg"
+                      onClick={() => acceptRequest("Accept")}
+                    >
+                      {actionRequest === 1 && actionRequesting  ? <Spinner size="sm" /> : "Accept"}
+                    </Button>
+                    <Button
+                      style={{
+                        borderRadius: 10,
+                        fontSize: 14,
+                        fontWeight: "bold",
+                        marginRight: 10
+                      }}
+                      lassName="btnTest2"
+                      color="success"
+                      title=""
+                      type="button"
+                      outline
+                      disabled={disable}
+                      size="lg"
+                      onClick={() => acceptRequest("Reject")}
+                    >
+                      {actionRequest === 2 && actionRequesting  ? <Spinner size="sm" /> : "Reject"}
+                    </Button>
+                  </>
+                )}
                 <Button
                   style={{
                     background:
@@ -614,10 +707,10 @@ const styles = {
     marginTop: 54,
     marginLeft: 54,
     marginRight: 54,
-    opacity: 0.94,
+    opacity: 0.94
   },
-  bottomStyle:{
-    marginBottom:'auto'
+  bottomStyle: {
+    marginBottom: "auto"
   },
   textArea: {
     opacity: "0.6",
@@ -649,6 +742,13 @@ const styles = {
     fontSize: 24,
     fontWeight: "600",
     display: "grid"
+  },
+  addBtnText: {
+    background: "linear-gradient(97.75deg, #00B9F1 -11.55%, #034EA2 111.02%)",
+    borderRadius: 10,
+    fontSize: 14,
+    fontWeight: "bold",
+    marginRight: 10
   }
 }
 
@@ -657,16 +757,21 @@ const mapStateToProps = state => ({
   servicesData: state.services.servicesData,
   frequencies: state.updateScheduleServices.frequencies,
   requesting: state.updateScheduleServices.requesting,
-  customers: state.customers.customers
+  customers: state.customers.customers,
+  actionRequesting: state.pendingRequests.requesting,
 })
 
 const mapDispatchToProps = dispatch => ({
   getTeam: () => dispatch(getTeam()),
   getServices: () => dispatch(getServices()),
-  updateScheduleServices: (data, id, closeUpdateModal, viewState,currentpage) =>
-    dispatch(updateScheduleServices(data, id, closeUpdateModal, viewState,currentpage)),
+  updateScheduleServices: (data, id, setBtnText,closeUpdateModal, viewState, currentpage, isCalender, pendingCalendar) =>
+    dispatch(
+      updateScheduleServices(data, id, setBtnText,closeUpdateModal, viewState, currentpage,isCalender, pendingCalendar)
+    ),
   getFrequencies: () => dispatch(getFrequencies()),
-  getAllCustomers: (index, isTrue) => dispatch(getAllCustomers(index, isTrue))
+  getAllCustomers: (index, isTrue) => dispatch(getAllCustomers(index, isTrue)),
+  requestAction: (data, modalToggle, index, isCalender) =>
+    dispatch(requestAction(data, modalToggle, index, isCalender)),
 })
 export default connect(
   mapStateToProps,

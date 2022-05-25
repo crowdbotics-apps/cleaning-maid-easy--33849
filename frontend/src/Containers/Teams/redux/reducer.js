@@ -7,6 +7,7 @@ import {
   DELETE_TEAM,
   GET_UN_ASSIGNED_EMPLOYEES,
   GET_UN_ASSIGNED_EMPLOYEES_SUCCESS,
+  GET_CALENDAR_TEAM_SUCCESS,
   RESET
 } from "./types"
 
@@ -17,7 +18,8 @@ const initialState = {
   employeeRequesting: false,
   deleteRequesting: false,
   createRequesting: false,
-  unAssignedEmployees: false
+  unAssignedEmployees: false,
+  calendarTeamData:[]
 }
 
 export default (state = initialState, action) => {
@@ -46,6 +48,14 @@ export default (state = initialState, action) => {
         requesting: false,
         teamData: action.data
       }
+
+      case GET_CALENDAR_TEAM_SUCCESS:
+        return {
+          ...state,
+          requesting: false,
+          calendarTeamData: action.data
+        }
+        
     case GET_EMPLOYEES_SUCCESS:
       return {
         ...state,

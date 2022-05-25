@@ -62,10 +62,22 @@ function* getFrequencies() {
   }
 }
 
-function* updateScheduleServices({ data, id, closeUpdateModal, viewState ,currentpage}) {
+function* updateScheduleServices({
+  data,
+  id,
+  setBtnText,
+  closeUpdateModal,
+  viewState,
+  currentpage,
+  isCalender,
+}) {
   try {
     const response = yield call(updateScheduleServicesApi, data, id)
-    closeUpdateModal(false)
+    if (isCalender) {
+      closeUpdateModal(false)
+    } else {
+      setBtnText("Edit")
+    }
 
     const newDate = sessionStorage.getItem("date")
     const currentDate = moment(newDate)
@@ -88,9 +100,11 @@ function* updateScheduleServices({ data, id, closeUpdateModal, viewState ,curren
       yield put(getMonthAcceptedAppointments(startOfMonth, endOfMonth))
     } else {
       if (viewState !== undefined) {
-        const userDate = JSON.parse(newDate)
-        const dateFormate = moment(userDate).format("YYYY-MM-DD")
-        yield put(getDayAcceptedAppointments(dateFormate))
+        if(isCalender){
+          const userDate = JSON.parse(newDate)
+          const dateFormate = moment(userDate).format("YYYY-MM-DD")
+          yield put(getDayAcceptedAppointments(dateFormate))
+        }
       } else {
         yield put(getPendingRequests(currentpage))
       }
