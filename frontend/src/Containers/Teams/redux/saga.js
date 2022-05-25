@@ -28,7 +28,8 @@ import {
   getEmployeesSuccess,
   getTeam,
   getUnAssignedEmployeesSuccess,
-  getUnAssignedEmployees as getUnAssignedEmployeesData
+  getUnAssignedEmployees as getUnAssignedEmployeesData,
+  getCalenderTeamSuccess
 } from "./actions"
 // import {getDayAcceptedAppointments} from '../../Calendar/redux/actions'
 import { getEmployeeList } from "../../Employees/redux/actions"
@@ -52,7 +53,11 @@ async function getTeamAPI(calenderDate) {
 function* getTeams({ calenderDate }) {
   try {
     const response = yield call(getTeamAPI, calenderDate)
+    if(calenderDate){
+      yield put(getCalenderTeamSuccess(response.data)) 
+    }
     yield put(getTeamSuccess(response.data))
+    
   } catch (e) {
     const { response } = e
   } finally {

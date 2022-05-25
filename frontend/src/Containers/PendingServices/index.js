@@ -126,19 +126,19 @@ const PendingServices = props => {
     setActionRequest(0)
   }
 
-  const acceptRequest = requestAction => {
-    const data = {
-      appointment_id: pendingDetails.id,
-      action: requestAction
-    }
-    props.requestAction(data, modalToggle, currentpage)
-    setRequestError(false)
-    if (requestAction === "Accept") {
-      setActionRequest(1)
-    } else {
-      setActionRequest(2)
-    }
-  }
+  // const acceptRequest = requestAction => {
+  //   const data = {
+  //     appointment_id: pendingDetails.id,
+  //     action: requestAction
+  //   }
+  //   props.requestAction(data, modalToggle, currentpage)
+  //   setRequestError(false)
+  //   if (requestAction === "Accept") {
+  //     setActionRequest(1)
+  //   } else {
+  //     setActionRequest(2)
+  //   }
+  // }
 
   const handlePageChange = page => {
     setCurrentPage(page)
@@ -166,7 +166,7 @@ const PendingServices = props => {
           flex: 1
         }}
       >
-        <Modal isOpen={modal} toggle={modalToggle}>
+        {/* <Modal isOpen={modal} toggle={modalToggle}>
           <ModalHeader style={{ borderBottom: 0 }}>
             <span>
               <b style={{ paddingTop: 10 }}>{pendingDetails?.title}</b>
@@ -408,7 +408,7 @@ const PendingServices = props => {
               </Col>
             </Row>
           </ModalBody>
-        </Modal>
+        </Modal> */}
         <Row>
           <Col md="12">
             <Card
@@ -447,30 +447,30 @@ const PendingServices = props => {
                         <td>
                           <b>No record found</b>
                         </td>
-                        <td></td>
+                        {/* <td></td> */}
                       </tr>
                     ) : (
                       pendingRequests?.results &&
                       pendingRequests?.results?.map((item, i) => (
-                        <tr>
+                        <tr onClick={() => editPendingRequest(item)}>
                           <td style={styles.tdataText1}>{i + 1}.</td>
                           <td
                             style={styles.tdataText2}
-                            onClick={() => {
-                              setPendingDetails(item)
-                              setModal(true)
-                              setRequestError(false)
-                            }}
+                            // onClick={() => {
+                            //   setPendingDetails(item)
+                            //   setModal(true)
+                            //   setRequestError(false)
+                            // }}
                           >
                             {item.title}
                           </td>
                           <td
                             style={styles.tdataText}
-                            onClick={() => {
-                              setPendingDetails(item)
-                              setModal(true)
-                              setRequestError(false)
-                            }}
+                            // onClick={() => {
+                            //   setPendingDetails(item)
+                            //   setModal(true)
+                            //   setRequestError(false)
+                            // }}
                           >
                             {item?.description}
                           </td>
@@ -484,7 +484,7 @@ const PendingServices = props => {
                           >
                             {item?.service?.name}
                           </td>
-                          <td className="text-center">
+                          {/* <td className="text-center">
                             <Button
                               className="btn-icon btn-neutral"
                               size="sm"
@@ -496,7 +496,7 @@ const PendingServices = props => {
                                 src={require("assets/icons/pencil_btn.png")}
                               />
                             </Button>
-                          </td>
+                          </td> */}
                         </tr>
                       ))
                     )}
@@ -546,7 +546,8 @@ const PendingServices = props => {
 const mapStateToProps = state => ({
   requesting: state.pendingRequests.requesting,
   actionRequesting: state.pendingRequests.requesting,
-  pendingRequests: state.pendingRequests.pendingRequests
+  pendingRequests: state.pendingRequests.pendingRequests,
+
   //   servicesError: state.services.servicesError
 })
 
@@ -600,7 +601,8 @@ const styles = {
   tdataText1: {
     fontSize: 14,
     lineHeight: 3,
-    fontWeight: "500"
+    fontWeight: "500",
+    cursor: "pointer"
   },
   tdataText2: {
     fontSize: 14,
