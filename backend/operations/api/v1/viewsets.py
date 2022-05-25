@@ -200,6 +200,12 @@ class AddTeamMemberViewSet(ViewSet):
 
         if day_off:
             for member in members:
+                member_membership = TeamMembershipRecord.objects.filter(
+                    record_date=day_off,
+                    member=member,
+                )
+                if len(member_membership) > 0:
+                    member_membership.delete()
                 membership = TeamMembershipRecord.objects.create(
                     record_date=day_off,
                     member=member,
