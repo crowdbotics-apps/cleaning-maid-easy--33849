@@ -622,17 +622,26 @@ const Customers = props => {
                             >
                               {item.service_history.map(
                                 preferredServicesItem => (
+                                  
                                   <div className="d-flex justify-content-between">
-                                    <h7>
-                                      -{preferredServicesItem?.service?.name}
-                                    </h7>
-                                    <i
-                                      className="fa fa-circle"
-                                      style={{
-                                        color: `${preferredServicesItem.frequency.color_code}`,
-                                        fontSize: "large"
-                                      }}
-                                    />
+                                    {
+                                      preferredServicesItem?.service!==null ?
+                                      (
+                                        <>
+                                        <h7>
+                                        -{preferredServicesItem?.service?.name}
+                                      </h7>
+                                      <i
+                                        className="fa fa-circle"
+                                        style={{
+                                          color: `${preferredServicesItem?.frequency?.color_code}`,
+                                          fontSize: "large"
+                                        }}
+                                      />
+                                      </>
+                                      ):null
+                                    }
+                                   
                                   </div>
                                 )
                               )}

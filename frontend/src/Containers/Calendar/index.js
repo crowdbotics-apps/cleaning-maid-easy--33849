@@ -224,19 +224,19 @@ const Calendar = props => {
     setEventDetail(false)
   }
 
-  const acceptRequest = requestAction => {
-    const data = {
-      appointment_id: pendingDetails.id,
-      action: requestAction
-    }
+  // const acceptRequest = requestAction => {
+  //   const data = {
+  //     appointment_id: pendingDetails.id,
+  //     action: requestAction
+  //   }
 
-    props.requestAction(data, modalToggle, currentPendingPage, true)
-    if (requestAction === "Accept") {
-      setActionRequest(1)
-    } else {
-      setActionRequest(2)
-    }
-  }
+  //   props.requestAction(data, modalToggle, currentPendingPage, true)
+  //   if (requestAction === "Accept") {
+  //     setActionRequest(1)
+  //   } else {
+  //     setActionRequest(2)
+  //   }
+  // }
 
   // const handlePageChange = page => {
   //   setCurrentPage(page)
@@ -514,10 +514,10 @@ const Calendar = props => {
         const data = {
           member_ids: [props.event.memberId],
           team_id: id,
-          day_off:moment(props.start).format("YYYY-MM-DD")
+          day_off: moment(props.start).format("YYYY-MM-DD")
         }
         if (props.event.resourceId !== id) {
-          addTeamMember(data, 1,false, true)
+          addTeamMember(data, 1, false, true)
           // removeTeamMember(data1,1)
           setCurrentPage(1)
         }
@@ -807,8 +807,10 @@ const Calendar = props => {
                                   <div
                                     key={index}
                                     onClick={() => {
-                                      setPendingDetails(item)
-                                      setPendingRequestModal(true)
+                                      // setPendingDetails(item)
+                                      // setPendingRequestModal(true)
+                                      setEventDetail(item)
+                                      setUpdateModal(true)
                                     }}
                                     className="text-center"
                                     style={teamListStyle}
@@ -972,7 +974,7 @@ const Calendar = props => {
             </div>
           </div>
         </Modal>
-        {eventDetail && (
+        {eventDetail?.start ? (
           <Modal
             size="xl"
             isOpen={updateModal}
@@ -983,10 +985,26 @@ const Calendar = props => {
               styles={styles}
               eventDetail={eventDetail}
               viewState={viewState}
+              isCalender={true}
+            />
+          </Modal>
+        ): (
+          <Modal
+            size="xl"
+            isOpen={updateModal}
+            closeUpdateModal={closeUpdateModal}
+          >
+            <UpdateScheduleServices
+              closeUpdateModal={closeUpdateModal}
+              styles={styles}
+              eventPendingRequest={eventDetail}
+              currentpage={currentpage}
+              viewState={viewState}
+              pendingCalendar={true}
             />
           </Modal>
         )}
-        <Modal isOpen={pendingRequestModal} toggle={modalToggle}>
+        {/* <Modal isOpen={pendingRequestModal} toggle={modalToggle}>
           <ModalHeader style={{ borderBottom: 0 }}>
             <span>
               <b style={{ paddingTop: 10 }}>{pendingDetails?.title}</b>
@@ -1021,9 +1039,7 @@ const Calendar = props => {
                     style={{ marginRight: 10, color: "grey" }}
                   ></i>
                   <label style={styles.inputStyle}>
-                    {moment(pendingDetails?.appointment_date).format(
-                      "LL"
-                    )}
+                    {moment(pendingDetails?.appointment_date).format("LL")}
                   </label>
                 </div>
               </Col>
@@ -1230,7 +1246,7 @@ const Calendar = props => {
               </Col>
             </Row>
           </ModalBody>
-        </Modal>
+        </Modal> */}
       </div>
     </>
   )
@@ -1485,7 +1501,7 @@ const mapStateToProps = state => ({
   unAssignedEmployees: state.teams.unAssignedEmployees,
   actionRequesting: state.pendingRequests.requesting,
   notesRequesting: state.calendar.notesRequesting,
-  teamData: state.teams.teamData
+  teamData: state.teams.calendarTeamData
   // htmlText: state.services.htmlText
 })
 
@@ -1502,10 +1518,10 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestAction(data, modalToggle, index, isCalender)),
   removeTeamMember: (data, currentpage) =>
     dispatch(removeTeamMember(data, currentpage)),
-  addTeamMember: (data, currentpage,isEmployee, isCalender) =>
-    dispatch(addTeamMember(data, currentpage,isEmployee,isCalender)),
+  addTeamMember: (data, currentpage, isEmployee, isCalender) =>
+    dispatch(addTeamMember(data, currentpage, isEmployee, isCalender)),
   editAppointmentCal: (data, details) =>
     dispatch(editAppointmentCal(data, details)),
-  getTeam: (calenderDate) => dispatch(getTeam(calenderDate))
+  getTeam: calenderDate => dispatch(getTeam(calenderDate))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)
