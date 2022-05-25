@@ -152,7 +152,7 @@ const Customers = props => {
       required: false
     },
     freq_id: {
-      required: customerData ? false:true
+      required: true
     }
   }
 
@@ -219,9 +219,10 @@ const Customers = props => {
     data.append("phone_number", state.phone_number.value)
     data.append("zip_code", state.zip_code.value)
     data.append("address", state.address.value)
-    data.append("service_id", parseInt(state.service_id.value))
+    data.append("service", parseInt(state.service_id.value))
     data.append("other", state.other.value)
     data.append("notifications_enabled", notificationsValue)
+    data.append("frequency", parseInt(state.freq_id.value))
     props.updateCustomer(data, customerData.id, toggle, currentpage)
   }
 
@@ -240,7 +241,7 @@ const Customers = props => {
       handleOnChange("address", customerData.address)
       handleOnChange("other", customerData.other)
       handleOnChange("service_id", customerData?.service?.id)
-
+      handleOnChange("freq_id", customerData?.frequency?.id)
       setNotificationsValue(customerData.notifications_enabled)
     }
   }, [customerData])
@@ -399,7 +400,6 @@ const Customers = props => {
                 />
                 <div style={styles.inputLineStyle} />
               </div>
-              {!customerData && (
                 <div className="mt-4">
                   <label style={styles.labelTextStyle}>Frequency*</label>
                   <div style={styles.mainstyle} className="mt-4">
@@ -426,8 +426,6 @@ const Customers = props => {
                     )}
                   </div>
                 </div>
-              )}
-
               <div className="mt-4 d-flex justify-content-between">
                 <label style={styles.labelTextStyle}>Notifications</label>
                 <Switch
@@ -624,17 +622,26 @@ const Customers = props => {
                             >
                               {item.service_history.map(
                                 preferredServicesItem => (
+                                  
                                   <div className="d-flex justify-content-between">
-                                    <h7>
-                                      -{preferredServicesItem?.service?.name}
-                                    </h7>
-                                    <i
-                                      className="fa fa-circle"
-                                      style={{
-                                        color: `${preferredServicesItem.frequency.color_code}`,
-                                        fontSize: "large"
-                                      }}
-                                    />
+                                    {
+                                      preferredServicesItem?.service!==null ?
+                                      (
+                                        <>
+                                        <h7>
+                                        -{preferredServicesItem?.service?.name}
+                                      </h7>
+                                      <i
+                                        className="fa fa-circle"
+                                        style={{
+                                          color: `${preferredServicesItem?.frequency?.color_code}`,
+                                          fontSize: "large"
+                                        }}
+                                      />
+                                      </>
+                                      ):null
+                                    }
+                                   
                                   </div>
                                 )
                               )}
