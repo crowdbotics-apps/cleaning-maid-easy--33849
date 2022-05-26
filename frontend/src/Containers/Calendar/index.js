@@ -256,13 +256,14 @@ const Calendar = props => {
   }
   const getTeamMembers = () => {
     let copyTeams = [...teamData]
-    const excludeObj = copyTeams.shift()
-    const teams = [...copyTeams, excludeObj]
+    const excludeObj = copyTeams.filter(v => v.title == 'Unassigned')
+    const obj = copyTeams.filter(v => v.title !== 'Unassigned')
+    const teams = [...obj, ...excludeObj]
 
     const date = sessionStorage.getItem("date")
     const items =
-      teams &&
-      teams
+    teams &&
+    teams
         .map((item, index) => {
           return (
             item &&
@@ -283,6 +284,7 @@ const Calendar = props => {
           )
         })
         .flat(1)
+
 
     const service =
       appointmentsDays &&
@@ -306,8 +308,8 @@ const Calendar = props => {
     }
 
     const resourceData =
-      teams &&
-      teams.map(element => {
+    teams &&
+    teams.map(element => {
         return {
           resourceId: element?.id,
           resourceTitle: element?.title
