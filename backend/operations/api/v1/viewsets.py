@@ -149,6 +149,7 @@ class CreateTeamViewSet(ViewSet):
             title=team_name
         )
         for member in members:
+            member.assigned_team.team_members.remove(member)
             team.team_members.add(member)
             member.assigned_team = team
             member.save()
@@ -298,11 +299,7 @@ class RemoveTeamMemberViewSet(ViewSet):
             for member in members:
                 member.assigned_team = unassigned_team
                 member.save()
-                membership = TeamMembershipRecord.objects.create(
-                    member=member,
-                    team=team,
-                    is_joining=False
-                )
+                unassigned_team.team_members.add(member)
 
         return Response(TeamSerializer(team).data)
 
