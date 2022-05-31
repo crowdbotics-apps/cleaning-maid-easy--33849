@@ -350,6 +350,8 @@ class CreateEmployeeViewSet(ViewSet):
                 user.assigned_team = unassigned_team
                 user.save()
                 unassigned_team.team_members.add(user)
+            else:
+                team.team_members.add(user)
 
             return Response(EmployeeSerializer(user).data)
         except:
