@@ -107,6 +107,7 @@ class TeamViewSet(ModelViewSet):
         else:
             unassigned_team = Team.objects.create(title="Unassigned")
         for member in team.team_members.all():
+            unassigned_team.team_members.add(member)
             member.assigned_team = unassigned_team
             member.save()
         team.delete()
