@@ -188,6 +188,7 @@ const EditProfile = props => {
                       <Input
                         style={styles.inputTextStyle}
                         className="border-0 pl-0"
+                        maxLength={10}
                         value={state.phone_number.value}
                         onChange={e =>
                           handleOnChange("phone_number", e.target.value)
