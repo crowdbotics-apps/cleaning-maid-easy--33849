@@ -142,9 +142,8 @@ function ScheduleService(props) {
   const onSave = (title, value) => {
     let data = { ...appointmentData }
     data[title] = value
-    data['start_time']=fromTime
-    data['end_time']=toTime
-
+    data["start_time"] = fromTime
+    data["end_time"] = toTime
 
     // data["start_time"] = moment(toTime).format("HH:mm")
     // data["end_time"] = moment(fromTime).format("HH:mm")
@@ -168,17 +167,16 @@ function ScheduleService(props) {
     const data = { ...appointmentData, ...getState(state) }
     data["status"] = "Pending"
 
-    const datas=moment(new Date()).format("ddd MMM YYYY")
-    const myData=moment(data.appointment_date).format("ddd MMM YYYY")
-    if (datas!==myData) {
+    const datas = moment(new Date()).format("ddd MMM YYYY")
+    const myData = moment(data.appointment_date).format("ddd MMM YYYY")
+    if (datas !== myData) {
       setSelectedDate(false)
     } else {
       setSelectedDate(true)
     }
 
-    if (data.start_time!=='-1:00' && data.end_time!=='-1:00') {
+    if (data.start_time !== "-1:00" && data.end_time !== "-1:00") {
       setSelectTime(false)
-      
     } else {
       setSelectTime(true)
     }
@@ -186,7 +184,7 @@ function ScheduleService(props) {
     if (
       data.end_time &&
       data.start_time &&
-      (data.appointment_date || slotsValue && slotsValue[0]) &&
+      (data.appointment_date || (slotsValue && slotsValue[0])) &&
       data.assigned_team_id &&
       data.service_id &&
       data.frequency_id
@@ -206,6 +204,16 @@ function ScheduleService(props) {
     }
   }, [slotsValue])
 
+  const customStyle = {
+    control: (base, state) => ({
+      ...base,
+      borderLeftWidth: 0,
+      borderTopWidth: 0,
+      borderRightWidth: 0,
+      // backgroundColor: "#fff",
+      boxShadow: "none"
+    })
+  }
   return (
     <>
       <Toaster position="top-center" />
@@ -356,7 +364,7 @@ function ScheduleService(props) {
                       />
                       <Input
                         style={styles.inputStyle}
-                        className="border-top-0 border-right-0 border-left-0 p-0"
+                        className="border-top-0 border-right-0 border-left-0 p-0 border-bottom-0"
                         // onChange={e => handleOnChange("client_address", e.target.value)}
                         disabled
                         value={state.client_address.value}
@@ -393,8 +401,12 @@ function ScheduleService(props) {
                       <Col lg="7" md="6" sm="3">
                         <label style={styles.labelFont}>Client Name*</label>
                         <Select
-                          className="react-select"
-                          classNamePrefix="react-select"
+                          // className="react-select"
+                          // classNamePrefix="react-select"
+                          components={{
+                            IndicatorSeparator: () => null
+                          }}
+                          styles={customStyle}
                           name="singleSelect"
                           options={
                             customers?.length &&
@@ -418,7 +430,7 @@ function ScheduleService(props) {
                       <Col lg="4" md="6" sm="3">
                         <label style={styles.labelFont}>Number*</label>
                         <Input
-                          style={styles.inputStyle}
+                          style={styles.numberInputStyle}
                           className="border-top-0 border-right-0 border-left-0 p-0"
                           onChange={e =>
                             handleOnChange("client_number", e.target.value)
@@ -442,8 +454,12 @@ function ScheduleService(props) {
                       className="border-top-0 border-right-0 border-left-0 p-0"
                     /> */}
                       <Select
-                        className="react-select "
-                        classNamePrefix="react-select"
+                        c // className="react-select"
+                        // classNamePrefix="react-select"
+                        components={{
+                          IndicatorSeparator: () => null
+                        }}
+                        styles={customStyle}
                         name="singleSelect"
                         //  value={appointmentData?.assigned_team_id?.value}
                         options={
@@ -467,8 +483,12 @@ function ScheduleService(props) {
                       <Col lg="6" md="6" sm="3">
                         <label style={styles.labelFont}>Services*</label>
                         <Select
-                          className="react-select"
-                          classNamePrefix="react-select"
+                          // className="react-select"
+                          // classNamePrefix="react-select"
+                          components={{
+                            IndicatorSeparator: () => null
+                          }}
+                          styles={customStyle}
                           name="singleSelect"
                           value={appointmentData?.service_id?.value}
                           options={
@@ -489,8 +509,12 @@ function ScheduleService(props) {
                       <Col lg="6" md="6" sm="3">
                         <label style={styles.labelFont}>Frequency*</label>
                         <Select
-                          className="react-select  "
-                          classNamePrefix="react-select"
+                          // className="react-select"
+                          // classNamePrefix="react-select"
+                          components={{
+                            IndicatorSeparator: () => null
+                          }}
+                          styles={customStyle}
                           name="singleSelect"
                           // value={appointmentData?.frequency_id?.value}
                           options={
@@ -522,8 +546,8 @@ function ScheduleService(props) {
                       <FormGroup>
                         <label style={styles.labelFont}> Description </label>
                         <Input
-                          className="textarea"
-                          type="textarea"
+                          // className="textarea"
+                          // type="textarea"
                           rows="3"
                           placeholder="Enter description"
                           style={styles.textArea}
@@ -536,10 +560,10 @@ function ScheduleService(props) {
                     </div>
                     <div>
                       <FormGroup>
-                        <label style={styles.labelFont}>Notes </label>
+                        <label style={styles.labelFont1}>Notes </label>
                         <Input
-                          className="textarea"
-                          type="textarea"
+                          // className="textarea1"
+                          type="textarea1"
                           rows="3"
                           placeholder="Leave a note here..."
                           style={styles.textArea}
@@ -586,16 +610,16 @@ const styles = {
     marginRight: 54,
     opacity: 0.94
   },
-  bottomStyle:{
-    marginBottom:'auto'
+  bottomStyle: {
+    marginBottom: "auto"
   },
   textArea: {
-    opacity: "0.6",
-    webkitBoxShadow: "1px 3px 1px #9E9E9E",
-    mozBoxShadow: "1px 3px 1px #9E9E9E",
-    boxShadow: "1px 3px 1px #9E9E9E",
+    boxShadow: "1px 2px 5px #d3d3d3",
+    // margin: "4em",
+    // padding: "1em",
     fontSize: 12,
-    color: "#000000"
+    color: "#000000",
+    height: 101
   },
   mainDivText: {
     borderRadius: 5,
@@ -603,10 +627,17 @@ const styles = {
     backgroundColor: "white"
   },
   labelFont: { fontSize: 14, fontWeight: "500" },
+  labelFont1: { fontSize: 14, fontWeight: "500", marginTop: 35 },
   inputStyle: {
     fontSize: 14,
     fontWeight: "500",
     color: "#000000"
+  },
+  numberInputStyle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000000",
+    marginTop: 20
   },
   saveBtn: {
     backgroundColor:
