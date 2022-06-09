@@ -40,7 +40,7 @@ import {
   updateEmployee,
   changeEmployeeTeam
 } from "../Employees/redux/actions"
-import { getTeam,addTeamMember } from "../Teams/redux/actions"
+import { getTeam, addTeamMember } from "../Teams/redux/actions"
 
 //utils
 import useForm from "../../utils/useForm"
@@ -165,7 +165,7 @@ function Employees(props) {
     }
   }
 
-  const { state, handleOnChange,setState, disable } = useForm(
+  const { state, handleOnChange, setState, disable } = useForm(
     stateSchema,
     validationStateSchema
   )
@@ -459,7 +459,7 @@ function Employees(props) {
                       />
                     )}
                   </div>
-                ):null}
+                ) : null}
               </CardBody>
 
               <CardFooter style={styles.stylefootter}>
@@ -612,6 +612,7 @@ function Employees(props) {
                       <Input
                         style={styles.inputStyle}
                         value={state.phone_number.value}
+                        maxLength={10}
                         className="border-top-0 border-right-0 border-left-0 pl-0"
                         onChange={e =>
                           handleOnChange("phone_number", e.target.value)
@@ -647,6 +648,7 @@ function Employees(props) {
                     <div>
                       <Input
                         style={styles.inputStyle}
+                        maxLength={6}
                         value={state.zip_code.value}
                         className="border-top-0 border-right-0 border-left-0 pl-0"
                         onChange={e =>
@@ -666,7 +668,7 @@ function Employees(props) {
                       <select
                         style={styles.selectStyle}
                         value={state.team_id.value}
-                        disabled={ editValues?.id ? true:false}
+                        disabled={editValues?.id ? true : false}
                         onChange={e =>
                           handleOnChange("team_id", e.target.value)
                         }
@@ -836,7 +838,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(deleteEmployee(id, currentpage)),
   updateEmployee: (data, id, toggle, currentpage) =>
     dispatch(updateEmployee(data, id, toggle, currentpage)),
-    addTeamMember: (data, currentpage,isEmployee) =>
-    dispatch(addTeamMember(data, currentpage,isEmployee))
+  addTeamMember: (data, currentpage, isEmployee) =>
+    dispatch(addTeamMember(data, currentpage, isEmployee))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Employees)

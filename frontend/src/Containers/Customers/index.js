@@ -320,6 +320,7 @@ const Customers = props => {
                 <label style={styles.labelTextStyle}>Phone Number*</label>
                 <Input
                   style={styles.inputTextStyle}
+                  maxLength={10}
                   value={state.phone_number.value}
                   className="border-0 pl-0"
                   onChange={e => handleOnChange("phone_number", e.target.value)}
@@ -337,6 +338,7 @@ const Customers = props => {
                     <label style={styles.labelTextStyle}>Zip Code*</label>
                     <Input
                       style={styles.inputTextStyle}
+                      maxLength={6}
                       value={state.zip_code.value}
                       className="border-0 pl-0"
                       onChange={e => handleOnChange("zip_code", e.target.value)}
