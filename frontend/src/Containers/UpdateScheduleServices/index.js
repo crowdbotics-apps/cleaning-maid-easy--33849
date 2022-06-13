@@ -315,6 +315,16 @@ function UpdateScheduleServices(props) {
     closeUpdateModal(false)
     setActionRequest(0)
   }
+  const customStyle = {
+    control: (base, state) => ({
+      ...base,
+      borderLeftWidth: 0,
+      borderTopWidth: 0,
+      borderRightWidth: 0,
+      // backgroundColor: "#fff",
+      boxShadow: "none"
+    })
+  }
 
   return (
     <>
@@ -374,7 +384,7 @@ function UpdateScheduleServices(props) {
                       <img
                         // alt="..."
                         src={calenderImage}
-                        style={{ marginRight: 5 }}
+                        style={{ marginRight: 7 }}
                       />
 
                       <DatePicker
@@ -465,7 +475,7 @@ function UpdateScheduleServices(props) {
                         <Input
                           style={styles.inputStyle}
                           disabled={isEdit ? false : true}
-                          className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+                          className="border-top-0 border-right-0 border-left-0 p-0"
                           onChange={e =>
                             handleOnChange("title", e.target.value)
                           }
@@ -477,16 +487,19 @@ function UpdateScheduleServices(props) {
                       </Col>
                     </Row>
                     <Row
-                      className="mt-4"
                       style={{ justifyContent: "space-between" }}
                     >
                       <Col lg="7" md="6" sm="3">
                         <label style={styles.labelFont}>Client Name*</label>
                         <Select
-                          className="react-select"
-                          classNamePrefix="react-select"
+                          // className="react-select"
+                          // classNamePrefix="react-select"
                           value={appointmentData?.client_id}
                           isDisabled={isEdit ? false : true}
+                          components={{
+                            IndicatorSeparator: () => null
+                          }}
+                          styles={customStyle}
                           name="singleSelect"
                           options={
                             customers?.length &&
@@ -506,7 +519,7 @@ function UpdateScheduleServices(props) {
                       <Col lg="4" md="6" sm="3">
                         <label style={styles.labelFont}>Number*</label>
                         <Input
-                          style={styles.inputStyle}
+                          style={styles.numberInputStyle}
                           className="border-top-0 border-right-0 border-left-0 p-0"
                           onChange={e =>
                             handleOnChange("client_number", e.target.value)
@@ -522,13 +535,17 @@ function UpdateScheduleServices(props) {
                       </Col>
                     </Row>
                     {/* </div> */}
-                    <div className="mt-4 ">
+                    <div className="mt-1 ">
                       <label style={styles.labelFont}>
                         Assigned Employee/ Team*
                       </label>
                       <Select
-                        className="react-select "
-                        classNamePrefix="react-select"
+                        // className="react-select "
+                        // classNamePrefix="react-select"
+                        components={{
+                          IndicatorSeparator: () => null
+                        }}
+                        styles={customStyle}
                         name="singleSelect"
                         value={appointmentData?.assigned_team_id}
                         isDisabled={isEdit ? false : true}
@@ -553,8 +570,12 @@ function UpdateScheduleServices(props) {
                       <Col lg="6" md="6" sm="3">
                         <label style={styles.labelFont}>Services*</label>
                         <Select
-                          className="react-select"
-                          classNamePrefix="react-select"
+                          // className="react-select"
+                          // classNamePrefix="react-select"
+                          components={{
+                            IndicatorSeparator: () => null
+                          }}
+                          styles={customStyle}
                           name="singleSelect"
                           value={appointmentData?.service_id}
                           isDisabled={isEdit ? false : true}
@@ -576,8 +597,12 @@ function UpdateScheduleServices(props) {
                       <Col lg="6" md="6" sm="3">
                         <label style={styles.labelFont}>Frequency*</label>
                         <Select
-                          className="react-select  "
-                          classNamePrefix="react-select"
+                          // className="react-select  "
+                          // classNamePrefix="react-select"
+                          components={{
+                            IndicatorSeparator: () => null
+                          }}
+                          styles={customStyle}
                           name="singleSelect"
                           value={appointmentData?.frequency_id}
                           isDisabled={isEdit ? false : true}
@@ -729,7 +754,13 @@ const styles = {
   inputStyle: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#000000"
+    color: "#000000",
+  },
+  numberInputStyle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000000",
+    marginTop: 20
   },
   saveBtn: {
     backgroundColor:

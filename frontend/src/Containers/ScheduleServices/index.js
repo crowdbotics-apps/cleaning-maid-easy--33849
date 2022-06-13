@@ -273,7 +273,7 @@ function ScheduleService(props) {
                       <img
                         // alt="..."
                         src={calenderImage}
-                        style={{ marginRight: 5 }}
+                        style={{ marginRight: 5}}
                       />
 
                       <DatePicker
@@ -383,7 +383,7 @@ function ScheduleService(props) {
                         <label style={styles.labelFont}>Title*</label>
                         <Input
                           style={styles.inputStyle}
-                          className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
+                          className="border-top-0 border-right-0 border-left-0 p-0"
                           onChange={e =>
                             handleOnChange("title", e.target.value)
                           }
@@ -395,7 +395,6 @@ function ScheduleService(props) {
                       </Col>
                     </Row>
                     <Row
-                      className="mt-4"
                       style={{ justifyContent: "space-between" }}
                     >
                       <Col lg="7" md="6" sm="3">
@@ -445,7 +444,7 @@ function ScheduleService(props) {
                       </Col>
                     </Row>
                     {/* </div> */}
-                    <div className="mt-4 ">
+                    <div className="mt-1 ">
                       <label style={styles.labelFont}>
                         Assigned Employee/ Team*
                       </label>
@@ -546,9 +545,9 @@ function ScheduleService(props) {
                       <FormGroup>
                         <label style={styles.labelFont}> Description </label>
                         <Input
-                          // className="textarea"
-                          // type="textarea"
-                          rows="3"
+                          className="textarea"
+                          type="textarea"
+                          rows="5"
                           placeholder="Enter description"
                           style={styles.textArea}
                           value={state.description.value}
@@ -562,9 +561,9 @@ function ScheduleService(props) {
                       <FormGroup>
                         <label style={styles.labelFont1}>Notes </label>
                         <Input
-                          // className="textarea1"
-                          type="textarea1"
-                          rows="3"
+                          className="textarea"
+                          type="textarea"
+                          rows="5"
                           placeholder="Leave a note here..."
                           style={styles.textArea}
                           value={state.notes.value}
@@ -619,7 +618,7 @@ const styles = {
     // padding: "1em",
     fontSize: 12,
     color: "#000000",
-    height: 101
+    height: 120
   },
   mainDivText: {
     borderRadius: 5,
