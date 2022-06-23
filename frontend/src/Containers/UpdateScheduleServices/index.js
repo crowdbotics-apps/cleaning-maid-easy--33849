@@ -73,7 +73,7 @@ function UpdateScheduleServices(props) {
       handleOnChange("price", eventPendingRequest?.price)
       handleOnChange("description", eventPendingRequest?.description)
       handleOnChange("notes", eventPendingRequest?.notes)
-      handleOnChange("client_number", eventPendingRequest?.client_number)
+      handleOnChange("client_number", eventPendingRequest?.client_number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"))
       handleOnChange("title", eventPendingRequest?.title)
       handleOnChange("client_address", eventPendingRequest?.client_address)
       setToTime(
@@ -122,7 +122,7 @@ function UpdateScheduleServices(props) {
       handleOnChange("price", eventDetail?.eventDetail?.price)
       handleOnChange("description", eventDetail?.eventDetail?.description)
       handleOnChange("notes", eventDetail?.eventDetail?.notes)
-      handleOnChange("client_number", eventDetail?.eventDetail?.client_number)
+      handleOnChange("client_number", eventDetail?.eventDetail?.client_number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"))
       handleOnChange("title", eventDetail?.eventDetail?.title)
       handleOnChange("client_address", eventDetail?.eventDetail?.client_address)
       setToTime(eventDetail?.end)
@@ -223,7 +223,7 @@ function UpdateScheduleServices(props) {
     },
     client_number: {
       required: true,
-      validator: validator.numeric
+      validator: validator.contactNumber
     },
     client_address: {
       required: false
@@ -257,6 +257,9 @@ function UpdateScheduleServices(props) {
     data["assigned_team_id"] = data.assigned_team_id.value
     data["frequency_id"] = data.frequency_id.value
     data["client_id"] = data.client_id.value
+    data['client_number']= data.client_number.replace(/[^\d]/g, '')
+
+    console.log("datadata",data);
     if (eventPendingRequest) {
       data["status"] = "Pending"
     }
@@ -325,6 +328,15 @@ function UpdateScheduleServices(props) {
       boxShadow: "none"
     })
   }
+
+  const formatPhoneNumber=(evt)=> {
+    let number = evt.target.value.replace(/[^\d]/g, '')
+    if (number.length == 10) {
+        number = number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+    }
+    evt.target.value = number;
+    handleOnChange("client_number", evt.target.value=number)
+}
 
   return (
     <>
@@ -453,43 +465,8 @@ function UpdateScheduleServices(props) {
                         </label>
                       ) : null}
                     </div>
-                    <div
-                      className="mt-4 d-flex"
-                      style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}
-                    >
-                      <img
-                        // alt="..."
-                        src={locationImage}
-                        style={{ marginRight: 10, paddingBottom: 10 }}
-                      />
-                      <Input
-                        style={styles.inputStyle}
-                        className="border-top-0 border-right-0 border-left-0 p-0"
-                        disabled
-                        value={state.client_address.value}
-                      />
-                    </div>
-                    <Row style={{ marginTop: 28 }}>
-                      <Col md="12">
-                        <label style={styles.labelFont}>Title*</label>
-                        <Input
-                          style={styles.inputStyle}
-                          disabled={isEdit ? false : true}
-                          className="border-top-0 border-right-0 border-left-0 p-0"
-                          onChange={e =>
-                            handleOnChange("title", e.target.value)
-                          }
-                          value={state.title.value}
-                        />
-                        <label style={{ color: "red" }}>
-                          {state.title.error ? state.title.error : null}
-                        </label>
-                      </Col>
-                    </Row>
-                    <Row
-                      style={{ justifyContent: "space-between" }}
-                    >
-                      <Col lg="7" md="6" sm="3">
+                    <Row style={{ marginTop: 28}}>
+                    <Col lg="12" md="6" sm="3">
                         <label style={styles.labelFont}>Client Name*</label>
                         <Select
                           // className="react-select"
@@ -516,20 +493,78 @@ function UpdateScheduleServices(props) {
                           placeholder="Select Customer"
                         />
                       </Col>
+                    </Row>
+                    <label style={{fontSize: 14, fontWeight: "500", marginTop:20}}>Address*</label>
+                    <div
+                      className="mt-2 d-flex"
+                      style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}
+                    >
+                      <img
+                        // alt="..."
+                        src={locationImage}
+                        style={{ marginRight: 10, paddingBottom: 10 }}
+                      />
+                      <Input
+                        style={styles.addressStyle}
+                        className="border-top-0 border-right-0 border-left-0 p-0 border-bottom-0"
+                        disabled
+                        value={state.client_address.value}
+                      />
+                    </div>
+                    {/* <Row style={{ marginTop: 28 }}>
+                      <Col md="12">
+                        <label style={styles.labelFont}>Title*</label>
+                        <Input
+                          style={styles.inputStyle}
+                          disabled={isEdit ? false : true}
+                          className="border-top-0 border-right-0 border-left-0 p-0"
+                          onChange={e =>
+                            handleOnChange("title", e.target.value)
+                          }
+                          value={state.title.value}
+                        />
+                        <label style={{ color: "red" }}>
+                          {state.title.error ? state.title.error : null}
+                        </label>
+                      </Col>
+                    </Row> */}
+                    <Row
+                      style={{ justifyContent: "space-between",marginTop: 28 }}
+                    >
+                      <Col lg="8" md="6" sm="3">
+                        <label style={styles.labelFont}>Title*</label>
+                        <Input
+                          style={styles.inputStyle}
+                          disabled={isEdit ? false : true}
+                          className="border-top-0 border-right-0 border-left-0 p-0"
+                          onChange={e =>
+                            handleOnChange("title", e.target.value)
+                          }
+                          value={state.title.value}
+                        />
+                        <label style={{ color: "red" }}>
+                          {state.title.error ? state.title.error : null}
+                        </label>
+                      </Col>
                       <Col lg="4" md="6" sm="3">
                         <label style={styles.labelFont}>Number*</label>
                         <Input
                           style={styles.numberInputStyle}
+                          keyboardType = 'numeric'
+                          maxLength={10}
                           className="border-top-0 border-right-0 border-left-0 p-0"
                           onChange={e =>
-                            handleOnChange("client_number", e.target.value)
+                            {
+                              formatPhoneNumber(e)
+                            }
+                            
                           }
                           value={state.client_number.value}
                           disabled={isEdit ? false : true}
                         />
                         <label style={{ color: "red" }}>
                           {state.client_number.error
-                            ? state.client_number.erroracceptRequest
+                            ? state.client_number.error
                             : null}
                         </label>
                       </Col>
@@ -669,14 +704,14 @@ function UpdateScheduleServices(props) {
                 </Row>
               </CardBody>
               <CardFooter className="text-lg-right text-center">
-                {(!eventDetail?.start && btnText === "Edit" )&& (
+                {(!eventDetail?.start && btnText === "Edit" ) && (
                   <>
                     <Button
                       style={styles.addBtnText}
                       color="white"
                       title=""
                       type="button"
-                      disabled={disable}
+                      disabled={btnText==='Edit'?false:  disable}
                       size="lg"
                       onClick={() => acceptRequest("Accept")}
                     >
@@ -694,7 +729,7 @@ function UpdateScheduleServices(props) {
                       title=""
                       type="button"
                       outline
-                      disabled={disable}
+                      disabled={btnText==='Edit'?false: disable}
                       size="lg"
                       onClick={() => acceptRequest("Reject")}
                     >
@@ -713,7 +748,7 @@ function UpdateScheduleServices(props) {
                   color="white"
                   title=""
                   type="button"
-                  disabled={disable}
+                  disabled={btnText==='Edit'?false:  disable}
                   size="lg"
                   onClick={() => updateData()}
                 >
@@ -760,7 +795,7 @@ const styles = {
     fontSize: 14,
     fontWeight: "500",
     color: "#000000",
-    marginTop: 20
+    // marginTop: 20
   },
   saveBtn: {
     backgroundColor:
@@ -768,6 +803,12 @@ const styles = {
     borderRadius: 10,
     fontSize: 14,
     fontWeight: "bold"
+  },
+  addressStyle:{
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000000",
+    marginBottom:'auto'
   },
   titleTextStyle: {
     fontSize: 24,

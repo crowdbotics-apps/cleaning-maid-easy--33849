@@ -127,7 +127,7 @@ function ScheduleService(props) {
     },
     client_number: {
       required: true,
-      validator: validator.numeric
+      validator: validator.contactNumber
     },
     client_address: {
       required: false
@@ -166,10 +166,13 @@ function ScheduleService(props) {
   const onHandleSave = () => {
     const data = { ...appointmentData, ...getState(state) }
     data["status"] = "Pending"
+    data['client_number']= data.client_number.replace(/[^\d]/g, '')
+    
 
     const datas = moment(new Date()).format("ddd MMM YYYY")
     const myData = moment(data.appointment_date).format("ddd MMM YYYY")
-    if (datas !== myData) {
+
+    if (datas !== myData || (slotsValue &&  slotsValue[0])) {
       setSelectedDate(false)
     } else {
       setSelectedDate(true)
@@ -190,6 +193,7 @@ function ScheduleService(props) {
       data.frequency_id
       // data.client_id
     ) {
+      console.log("dssss");
       props.getScheduleServices(data, closeModal, setSlotsValue)
     } else {
       toast.error("Please fill require fields!")
@@ -214,6 +218,17 @@ function ScheduleService(props) {
       boxShadow: "none"
     })
   }
+
+  const formatPhoneNumber=(evt)=> {
+    let number = evt.target.value.replace(/[^\d]/g, '')
+    if (number.length == 10) {
+        number = number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+    }
+    evt.target.value = number;
+    handleOnChange("client_number", evt.target.value=number)
+}
+
+
   return (
     <>
       <Toaster position="top-center" />
@@ -353,51 +368,8 @@ function ScheduleService(props) {
                         </label>
                       ) : null}
                     </div>
-                    <div
-                      className="mt-4 d-flex"
-                      style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}
-                    >
-                      <img
-                        // alt="..."
-                        src={locationImage}
-                        style={{ marginRight: 10, paddingBottom: 10 }}
-                      />
-                      <Input
-                        style={styles.inputStyle}
-                        className="border-top-0 border-right-0 border-left-0 p-0 border-bottom-0"
-                        // onChange={e => handleOnChange("client_address", e.target.value)}
-                        disabled
-                        value={state.client_address.value}
-                      />
-                    </div>
-
-                    {/* <div
-                    className="mt-4 d-flex"
-                    style={{
-                      justifyContent: "space-between",
-                      flexWrap: "wrap",
-                    }}
-                  > */}
                     <Row style={{ marginTop: 28 }}>
-                      <Col md="12">
-                        <label style={styles.labelFont}>Title*</label>
-                        <Input
-                          style={styles.inputStyle}
-                          className="border-top-0 border-right-0 border-left-0 p-0"
-                          onChange={e =>
-                            handleOnChange("title", e.target.value)
-                          }
-                          value={state.title.value}
-                        />
-                        <label style={{ color: "red" }}>
-                          {state.title.error ? state.title.error : null}
-                        </label>
-                      </Col>
-                    </Row>
-                    <Row
-                      style={{ justifyContent: "space-between" }}
-                    >
-                      <Col lg="7" md="6" sm="3">
+                    <Col lg="12" md="6" sm="3">
                         <label style={styles.labelFont}>Client Name*</label>
                         <Select
                           // className="react-select"
@@ -426,13 +398,79 @@ function ScheduleService(props) {
                         className="border-top-0 border-right-0 border-left-0 p-0 mb-4"
                       /> */}
                       </Col>
+                      </Row>
+                      <label style={{fontSize: 14, fontWeight: "500", marginTop:20}}>Address*</label>
+                    <div
+                      className="mt-2 d-flex"
+                      style={{ borderBottom: "1px solid rgb(212, 212, 212)" }}
+                    >
+                      <img
+                        // alt="..."
+                        src={locationImage}
+                        style={{ marginRight: 10, paddingBottom: 10 }}
+                      />
+                      <Input
+                        style={styles.addressStyle}
+                        className="border-top-0 border-right-0 border-left-0 p-0 border-bottom-0"
+                        // onChange={e => handleOnChange("client_address", e.target.value)}
+                        disabled
+                        value={state.client_address.value}
+                      />
+                    </div>
+
+                    {/* <div
+                    className="mt-4 d-flex"
+                    style={{
+                      justifyContent: "space-between",
+                      flexWrap: "wrap",
+                    }}
+                  > */}
+                    {/* <Row style={{ marginTop: 28 }}>
+                      <Col md="12">
+                        <label style={styles.labelFont}>Title*</label>
+                        <Input
+                          style={styles.inputStyle}
+                          className="border-top-0 border-right-0 border-left-0 p-0"
+                          onChange={e =>
+                            handleOnChange("title", e.target.value)
+                          }
+                          value={state.title.value}
+                        />
+                        <label style={{ color: "red" }}>
+                          {state.title.error ? state.title.error : null}
+                        </label>
+                      </Col>
+                    </Row> */}
+                    <Row
+                      style={{ justifyContent: "space-between",marginTop: 28 }}
+                    >
+                     <Col lg="8" md="6" sm="3">
+                        <label style={styles.labelFont}>Title*</label>
+                        <Input
+                          style={styles.inputStyle}
+                          className="border-top-0 border-right-0 border-left-0 p-0"
+                          onChange={e =>
+                            handleOnChange("title", e.target.value)
+                          }
+                          value={state.title.value}
+                        />
+                        <label style={{ color: "red" }}>
+                          {state.title.error ? state.title.error : null}
+                        </label>
+                      </Col>
                       <Col lg="4" md="6" sm="3">
                         <label style={styles.labelFont}>Number*</label>
                         <Input
                           style={styles.numberInputStyle}
+                          keyboardType = 'numeric'
+                          maxLength={10}
                           className="border-top-0 border-right-0 border-left-0 p-0"
                           onChange={e =>
-                            handleOnChange("client_number", e.target.value)
+                            {
+                              formatPhoneNumber(e)
+                              // handleOnChange("client_number", evt.target.value=number)
+                            }
+                            
                           }
                           value={state.client_number.value}
                         />
@@ -627,16 +665,24 @@ const styles = {
   },
   labelFont: { fontSize: 14, fontWeight: "500" },
   labelFont1: { fontSize: 14, fontWeight: "500", marginTop: 35 },
+
   inputStyle: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#000000"
+    color: "#000000",
+    // marginTop: 8
+  },
+  addressStyle:{
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000000",
+    marginBottom:'auto'
   },
   numberInputStyle: {
     fontSize: 14,
     fontWeight: "500",
     color: "#000000",
-    marginTop: 20
+    // marginTop: 8
   },
   saveBtn: {
     backgroundColor:
