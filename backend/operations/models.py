@@ -20,7 +20,7 @@ class Team(models.Model):
 
 
 class TeamMembershipRecord(models.Model):
-    record_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    record_date = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     member = models.ForeignKey('users.User', on_delete=models.CASCADE)

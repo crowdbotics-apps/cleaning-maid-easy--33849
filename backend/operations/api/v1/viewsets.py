@@ -80,11 +80,11 @@ class TeamViewSet(ModelViewSet):
         for team in all_teams:
             member_list = []
 
-            team_memberships = TeamMembershipRecord.objects.filter(team=team,
-                                                                   record_date__date=request_date,
-                                                                   is_joining=False)
             for member in team.team_members.all():
-                if len(team_memberships.filter(member=member)) <= 0:
+                team_memberships = TeamMembershipRecord.objects.filter(member=member,
+                                                                       record_date__date=request_date,
+                                                                       is_joining=False)
+                if len(team_memberships) <= 0:
                     member_list.append(BriefUserSerializer(member).data)
 
             result.append({
@@ -92,6 +92,10 @@ class TeamViewSet(ModelViewSet):
                 'title': team.title,
                 'team_members': member_list
             })
+        for day_off in TeamMembershipRecord.objects.filter(record_date__date=request_date, is_joining=False):
+            for res in result:
+                if res['title'] == day_off.team.title:
+                    res['team_members'] = res['team_members'] + [BriefUserSerializer(day_off.member).data]
 
         return Response(result)
 
@@ -103,6 +107,7 @@ class TeamViewSet(ModelViewSet):
         else:
             unassigned_team = Team.objects.create(title="Unassigned")
         for member in team.team_members.all():
+            unassigned_team.team_members.add(member)
             member.assigned_team = unassigned_team
             member.save()
         team.delete()
@@ -145,6 +150,7 @@ class CreateTeamViewSet(ViewSet):
             title=team_name
         )
         for member in members:
+            member.assigned_team.team_members.remove(member)
             team.team_members.add(member)
             member.assigned_team = team
             member.save()
@@ -196,6 +202,12 @@ class AddTeamMemberViewSet(ViewSet):
 
         if day_off:
             for member in members:
+                member_membership = TeamMembershipRecord.objects.filter(
+                    record_date__date=day_off,
+                    member=member,
+                )
+                if len(member_membership) > 0:
+                    member_membership.delete()
                 membership = TeamMembershipRecord.objects.create(
                     record_date=day_off,
                     member=member,
@@ -228,6 +240,11 @@ class AddTeamMemberViewSet(ViewSet):
                 #if change_date:
                 #    membership.record_date = change_date
                 #    membership.save()
+        if day_off:
+            result = TeamSerializer(team).data
+            for member in members:
+                result['team_members'] = result['team_members'] + [BriefUserSerializer(member).data]
+            return Response(result)
 
         return Response(TeamSerializer(team).data)
 
@@ -283,11 +300,7 @@ class RemoveTeamMemberViewSet(ViewSet):
             for member in members:
                 member.assigned_team = unassigned_team
                 member.save()
-                membership = TeamMembershipRecord.objects.create(
-                    member=member,
-                    team=team,
-                    is_joining=False
-                )
+                unassigned_team.team_members.add(member)
 
         return Response(TeamSerializer(team).data)
 
