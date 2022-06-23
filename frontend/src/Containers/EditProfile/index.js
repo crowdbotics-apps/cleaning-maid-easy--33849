@@ -44,7 +44,7 @@ const EditProfile = props => {
       handleOnChange("fullName", userInfo.name)
       handleOnChange("company_name", userInfo.company_name)
       handleOnChange("address", userInfo.address)
-      handleOnChange("phone_number", userInfo.phone_number)
+      handleOnChange("phone_number", userInfo.phone_number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"))
       handleOnChange("profileImage", userInfo.profile_picture)
       setSelectedImage(userInfo.profile_picture)
     }
@@ -81,15 +81,15 @@ const EditProfile = props => {
       //   required: true
     },
     address: {
-      // required: true
+      validator: validator.address
     },
     phone_number: {
       //   required: true,
-      validator: validator.phone
+      validator: validator.contactNumber
     },
     profileImage: {
       //   required: true,
-      validator: validator.phone
+      // validator: validator.phone
     }
   }
 
@@ -103,7 +103,7 @@ const EditProfile = props => {
     selectedImage?.name && data.append("profile_picture", selectedImage)
     data.append("company_name", state.company_name.value)
     data.append("address", state.address.value)
-    data.append("phone_number", state.phone_number.value)
+    data.append("phone_number", state.phone_number.value.replace(/[^\d]/g, ''))
     props.editUserInfo(data, userInfo.id)
   }
 
@@ -114,6 +114,17 @@ const EditProfile = props => {
       props.uploadImage(data, userInfo.id)
     }
   }, [selectedImage])
+
+  
+const phoneNumberformat=(evt)=> {
+  let number = evt.target.value.replace(/[^\d]/g, '')
+  if (number.length == 10) {
+      number = number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+  }
+  evt.target.value = number;
+  handleOnChange("phone_number", evt.target.value=number)
+}
+
 
   return (
     <>
@@ -180,6 +191,11 @@ const EditProfile = props => {
                         }
                       />
                       <div style={styles.inputLineStyle} />
+                      {state.address.error && (
+                        <label style={{ color: "red" }}>
+                          {state.address.error}
+                        </label>
+                      )}
                     </div>
                     <div className="mt-4">
                       <label style={styles.labelTextStyle}>
@@ -191,14 +207,19 @@ const EditProfile = props => {
                         maxLength={10}
                         value={state.phone_number.value}
                         onChange={e =>
-                          handleOnChange("phone_number", e.target.value)
+                          phoneNumberformat(e)
                         }
                       />
                       <div style={styles.inputLineStyle} />
+                      {state.phone_number.error && (
+                        <label style={{ color: "red" }}>
+                          {state.phone_number.error}
+                        </label>
+                      )}
                     </div>
                   </div>
                   <div className="pt-4 text-center">
-                    <Button onClick={updateProfile} style={styles.editBtn}>
+                    <Button onClick={updateProfile} style={styles.editBtn} disabled={disable}>
                       {requesting ? <Spinner size="sm" /> : "Save"}
                     </Button>
                   </div>

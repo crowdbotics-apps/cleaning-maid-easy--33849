@@ -135,7 +135,7 @@ const Customers = props => {
     },
     phone_number: {
       required: true,
-      validator: validator.phone
+      validator: validator.contactNumber
     },
     zip_code: {
       required: true,
@@ -200,7 +200,7 @@ const Customers = props => {
       name: state.fullName.value,
       email: state.email.value,
       company_name: state.company_name.value,
-      phone_number: state.phone_number.value,
+      phone_number: state.phone_number.value.replace(/[^\d]/g, ''),
       zip_code: state.zip_code.value,
       address: state.address.value,
       service_id: parseInt(state.service_id.value),
@@ -216,7 +216,7 @@ const Customers = props => {
     data.append("name", state.fullName.value)
     data.append("email", state.email.value)
     data.append("company_name", state.company_name.value)
-    data.append("phone_number", state.phone_number.value)
+    data.append("phone_number", state.phone_number.value.replace(/[^\d]/g, ''))
     data.append("zip_code", state.zip_code.value)
     data.append("address", state.address.value)
     data.append("service", parseInt(state.service_id.value))
@@ -236,7 +236,9 @@ const Customers = props => {
       handleOnChange("fullName", customerData.name)
       handleOnChange("email", customerData.email)
       handleOnChange("company_name", customerData.company)
-      handleOnChange("phone_number", customerData.phone_number)
+
+      handleOnChange("phone_number", customerData.phone_number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"))
+
       handleOnChange("zip_code", customerData.zip_code)
       handleOnChange("address", customerData.address)
       handleOnChange("other", customerData.other)
@@ -245,6 +247,15 @@ const Customers = props => {
       setNotificationsValue(customerData.notifications_enabled)
     }
   }, [customerData])
+
+  const formatPhoneNumber=(evt)=> {
+    let number = evt.target.value.replace(/[^\d]/g, '')
+    if (number.length == 10) {
+        number = number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+    }
+    evt.target.value = number;
+    handleOnChange("phone_number", evt.target.value=number)
+}
 
   return (
     <>
@@ -321,9 +332,10 @@ const Customers = props => {
                 <Input
                   style={styles.inputTextStyle}
                   maxLength={10}
+                  keyboardType = 'numeric'
                   value={state.phone_number.value}
                   className="border-0 pl-0"
-                  onChange={e => handleOnChange("phone_number", e.target.value)}
+                  onChange={e => formatPhoneNumber(e)}
                 />
                 <div style={styles.inputLineStyle} />
                 {state.phone_number.error && (
@@ -333,6 +345,23 @@ const Customers = props => {
                 )}
               </div>
               <Row>
+                <Col lg={8}>
+                  <div className="mt-4">
+                    <label style={styles.labelTextStyle}>Address*</label>
+                    <Input
+                      style={styles.inputTextStyle}
+                      className="border-0 pl-0"
+                      value={state.address.value}
+                      onChange={e => handleOnChange("address", e.target.value)}
+                    />
+                    <div style={styles.inputLineStyle} />
+                    {state.address.error && (
+                      <label style={{ color: "red" }}>
+                        {state.address.error}
+                      </label>
+                    )}
+                  </div>
+                </Col>
                 <Col lg={4}>
                   <div className="mt-4">
                     <label style={styles.labelTextStyle}>Zip Code*</label>
@@ -347,23 +376,6 @@ const Customers = props => {
                     {state.zip_code.error && (
                       <label style={{ color: "red" }}>
                         {state.zip_code.error}
-                      </label>
-                    )}
-                  </div>
-                </Col>
-                <Col lg={8}>
-                  <div className="mt-4">
-                    <label style={styles.labelTextStyle}>Address*</label>
-                    <Input
-                      style={styles.inputTextStyle}
-                      className="border-0 pl-0"
-                      value={state.address.value}
-                      onChange={e => handleOnChange("address", e.target.value)}
-                    />
-                    <div style={styles.inputLineStyle} />
-                    {state.address.error && (
-                      <label style={{ color: "red" }}>
-                        {state.address.error}
                       </label>
                     )}
                   </div>
@@ -459,9 +471,9 @@ const Customers = props => {
                   aria-hidden="true"
                 />
               ) : customerData ? (
-                "Update Service"
+                "Update Customer"
               ) : (
-                "Save Service"
+                "Save Customer"
               )}
             </Button>
           </div>

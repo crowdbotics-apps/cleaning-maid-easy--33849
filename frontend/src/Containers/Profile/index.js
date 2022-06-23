@@ -43,6 +43,15 @@ const Profile = props => {
   const profileImage = { image: require("assets/img/placeholder.jpg") }
   const { history } = props
 
+  const  formatPhoneNumber=(evt)=> {
+    let number = evt.replace(/[^\d]/g, '')
+    if (number.length == 10) {
+        number = number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+    }
+    return number
+    
+}
+
   return (
     <>
       <Toaster position="top-center" />
@@ -110,7 +119,7 @@ const Profile = props => {
                         src={require("assets/icons/phone_img.png")}
                       />
                       <label style={styles.addressText}>
-                        {userInfo.phone_number && userInfo.phone_number}
+                        {userInfo.phone_number && formatPhoneNumber(userInfo.phone_number)}
                       </label>
                     </div>
                   )}

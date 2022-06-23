@@ -83,7 +83,7 @@ function Employees(props) {
     if (editValues) {
       handleOnChange("firstName", editValues.name)
       // handleOnChange("lastName", editValues.name.split(' ')[1] )
-      handleOnChange("phone_number", editValues.phone_number)
+      handleOnChange("phone_number",  editValues.phone_number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3") )
       handleOnChange("zip_code", editValues.zip_code)
       handleOnChange("company_name", editValues.company_name)
       handleOnChange("display_company", editValues.display_company)
@@ -150,7 +150,7 @@ function Employees(props) {
     },
     phone_number: {
       required: false,
-      validator: validator.phone
+      validator: validator.contactNumber
     },
     zip_code: {
       required: false,
@@ -176,7 +176,7 @@ function Employees(props) {
       email: state.email.value,
       company_name: state.company_name.value,
       display_company: state.display_company.value ? true : false,
-      phone_number: state.phone_number.value,
+      phone_number:  state.phone_number.value.replace(/[^\d]/g, ''),
       zip_code: state.zip_code.value,
       address: state.address.value,
       team_id: parseInt(state.team_id.value)
@@ -218,11 +218,10 @@ function Employees(props) {
         ? true
         : false
     )
-    formBody.append("phone_number", state.phone_number.value)
+    formBody.append("phone_number", state.phone_number.value.replace(/[^\d]/g, ''))
     formBody.append("zip_code", state.zip_code.value)
     formBody.append("address", state.address.value)
     // formBody.append("team_id", parseInt(state.team_id.value))
-
     props.updateEmployee(formBody, editValues.id, toggle, currentpage)
   }
 
@@ -245,6 +244,24 @@ function Employees(props) {
     setCurrentPage(page)
     props.getEmployeeList(page)
   }
+
+  const  formatPhoneNumber=(evt)=> {
+    let number = evt.replace(/[^\d]/g, '')
+    if (number.length == 10) {
+        number = number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+    }
+    return number
+    
+}
+
+const phoneNumberformat=(evt)=> {
+  let number = evt.target.value.replace(/[^\d]/g, '')
+  if (number.length == 10) {
+      number = number.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+  }
+  evt.target.value = number;
+  handleOnChange("phone_number", evt.target.value=number)
+}
 
   return (
     <>
@@ -357,7 +374,7 @@ function Employees(props) {
                               </Tooltip> */}
                             </div>
                           </td>
-                          <td>{item.phone_number}</td>
+                          <td>{ item.phone_number && formatPhoneNumber(item.phone_number)}</td>
                           <td>
                             {changeEmployeeRequesting && item.id === itemId ? (
                               <Spinner size="sm" />
@@ -615,7 +632,7 @@ function Employees(props) {
                         maxLength={10}
                         className="border-top-0 border-right-0 border-left-0 pl-0"
                         onChange={e =>
-                          handleOnChange("phone_number", e.target.value)
+                          phoneNumberformat(e)
                         }
                       ></Input>
                       {state.phone_number.error && (

@@ -104,7 +104,10 @@ function* updateScheduleServices({
           const userDate = JSON.parse(newDate)
           const dateFormate = moment(userDate).format("YYYY-MM-DD")
           yield put(getDayAcceptedAppointments(dateFormate))
+        }else {
+          yield put(getPendingRequests(currentpage))
         }
+       
       } else {
         yield put(getPendingRequests(currentpage))
       }
