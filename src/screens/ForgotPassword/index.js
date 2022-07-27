@@ -3,27 +3,17 @@ import React, { useState, useEffect } from "react"
 // components
 import { Text, Button, Input } from "src/components"
 import {
-  StatusBar,
   Platform,
   SafeAreaView,
   ScrollView,
   TextInput
 } from "react-native"
-import { Icon, Container } from "native-base"
 import {
   View,
   Image,
   TouchableOpacity,
   KeyboardAvoidingView
 } from "react-native"
-import {
-  GoogleSignin,
-  statusCodes
-} from "@react-native-google-signin/google-signin"
-import { AccessToken, LoginManager } from "react-native-fbsdk"
-import { connect } from "react-redux"
-import useForm from "../../utils/useForm"
-import validator from "../../utils/validation"
 
 // styles
 import { Layout, Fonts, Images, Colors, Gutters } from "src/theme"
@@ -50,13 +40,13 @@ const ForgotPassword = props => {
           }}
         />
         <View style={{ justifyContent: "center", alignItems: "center", flexDirection: 'row', justifyContent: 'space-between'}}>
-            <View style={{justifyContent: 'center', marginTop: 30,}}>
+            <View style={{justifyContent: 'center', marginTop: 20,}}>
         <Image
           source={backArrow}
           style={{
-            width: 18,
-            height: 9,
-            paddingLeft: 20,
+            width: 19,
+            height: 10,
+            paddingLeft: 30,
             resizeMode: "contain",
           }}
         />
@@ -66,7 +56,7 @@ const ForgotPassword = props => {
               marginTop: 14,
               fontSize: 24,
               fontWeight: "700",
-              color: "#0C4DA2"
+              color: "#0C4DA2",
             }}
           >
             Forgot Password?
@@ -102,7 +92,7 @@ const ForgotPassword = props => {
         </KeyboardAvoidingView>
       </SafeAreaView>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity style={{ marginBottom: 27 }} onPress={()=> navigate('')}>
+        <TouchableOpacity style={{ marginBottom: 80 }} onPress={()=> navigate('ResetPassword')}>
           <LinearGradient
             colors={["#00B9F1", "#034EA2"]}
             style={{ height: 42, width: 262, borderRadius: 10 }}
@@ -119,19 +109,6 @@ const ForgotPassword = props => {
             </Text>
           </LinearGradient>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row" }}>
-          <Text>Don’t have an account?</Text>
-          <Text
-            style={{
-              fontWeight: "700",
-              textDecorationLine: "underline",
-              marginBottom: 42
-            }}
-          >
-            {" "}
-            Click here
-          </Text>
-        </View>
       </View>
     </>
   )

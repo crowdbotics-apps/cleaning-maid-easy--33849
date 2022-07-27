@@ -42,6 +42,16 @@ export default {
   backgroundImage: require("src/assets/images/newImage/screensbackground.png"),
   appLogo: require("src/assets/images/newImage/appLogo.png"),
   backArrow: require("src/assets/images/newImage/backArrow.png"),
+  mainBackArrow: require("src/assets/images/newImage/mainBackArrow.png"),
+  clockIcon: require("src/assets/images/newImage/Clock.png"),
+  activeClock: require("src/assets/images/newImage/activeClock.png"),
+  activeCalender: require("src/assets/images/newImage/activeCalender.png"),
+  calender: require("src/assets/images/newImage/Calendar.png"),
+  mapIcon: require("src/assets/images/newImage/mapIcon.png"),
+  elipsIcon: require("src/assets/images/newImage/elips.png"),
+
+  
+
   AppLogo,
   EmailIcon,
   PasswordLock,

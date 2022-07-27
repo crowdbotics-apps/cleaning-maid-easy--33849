@@ -1,51 +1,38 @@
 import React from 'react'
 
 // components
-import { SafeAreaView } from 'react-native'
-import { Title, View } from 'native-base'
+import { SafeAreaView, Image, Text, TouchableOpacity } from 'react-native'
+import {  View } from 'native-base'
+import { Images } from "src/theme"
 
-// styles
-import { Layout } from 'src/theme'
-import styles from './styles'
 
-const Header = ({
-  title,
-  left,
-  right,
-  color,
-  large,
-  rounded
-}) => {
-  const {
-    header,
-    roundedBg,
-    largeHeader,
-    leftStyle,
-    bodyStyle,
-    titleText,
-    rightStyle,
-    roundedCorner,
-  } = styles
-  const { justifyContentCenter } = Layout
-
+const Header = (props) => {
+    const { mainText , navigation, onPress } = props
+    const { mainBackArrow } = Images
   return (
-    <SafeAreaView style={styles[color]}>
-      <View style={[rounded && roundedBg]}>
-        <View
-          style={[
-            header,
-            large && largeHeader,
-            rounded && roundedCorner,
-            styles[color],
-          ]}
-        >
-          <View style={leftStyle}>{left}</View>
-          <View style={[bodyStyle, justifyContentCenter]}>
-            <Title style={[titleText, styles[`${color}Text`]]}>{title}</Title>
-          </View>
-          <View style={rightStyle}>{right}</View>
+    <SafeAreaView>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 16}}>
+          <TouchableOpacity style={{justifyContent: 'center'}}  onPress={onPress}>
+        <Image
+          source={mainBackArrow}
+          style={{
+            width: 9,
+            height: 18,
+            alignSelf: "center",
+            resizeMode: "contain",
+          }}
+        />
+        </TouchableOpacity>
+          <Text
+            style={{
+              fontSize: 24,
+              color: "#000000",
+            }}
+          >
+            {mainText}
+          </Text>
+          <View></View>
         </View>
-      </View>
     </SafeAreaView>
   )
 }

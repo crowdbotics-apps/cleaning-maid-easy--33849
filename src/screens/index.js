@@ -8,6 +8,8 @@ import EmptyScreen from './EmptyScreen'
 import MainLogin from './MainLogin'
 import SignUp from './SignUp'
 import ResetPassword from './ResetPassword'
+import RequestService from './RequestService'
+import ServiceDetail from './ServiceDetail'
 
 export {
   Splash,
@@ -19,5 +21,7 @@ export {
   EmptyScreen,
   MainLogin,
   SignUp,
-  ResetPassword
+  ResetPassword,
+  RequestService,
+  ServiceDetail
 };

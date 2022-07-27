@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 
 // components
 import { Text, Button, Input, MainHeader } from "src/components"
@@ -16,11 +16,6 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView
 } from "react-native"
-import {
-  GoogleSignin,
-  statusCodes
-} from "@react-native-google-signin/google-signin"
-import { AccessToken, LoginManager } from "react-native-fbsdk"
 import { connect } from "react-redux"
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
@@ -62,15 +57,17 @@ const ResetPassword = props => {
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
-      <MainHeader mainText="Sign Up"/>
+      <MainHeader mainText="Reset Password"/>
           <ScrollView
+          style={{flexGrow: 1}}
             bounces={false}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
             <View style={{ paddingHorizontal: 30, marginTop: 58 }}>
-              <Text style={{ fontSize: 12, marginBottom: 8 }}>Full name</Text>
+              <Text style={{ fontSize: 12, marginBottom: 8 }}>NWE PASSWORD</Text>
               <TextInput
+                secureTextEntry={true}
                 style={{
                   backgroundColor: "white",
                   width: "100%",
@@ -80,45 +77,10 @@ const ResetPassword = props => {
                 }}
               />
               <Text style={{ fontSize: 12, marginBottom: 8, marginTop: 17 }}>
-                EMAIL
+                CONFIRM NEW PASSWORD
               </Text>
               <TextInput
-                style={{
-                  backgroundColor: "white",
-                  width: "100%",
-                  height: 42,
-                  borderRadius: 5,
-                  color: "black"
-                }}
-              />
-              <Text style={{ fontSize: 12, marginBottom: 8, marginTop: 17 }}>
-              PHONE NUMBER
-              </Text>
-              <TextInput
-                style={{
-                  backgroundColor: "white",
-                  width: "100%",
-                  height: 42,
-                  borderRadius: 5,
-                  color: "black"
-                }}
-              />
-             <Text style={{ fontSize: 12, marginBottom: 8, marginTop: 17 }}>
-             PASSWORD
-              </Text>
-              <TextInput
-                style={{
-                  backgroundColor: "white",
-                  width: "100%",
-                  height: 42,
-                  borderRadius: 5,
-                  color: "black"
-                }}
-              />
-               <Text style={{ fontSize: 12, marginBottom: 8, marginTop: 17 }}>
-               CONFIRM PASSWORD
-              </Text>
-              <TextInput
+              secureTextEntry={true}
                 style={{
                   backgroundColor: "white",
                   width: "100%",
@@ -128,8 +90,10 @@ const ResetPassword = props => {
                 }}
               />
             </View>
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity style={{ marginBottom: 27, marginTop: 47 }} onPress={()=> navigate('ForgotPassword')} >
+          </ScrollView>
+      </SafeAreaView>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <TouchableOpacity style={{ marginBottom: 80 }} onPress={()=> navigate('RequestService')} >
           <LinearGradient
             colors={["#00B9F1", "#034EA2"]}
             style={{ height: 42, width: 262, borderRadius: 10 }}
@@ -142,26 +106,11 @@ const ResetPassword = props => {
                 lineHeight: 42
               }}
             >
-              Sign Up
+              Reset
             </Text>
           </LinearGradient>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row" }}>
-          <Text>Don’t have an account?</Text>
-          <Text
-            style={{
-              fontWeight: "700",
-              textDecorationLine: "underline",
-              marginBottom: 42
-            }}
-          >
-            {" "}
-            Click here
-          </Text>
-        </View>
       </View>
-          </ScrollView>
-      </SafeAreaView>
     </>
   )
 }

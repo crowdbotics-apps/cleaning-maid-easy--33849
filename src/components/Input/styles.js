@@ -3,35 +3,36 @@ import { Colors } from "src/theme"
 
 export default StyleSheet.create({
   wrapper: {
-    backgroundColor: "#FBFBFD",
+    backgroundColor: "white",
     // borderColor: Colors.wildSand,
-    borderRadius: 6
+    // borderRadius: 6
     // borderWidth:2
   },
 
   editWrapper: {
     backgroundColor: "rgba(35, 31, 32, 0.05)",
-    borderRadius: 5
+    // borderRadius: 5
     // paddingLeft: 20
   },
 
   input: {
     flex: 1,
-    borderRadius: 10,
-    borderColor: "#FBFBFD",
+    // borderRadius: 10,
+    borderColor: "white",
     borderWidth: 0,
-    backgroundColor: "#FBFBFD",
+    backgroundColor: "white",
+    paddingBottom: 0
   },
   editInput: {
     flex: 1,
-    borderRadius: 10,
+    // borderRadius: 10,
     borderColor: "red",
     borderWidth: 0,
     backgroundColor: "transparent"
   },
   iconStyle: {
     fontSize: 40,
-    color: "#F4753B"
+    color: "white"
   },
   text: {
     color: Colors.black,
@@ -43,7 +44,7 @@ export default StyleSheet.create({
     })
   },
   height: {
-    height: 45
+    height: 30
   },
   transparentInput: {
     backgroundColor: "transparent",

@@ -3,7 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 // import BottomTabNavigator from '@/Navigators/Main'
 
 // screens
-import {MainSplashScreen, Register, ForgotPassword, ProfileScreen, EditProfile,MainLogin, SignUp, ResetPassword} from 'src/screens';
+import {MainSplashScreen, Register, ForgotPassword, ProfileScreen, EditProfile,MainLogin, SignUp, ResetPassword, RequestService, ServiceDetail} from 'src/screens';
 
 const authStack = createStackNavigator();
 
@@ -19,6 +19,8 @@ const AuthStackScreen = () => (
     <authStack.Screen name="MainLogin" component={MainLogin} />
     <authStack.Screen name="SignUp" component={SignUp} />
     <authStack.Screen name="ResetPassword" component={ResetPassword} />
+    <authStack.Screen name="RequestService" component={RequestService} />
+    <authStack.Screen name="ServiceDetail" component={ServiceDetail} />
 
 
 

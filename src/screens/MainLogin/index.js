@@ -15,12 +15,6 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView
 } from "react-native"
-import {
-  GoogleSignin,
-  statusCodes
-} from "@react-native-google-signin/google-signin"
-import { AccessToken, LoginManager } from "react-native-fbsdk"
-import { connect } from "react-redux"
 import useForm from "../../utils/useForm"
 import validator from "../../utils/validation"
 
@@ -72,12 +66,12 @@ const MainLogin = props => {
   }
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#ECECEC' }}>
         <MainHeader mainText="Sign In"/>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={100}
-          style={{ flex: 1 }}
+          style={{ flexGrow: 1 }}
         >
           <ScrollView
             bounces={false}
