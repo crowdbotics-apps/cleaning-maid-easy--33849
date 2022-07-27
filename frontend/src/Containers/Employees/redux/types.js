@@ -1,0 +1,20 @@
+export const GET_EMPLOYEE_LIST = 'Employee/GET_EMPLOYEE_LIST';
+export const GET_EMPLOYEE_SUCCESS='Employee/GET_EMPLOYEE_SUCCESS'
+
+export const ADD_EMPLOYEE = 'Employee/ADD_EMPLOYEE';
+export const ADD_EMPLOYEE_FAILURE='Employee/ADD_EMPLOYEE_FAILURE'
+
+export const UPDATE_EMPLOYEE='Employee/UPDATE_EMPLOYEE'
+
+export const CHANGE_EMPLOYEE_TEAM='Employee/CHANGE_EMPLOYEE_TEAM'
+export const RESET_EMPLOYEE_TEAM='Employee/RESET_EMPLOYEE_TEAM'
+
+export const DELETE_EMPLOYEE='Employee/DELETE_EMPLOYEE'
+export const RESET='Employee/RESET'
+
+
+
+
+
+
+

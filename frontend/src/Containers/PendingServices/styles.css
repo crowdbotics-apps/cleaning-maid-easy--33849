@@ -1,0 +1,44 @@
+.btnTest {
+    height: 52px;
+    width: 100%;
+    background: linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%),
+linear-gradient(0deg, #4A8E44, #4A8E44),
+linear-gradient(0deg, #DFDFDF, #DFDFDF);
+border-radius: 20px !important;
+}
+
+.btnTest2 {
+    height: 52px;
+    width: 100%;
+    background-color: white !important;
+    border: 2px linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%),
+    linear-gradient(0deg, #4A8E44, #4A8E44),
+    linear-gradient(0deg, #DFDFDF, #DFDFDF) solid !important;
+    border-color: linear-gradient(155.56deg, #E6DE18 -55%, #438B44 127.5%),
+    linear-gradient(0deg, #4A8E44, #4A8E44),
+    linear-gradient(0deg, #DFDFDF, #DFDFDF) !important;
+    border-radius: 20px !important;
+    
+
+}
+
+.inputDiv12  {
+    flex-direction: row!important;
+    border: #438B44 2px solid ;
+}
+
+.calnderStyle{
+    width: 95%;    
+    border: none;
+    flex-direction: row;
+    
+    /* border: 2px green solid !important; */
+}
+
+.react-datepicker-wrapper {
+    border: none !important;
+}
+
+.timeStyle{
+  border: none !important;
+}
