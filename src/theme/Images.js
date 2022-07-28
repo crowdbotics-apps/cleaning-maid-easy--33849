@@ -1,4 +1,3 @@
-
 import AppLogo from "src/assets/images/newImages/appLogo.svg"
 import EmailIcon from "src/assets/images/newImages/EmailIcon.svg"
 import PasswordLock from "src/assets/images/newImages/passwordLoack.svg"
@@ -49,8 +48,8 @@ export default {
   calender: require("src/assets/images/newImage/Calendar.png"),
   mapIcon: require("src/assets/images/newImage/mapIcon.png"),
   elipsIcon: require("src/assets/images/newImage/elips.png"),
-
-  
+  checkInIcon: require("src/assets/images/newImage/DownloadSimple.png"),
+  checkOutIcon: require("src/assets/images/newImage/UploadSimple.png"),
 
   AppLogo,
   EmailIcon,
