@@ -95,14 +95,18 @@ const ServiceDetail = props => {
           <View
             style={{
               marginTop: 5,
-              borderWidth: 1,
-              shadowColor: "rgba(0, 0, 0, 0.3)",
+              paddingTop: 6, 
+              paddingTop: 11,
+              paddingLeft: 6,
+              paddingRight: 15,
               shadowOffset: {
                 width: 0,
-                height: 1
+                height: 1,
               },
-              shadowOpacity: 0.22,
-              shadowRadius: 2.22
+              shadowOpacity: 0.18,
+              shadowRadius: 1.00,
+              
+              elevation: 1,
             }}
           >
             <Text>
@@ -111,29 +115,31 @@ const ServiceDetail = props => {
             </Text>
           </View>
         </View>
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'flex-end'}}>
-        <TouchableOpacity
-          style={{
-            marginBottom: 22,
-          }}
-          onPress={() => navigate("FeedBack")}
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "flex-end" }}
         >
-          <LinearGradient
-            colors={["#00B9F1", "#034EA2"]}
-            style={{ height: 42, width: 207, borderRadius: 10 }}
+          <TouchableOpacity
+            style={{
+              marginBottom: 22
+            }}
+            onPress={() => navigate("FeedBack")}
           >
-            <Text
-              style={{
-                textAlign: "center",
-                fontSize: 18,
-                color: "#FFFFFF",
-                lineHeight: 42
-              }}
+            <LinearGradient
+              colors={["#00B9F1", "#034EA2"]}
+              style={{ height: 42, width: 207, borderRadius: 10 }}
             >
-              Reschedule
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontSize: 18,
+                  color: "#FFFFFF",
+                  lineHeight: 42
+                }}
+              >
+                Reschedule
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </>

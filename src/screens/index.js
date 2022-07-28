@@ -13,6 +13,8 @@ import ServiceDetail from './ServiceDetail'
 import MyProfile from './MyProfile'
 import FeedBack from './FeedBack'
 import Notifications from './Notifications'
+import EmployeeServiceDetails from "./EmployeeServiceDetails"
+
 
 export {
   Splash,
@@ -29,5 +31,6 @@ export {
   ServiceDetail,
   MyProfile,
   FeedBack,
-  Notifications
+  Notifications,
+  EmployeeServiceDetails
 };

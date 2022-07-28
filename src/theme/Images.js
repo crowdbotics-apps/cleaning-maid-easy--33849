@@ -1,4 +1,3 @@
-
 import AppLogo from "src/assets/images/newImages/appLogo.svg"
 import EmailIcon from "src/assets/images/newImages/EmailIcon.svg"
 import PasswordLock from "src/assets/images/newImages/passwordLoack.svg"
@@ -52,6 +51,8 @@ export default {
   profileBackGround: require("src/assets/images/newImage/profileBackground.png"),
   userImage: require("src/assets/images/newImage/user.png"),
   notificationImage: require("src/assets/images/newImage/notificationImage.png"),
+  checkInIcon: require("src/assets/images/newImage/DownloadSimple.png"),
+  checkOutIcon: require("src/assets/images/newImage/UploadSimple.png"),
 
   
 
