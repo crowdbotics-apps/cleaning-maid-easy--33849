@@ -57,15 +57,23 @@ const ResetPassword = props => {
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
-      <MainHeader mainText="Reset Password"/>
+        <MainHeader mainText="Reset Password" />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          // keyboardVerticalOffset={100}
+          style={{ flex: 1 }}
+          enabled
+        >
           <ScrollView
-          style={{flexGrow: 1}}
             bounces={false}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ flexGrow: 1 }}
           >
-            <View style={{ paddingHorizontal: 30, marginTop: 58 }}>
-              <Text style={{ fontSize: 12, marginBottom: 8 }}>NWE PASSWORD</Text>
+            <View style={{ paddingHorizontal: 30, marginTop: 58, flex: 1 }}>
+              <Text style={{ fontSize: 12, marginBottom: 8 }}>
+                NEW PASSWORD
+              </Text>
               <TextInput
                 secureTextEntry={true}
                 style={{
@@ -80,7 +88,7 @@ const ResetPassword = props => {
                 CONFIRM NEW PASSWORD
               </Text>
               <TextInput
-              secureTextEntry={true}
+                secureTextEntry={true}
                 style={{
                   backgroundColor: "white",
                   width: "100%",
@@ -90,27 +98,38 @@ const ResetPassword = props => {
                 }}
               />
             </View>
-          </ScrollView>
-      </SafeAreaView>
-      <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity style={{ marginBottom: 80 }} onPress={()=> navigate('RequestService')} >
-          <LinearGradient
-            colors={["#00B9F1", "#034EA2"]}
-            style={{ height: 42, width: 262, borderRadius: 10 }}
-          >
-            <Text
+            <View
               style={{
-                textAlign: "center",
-                fontSize: 18,
-                color: "#FFFFFF",
-                lineHeight: 42
+                alignItems: "center",
+                flex: 1,
+                justifyContent: "flex-end",
+                paddingTop: 100
               }}
             >
-              Reset
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+              <TouchableOpacity
+                style={{ marginBottom: 80 }}
+                onPress={() => navigate("MyProfile")}
+              >
+                <LinearGradient
+                  colors={["#00B9F1", "#034EA2"]}
+                  style={{ height: 42, width: 262, borderRadius: 10 }}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 18,
+                      color: "#FFFFFF",
+                      lineHeight: 42
+                    }}
+                  >
+                    Reset
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </>
   )
 }

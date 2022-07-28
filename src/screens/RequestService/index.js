@@ -9,11 +9,20 @@ import {
   ScrollView,
   TextInput,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Image,
+  Modal
 } from "react-native"
 
 import LinearGradient from "react-native-linear-gradient"
 import { Dropdown } from "react-native-element-dropdown"
+import {
+  Datepicker,
+  NativeDateService,
+  withStyles
+} from "@ui-kitten/components"
+import DatePicker from "react-native-date-picker"
+import Images from "../../theme/Images"
 
 const RequestService = props => {
   const {
@@ -44,7 +53,18 @@ const RequestService = props => {
       return { label: item.name, value: item.name }
     })
   }
-  
+
+  const dateService = new NativeDateService("en", { format: "MM/DD/YYYY" })
+
+  const openTimeModal = () => {
+    ;<DatePicker
+      mode="date"
+      date={new Date()}
+      // onDateChange={setBirthdayData}
+      maximumDate={new Date()}
+      style={{ backgroundColor: "white" }}
+    />
+  }
 
   return (
     <>
@@ -56,51 +76,71 @@ const RequestService = props => {
           }}
         />
         <ScrollView
-          bounces={false}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          style={{paddingBottom: 10}}
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ flexGrow: 1 }}
         >
           <View style={{ marginHorizontal: 36 }}>
-            <Text style={{fontSize: 12, marginTop: 31 }}>
+            <Text style={{ fontSize: 12, marginTop: 31, opacity: 0.4 }}>
               Time
             </Text>
-            <View
+            <TouchableOpacity
+              onPress={() => {
+                setActiveIcon("activeClock"), setActiveCalender("calender")
+              }}
               style={{
+                width: "100%",
                 borderBottomWidth: 2,
                 borderBottomColor: "#C4C4C4",
-                height: 45
+                height: 36,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingTop: 6
               }}
             >
-              <Input
-                secureTextEntry={true}
-                icon={activeIcon}
-                placeholder="00:00 AA"
-                onFocus={() => {
-                  setActiveIcon("activeClock"), setActiveCalender("calender")
+              <Text style={{ paddingTop: 6, fontSize: 14, opacity: 0.5 }}>00:00 AA</Text>
+              <Image
+                source={
+                  activeIcon === "clock" ? Images.clockIcon : Images.activeClock
+                }
+                style={{
+                  width: 27,
+                  height: 27
                 }}
               />
-            </View>
-            <Text style={{ fontSize: 12, marginTop: 28 }}>
+            </TouchableOpacity>
+            <Text style={{ fontSize: 12, marginTop: 28, opacity: 0.4 }}>
               Date
             </Text>
-            <View
+            <TouchableOpacity
+              onPress={() => {
+                setActiveCalender("activeCalender"), setActiveIcon("clock")
+              }}
               style={{
-                borderBottomWidth: 2,
+                width: "100%",
+                borderBottomWidth: 1,
                 borderBottomColor: "#C4C4C4",
-                height: 45
+                height: 36,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingTop: 6
               }}
             >
-              <Input
-                secureTextEntry={true}
-                icon={activeCalender}
-                placeholder="mm/dd/yyyy"
-                onFocus={() => {
-                  setActiveCalender("activeCalender"), setActiveIcon("clock")
+              <Text style={{ paddingTop: 6, fontSize: 14, opacity: 0.5 }}>mm/dd/yyyy</Text>
+              <Image
+                source={
+                  activeCalender === "calender"
+                    ? Images.calender
+                    : Images.activeCalender
+                }
+                style={{
+                  width: 27,
+                  height: 27
                 }}
               />
-            </View>
-            <Text style={{ fontSize: 12, marginTop: 28 }}>
+            </TouchableOpacity>
+            <Text style={{ fontSize: 12, marginTop: 28, opacity: 0.4 }}>
               Service
             </Text>
             <Dropdown
@@ -111,11 +151,12 @@ const RequestService = props => {
               valueField="value"
               placeholder="Select..."
               value={serviceValue}
+              placeholderStyle={{opacity: 0.5}}
               onChange={item => {
                 setServiceValue(item.value)
               }}
             />
-            <Text style={{ fontSize: 12, marginTop: 28 }}>
+            <Text style={{ fontSize: 12, marginTop: 28, opacity: 0.4 }}>
               Frequency
             </Text>
             <Dropdown
@@ -126,48 +167,72 @@ const RequestService = props => {
               valueField="value"
               placeholder="Select..."
               value={serviceValue}
+              placeholderStyle={{opacity: 0.5}}
               onChange={item => {
                 setServiceValue(item.value)
               }}
             />
-            <Text style={{ fontSize: 12, marginTop: 28 }}>Notes</Text>
-            <View
-              style={{
-                borderBottomWidth: 2,
-                borderBottomColor: "#C4C4C4",
-                height: 45
-              }}
-            >
-              <Input
-                placeholder="Notes"
-                onFocus={() => {
-                  setActiveCalender("activeCalender"), setActiveIcon("clock")
-                }}
-                // multiline={true}
-              />
-            </View>
+            <Text style={{ opacity: 0.4, fontSize: 12, marginTop: 20 }}>Notes</Text>
+          <TextInput
+            style={{width: "100%",
+            borderBottomColor: "#C4C4C4",
+            paddingBottom: 0,
+            borderBottomWidth: 1,
+            color: "black"}}
+            placeholder="Notes"
+            placeholderTextColor='#C4C4C4'
+          />
           </View>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-      </View>
+          <View
+            style={{ justifyContent: "center", alignItems: "center" }}
+          ></View>
+          <View style={{flex: 1, justifyContent: 'flex-end', paddingTop: 100}}>
+          <TouchableOpacity
+            style={{
+              paddingBottom: 22,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "white"
+            }}
+            onPress={() => navigate("ServiceDetail")}
+          >
+            <LinearGradient
+              colors={["#00B9F1", "#034EA2"]}
+              style={{ height: 42, width: 207, borderRadius: 10 }}
+            >
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontSize: 18,
+                  color: "#FFFFFF",
+                  lineHeight: 42
+                }}
+              >
+                Request Service
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          </View>
         </ScrollView>
       </SafeAreaView>
-      <TouchableOpacity style={{ paddingBottom: 22,  justifyContent: "center", alignItems: "center", backgroundColor: 'white', }} onPress={()=> navigate('ServiceDetail')} >
-          <LinearGradient
-            colors={["#00B9F1", "#034EA2"]}
-            style={{ height: 42, width: 207, borderRadius: 10 }}
-          >
-            <Text
+      {/* <Modal visible={true} style={{flex: 1}}>
+            <View
               style={{
-                textAlign: "center",
-                fontSize: 18,
-                color: "#FFFFFF",
-                lineHeight: 42
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
               }}
             >
-              Request Service
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
+              <DatePicker
+                mode="date"
+                date={new Date()}
+                // onDateChange={setBirthdayData}
+                maximumDate={new Date()}
+                style={{backgroundColor: 'white'}}
+              />
+            </View>
+          </Modal> */}
     </>
   )
 }

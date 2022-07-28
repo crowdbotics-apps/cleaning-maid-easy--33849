@@ -10,6 +10,9 @@ import SignUp from './SignUp'
 import ResetPassword from './ResetPassword'
 import RequestService from './RequestService'
 import ServiceDetail from './ServiceDetail'
+import MyProfile from './MyProfile'
+import FeedBack from './FeedBack'
+import Notifications from './Notifications'
 
 export {
   Splash,
@@ -23,5 +26,8 @@ export {
   SignUp,
   ResetPassword,
   RequestService,
-  ServiceDetail
+  ServiceDetail,
+  MyProfile,
+  FeedBack,
+  Notifications
 };

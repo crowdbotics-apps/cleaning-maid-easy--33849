@@ -7,13 +7,13 @@ import { Images } from "src/theme"
 
 
 const Header = (props) => {
-    const { mainText , navigation, onPress } = props
+    const { mainText , navigation, onPress, showArrow } = props
     const { mainBackArrow } = Images
   return (
     <SafeAreaView>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 16}}>
           <TouchableOpacity style={{justifyContent: 'center'}}  onPress={onPress}>
-        <Image
+       {!showArrow && <Image
           source={mainBackArrow}
           style={{
             width: 9,
@@ -21,7 +21,7 @@ const Header = (props) => {
             alignSelf: "center",
             resizeMode: "contain",
           }}
-        />
+        />}
         </TouchableOpacity>
           <Text
             style={{

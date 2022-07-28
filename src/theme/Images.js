@@ -49,6 +49,14 @@ export default {
   calender: require("src/assets/images/newImage/Calendar.png"),
   mapIcon: require("src/assets/images/newImage/mapIcon.png"),
   elipsIcon: require("src/assets/images/newImage/elips.png"),
+  profileBackGround: require("src/assets/images/newImage/profileBackground.png"),
+  userImage: require("src/assets/images/newImage/user.png"),
+  notificationImage: require("src/assets/images/newImage/notificationImage.png"),
+
+  
+
+  
+  
 
   
 

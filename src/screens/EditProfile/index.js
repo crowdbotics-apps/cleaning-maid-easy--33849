@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react"
 // components
 import { Text, Button, Input } from "src/components"
 import { launchImageLibrary } from "react-native-image-picker"
-import { StatusBar, Platform, Dimensions } from "react-native"
+import { StatusBar, Platform, Dimensions, ScrollView } from "react-native"
+import LinearGradient from "react-native-linear-gradient"
 import { Icon, Container } from "native-base"
 import {
   View,
@@ -19,10 +20,8 @@ import validator from "../../utils/validation"
 // styles
 import styles from "./styles"
 import { Layout, Fonts, Images, Colors, Gutters } from "src/theme"
-import { ScrollView } from "react-native-gesture-handler"
 
-//actions
-import { editProfile } from "../../screenRedux/editProfileRedux"
+//actions"
 import { SafeAreaView } from "react-navigation"
 
 const EditProfile = props => {
@@ -115,20 +114,20 @@ const EditProfile = props => {
 
   const { width } = Dimensions.get("window")
 
-  useEffect(() => {
-    if (profileData) {
-      handleOnChange(
-        "name",
-        profileData.name ? profileData.name : profileData.username
-      )
-      handleOnChange("email", profileData.email)
-      profileData.location && handleOnChange("location", profileData.location)
-      profileData.zip_code && handleOnChange("zipcode", profileData.zip_code)
-      profileData.phone_number &&
-        handleOnChange("phoneNumber", profileData.phone_number)
-      setProfileImage(profileData.profile_image)
-    }
-  }, [profileData])
+  // useEffect(() => {
+  //   if (profileData) {
+  //     handleOnChange(
+  //       "name",
+  //       profileData.name ? profileData.name : profileData.username
+  //     )
+  //     handleOnChange("email", profileData.email)
+  //     profileData.location && handleOnChange("location", profileData.location)
+  //     profileData.zip_code && handleOnChange("zipcode", profileData.zip_code)
+  //     profileData.phone_number &&
+  //       handleOnChange("phoneNumber", profileData.phone_number)
+  //     setProfileImage(profileData.profile_image)
+  //   }
+  // }, [profileData])
 
   const { EditIcon } = Images
 
@@ -175,216 +174,101 @@ const EditProfile = props => {
 
   return (
     <SafeAreaView
-      style={[smallHPadding, { flex: 1, backgroundColor: "#FBFBFD" }]}
+      style={[{ flex: 1, backgroundColor: "#FFFFFF" }]}
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View
-          style={[
-            center,
-            largeTMargin,
-            row,
-            { justifyContent: "space-between" }
-          ]}
-        >
-          <TouchableOpacity onPress={() => goBack()}>
-            <BackArrow />
-          </TouchableOpacity>
-          <Text text="Edit Profile" style={{ fontSize: 20 }} bold />
-          <View />
-        </View>
-        <View style={[center]}>
-          <View
+      <ScrollView style={{paddingBottom: 10}}>
+        <View style={{ alignItems: "center", marginTop: 20 }}>
+          <Text style={{ fontSize: 24, lineHeight: 28 }}>Edit Profile</Text>
+          <Image
+            source={Images.userImage}
             style={{
-              height: 132,
-              width: 132,
-              borderRadius: 61,
-              backgroundColor: "#C4C4C4",
-              top: 26,
-              borderRadius: 100,
-              zIndex: 1
+              width: 145,
+              height: 145,
+              borderRadius: 73,
+              marginTop: 38
             }}
-          >
-            {/* <ProfileImage /> */}
-            {profileImage ? (
-              <Image
-                source={{
-                  uri: profileImage
-                }}
-                style={{ height: 132, width: 132, borderRadius: 100 }}
-              />
-            ) : (
-              <Image
-                source={Images.userImage}
-                style={{ height: 132, width: 132, borderRadius: 100 }}
-              />
-            )}
-          </View>
-          <TouchableOpacity
-            onPress={() => launchImage()}
-            style={{
-              position: "absolute",
-              bottom: -10,
-              right: 0,
-              marginRight: width * 0.28,
-              zIndex: 1
-            }}
-          >
-            <EditIcon />
-          </TouchableOpacity>
-        </View>
-        <Text
-          text="Edit your details"
-          style={[largeTMargin, { fontSize: 18 }]}
-          bold
-        />
-        <View
-          style={[
-            smallHPadding,
-            small2xBPadding,
-            small2xTMargin,
-            { backgroundColor: "white", borderRadius: 10 }
-          ]}
-        >
-          <Text
-            text="Name"
-            style={[small2xTMargin, { fontSize: 14 }, smallBMargin]}
-            bold
           />
+          <Text
+            style={{
+              marginTop: 12,
+              fontSize: 12,
+              color: "#438B44",
+              fontWeight: "600"
+            }}
+          >
+            Edit Photo
+          </Text>
+        </View>
+        <View style={{ paddingHorizontal: 30, marginTop: 26 }}>
+          <Text style={{ opacity: 0.4, fontSize: 12 }}>Full Name</Text>
           <TextInput
             style={[inputStyle]}
-            value={state.name.value}
-            onChangeText={value => handleOnChange("name", value)}
             placeholder="Name"
-            placeholderTextColor={'#231F2050'}
+            placeholderTextColor='#C4C4C4'
           />
-          <Text text={state.name.error} style={{ color: "red" }} />
-          <Text
-            text="Email"
-            style={[small2xTMargin, { fontSize: 14 }, smallBMargin]}
-            bold
-          />
+           <Text style={{ opacity: 0.4, fontSize: 12, marginTop: 20 }}>Email</Text>
           <TextInput
+          keyboardType="email-address"
             style={[inputStyle]}
-            value={state.email.value}
-            onChangeText={value => handleOnChange("email", value)}
             placeholder="Email"
-            editable={false}
+            placeholderTextColor='#C4C4C4'
           />
-          <Text text={state.email.error} style={{ color: "red" }} />
-          <Text
-            text="Location"
-            style={[small2xTMargin, { fontSize: 14 }, smallBMargin]}
-            bold
-          />
-          <View style={[row, { justifyContent: "space-between" }]}>
-            <TextInput
-              style={[locationInputStyle]}
-              value={state.location.value}
-              onChangeText={value => handleOnChange("location", value)}
-              placeholder="Location"
-              placeholderTextColor={'#231F2050'}
-            />
-            <View style={[center, locationIconStyle, small2xRPadding]}>
-              <LocationIcon />
-            </View>
-          </View>
-          <Text text={state.location.error} style={{ color: "red" }} />
-          <Text
-            text="ZipCode"
-            style={[small2xTMargin, { fontSize: 14 }, smallBMargin]}
-            bold
-          />
+           <Text style={{ opacity: 0.4, fontSize: 12, marginTop: 20 }}>Company Name</Text>
           <TextInput
             style={[inputStyle]}
-            value={state.zipcode.value}
-            onChangeText={value => handleOnChange("zipcode", value)}
-            placeholder="ZipCode"
-            keyboardType="numeric"
-            placeholderTextColor={'#231F2050'}
+            placeholder="Company Name"
+            placeholderTextColor='#C4C4C4'
           />
-          <Text text={state.zipcode.error} style={{ color: "red" }} />
-          <Text
-            text="Phone Number"
-            style={[small2xTMargin, { fontSize: 14 }, smallBMargin]}
-            bold
+           <Text style={{ opacity: 0.4, fontSize: 12, marginTop: 20 }}>Phone number</Text>
+          <TextInput
+          keyboardType="phone-pad"
+            style={[inputStyle]}
+            placeholder="Phone number"
+            placeholderTextColor='#C4C4C4'
           />
+          <Text style={{ opacity: 0.4, fontSize: 12, marginTop: 20 }}>Zip Code</Text>
           <TextInput
             style={[inputStyle]}
-            value={state.phoneNumber.value}
-            onChangeText={value => handleOnChange("phoneNumber", value)}
-            placeholder="Phone Number"
-            keyboardType="numeric"
-            placeholderTextColor={'#231F2050'}
+            placeholder="Zip Code"
+            placeholderTextColor='#C4C4C4'
           />
-          <Text text={state.phoneNumber.error} style={{ color: "red" }} />
-
-          <Text
-            text="Password"
-            style={[small2xTMargin, { fontSize: 14 }, smallBMargin]}
-            bold
+           <Text style={{ opacity: 0.4, fontSize: 12, marginTop: 20 }}>Address</Text>
+          <TextInput
+            style={[inputStyle]}
+            placeholder="Address"
+            placeholderTextColor='#C4C4C4'
           />
-          <View style={[row]}>
-            <TextInput
-              style={[inputStyle]}
-              value={"9293929399"}
-              secureTextEntry={true}
-              // onChangeText={value => handleOnChange("phoneNumber", value)}
-              // placeholder="Phone Number"
-              editable={false}
-            />
-            <View style={[center, locationIconStyle, small2xRPadding]}>
-              <HidePassword />
-            </View>
-          </View>
-        </View>
-        <View
-          style={[
-            row,
-            largeHPadding,
-            { marginTop: 23, justifyContent: "space-around" }
-          ]}
-        >
-          <Button
-            text="Cancel"
-            color="primary"
-            block
-            style={login}
-            center
-            onPress={() => goBack()}
-          />
-          <Button
-            text="Save"
-            color="primary"
-            block
-            style={save}
-            center
-            onPress={() => saveProfile()}
-            loading={props.requesting}
-            disabled={disable}
-          />
-        </View>
-        <View>
-          <Text
-            text="Delete Account"
-            style={[
-              smallHPadding,
-              { fontSize: 14, color: "#FF6848", marginVertical: 31 }
-            ]}
-            bold
-          />
+            <TouchableOpacity
+              style={{
+                paddingBottom: 22,
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 21
+              }}
+              onPress={() => navigate("RequestService")}
+            >
+              <LinearGradient
+                colors={["#00B9F1", "#034EA2"]}
+                style={{ height: 42, width: 141, borderRadius: 10 }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: 14,
+                    color: "#FFFFFF",
+                    lineHeight: 42,
+                    fontWeight: "700"
+                  }}
+                >
+                  Save
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          
         </View>
       </ScrollView>
     </SafeAreaView>
   )
 }
 
-const mapStateToProps = state => ({
-  requesting: state.editProfileReducer.requesting,
-  profileData: state.myProfileReducer.profileData,
-  user: state.login.userDetail
-})
-
-const mapDispatchToProps = dispatch => ({
-  editProfile: (data, id) => dispatch(editProfile(data, id))
-})
-export default connect(mapStateToProps, mapDispatchToProps)(EditProfile)
+export default EditProfile

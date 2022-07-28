@@ -1,23 +1,14 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 
 // components
-import { Text, Button, Input, MainHeader, Header } from "src/components"
-import {
-  StatusBar,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  TextInput,
-  View,
-  TouchableOpacity,
-  Image
-} from "react-native"
+import { Text, Header } from "src/components"
+import { SafeAreaView, View, TouchableOpacity, Image } from "react-native"
 import Images from "../../theme/Images"
 
 import LinearGradient from "react-native-linear-gradient"
-import { Dropdown } from "react-native-element-dropdown"
+import { Rating } from "react-native-ratings"
 
-const ServiceDetail = props => {
+const FeedBack = props => {
   const {
     navigation: { navigate, goBack }
   } = props
@@ -26,7 +17,7 @@ const ServiceDetail = props => {
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <Header
-          mainText="Service Details"
+          mainText="Rate Our Service"
           onPress={() => {
             goBack()
           }}
@@ -91,53 +82,49 @@ const ServiceDetail = props => {
             />
             <Text style={{ marginLeft: 9 }}>4 weeks/ monthly </Text>
           </View>
-          <Text style={{ marginTop: 24, opacity: 0.5 }}>Notes </Text>
-          <View
+          <Text
             style={{
-              marginTop: 5,
-              borderWidth: 1,
-              shadowColor: "rgba(0, 0, 0, 0.3)",
-              shadowOffset: {
-                width: 0,
-                height: 1
-              },
-              shadowOpacity: 0.22,
-              shadowRadius: 2.22
+              marginTop: 41,
+              fontSize: 18,
+              fontWeight: "600",
+              textAlign: "center"
             }}
           >
-            <Text>
-              Damp cloth wipe down of all walls (waist down) throughout the
-              home.
-            </Text>
+            Rating{" "}
+          </Text>
+          <View style={{ marginTop: 27 }}>
+            <Rating ratingCount={5} imageSize={52} startingValue={3} />
           </View>
         </View>
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'flex-end'}}>
-        <TouchableOpacity
-          style={{
-            marginBottom: 22,
-          }}
-          onPress={() => navigate("FeedBack")}
+        <View
+          style={{ flex: 1, justifyContent: "flex-end", alignItems: "center" }}
         >
-          <LinearGradient
-            colors={["#00B9F1", "#034EA2"]}
-            style={{ height: 42, width: 207, borderRadius: 10 }}
+          <TouchableOpacity
+            style={{
+              paddingBottom: 22
+            }}
+            onPress={() => navigate("Notifications")}
           >
-            <Text
-              style={{
-                textAlign: "center",
-                fontSize: 18,
-                color: "#FFFFFF",
-                lineHeight: 42
-              }}
+            <LinearGradient
+              colors={["#00B9F1", "#034EA2"]}
+              style={{ height: 42, width: 207, borderRadius: 10 }}
             >
-              Reschedule
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontSize: 18,
+                  color: "#FFFFFF",
+                  lineHeight: 42
+                }}
+              >
+                Rate Our Service
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </>
   )
 }
 
-export default ServiceDetail
+export default FeedBack

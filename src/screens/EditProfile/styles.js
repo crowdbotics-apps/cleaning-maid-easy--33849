@@ -13,13 +13,11 @@ export default StyleSheet.create({
     backgroundColor: "#F44C28"
   },
   inputStyle: {
-    backgroundColor: "rgba(35, 31, 32, 0.05)",
-    opacity: 0.5,
-    borderRadius: 5,
-    paddingLeft: 20,
-    flex: 1,
-    height: Platform.OS === "ios" ? 40:null,
-    color: 'black'
+    width: "100%",
+    borderBottomColor: "#C4C4C4",
+    paddingBottom: 0,
+    borderBottomWidth: 1,
+    color: "black"
   },
   save: {
     height: 50,
@@ -42,6 +40,6 @@ export default StyleSheet.create({
     borderRightWidth: 1,
     borderRightColor: "rgba(2, 16, 22, 0.05)",
     height: Platform.OS === "ios" ? 40 : null,
-    color: 'black'
+    color: "black"
   }
 })
